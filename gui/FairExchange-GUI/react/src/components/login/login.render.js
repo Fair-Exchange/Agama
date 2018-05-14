@@ -244,8 +244,17 @@ const LoginRender = function() {
               { translate('INDEX.WELCOME_PLEASE_ADD') }
             </h4>
             <div className="form-group form-material floating width-540 vertical-margin-30 auto-side-margin">
-
-              <div className="addcoin-shortcut">
+               <button
+                  className="btn btn-lg btn-primary btn-block ladda-button"
+                  onClick={ this.toggleActivateCoinForm }
+                  disabled={ !this.props.Main }>
+                  <span className="ladda-label">
+                    { translate('INDEX.ACTIVATE_COIN') }
+                  </span>
+                </button>
+              <div className="line">{ translate('LOGIN.OR_USE_A_SHORTCUT') }</div>
+             
+            <div className="addcoin-shortcut">
                 <div>
                   <i className="icon fa-cube margin-right-5"></i>
                   { translate('INDEX.NATIVE_MODE') }
@@ -265,6 +274,39 @@ const LoginRender = function() {
                   valueRenderer={ this.renderShortcutOption }
                   options={[
                     { value: 'safe', label: 'safe' },
+                    { value: 'mnz', label: 'mnz' },
+                    { value: 'btch', label: 'btch' },
+                    { value: 'revs', label: 'revs' },
+                    { value: 'jumblr', label: 'jumblr' },
+                    { value: 'safe+revs+jumblr', label: 'safe+revs+jumblr' },
+                  ]} />
+              </div>
+              <div className="addcoin-shortcut">
+                <div>
+                  <i className="icon fa-flash margin-right-5"></i>
+                  { translate('INDEX.SPV_MODE') }
+                  <i
+                    className="icon fa-question-circle login-help"
+                    data-tip="If you need a quick and easy access to your funds try <u>Lite (SPV) mode</u> which doesn't require any blockchain to be loaded locally.<br/>All data is requested on demand from Electrum servers."
+                    data-html={ true }></i>
+                  <ReactTooltip
+                    effect="solid"
+                    className="text-left" />
+                </div>
+                <Select
+                  name="selectedShortcutSPV"
+                  value={ this.state.selectedShortcutSPV }
+                  onChange={ (event) => this.updateSelectedShortcut(event, 'spv') }
+                  optionRenderer={ this.renderShortcutOption }
+                  valueRenderer={ this.renderShortcutOption }
+                  options={[
+                    { value: 'safe', label: 'safe' },
+                    { value: 'chips', label: 'chips' },
+                    { value: 'btch', label: 'btch' },
+                    { value: 'mnz', label: 'mnz' },
+                    { value: 'revs', label: 'revs' },
+                    { value: 'jumblr', label: 'jumblr' },
+                    { value: 'safe+revs+jumblr', label: 'safe+revs+jumblr' },
                   ]} />
               </div>
  
