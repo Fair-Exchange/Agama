@@ -49,37 +49,7 @@ const CoinSelectorsRender = function(item, coin, i) {
             { translate('INDEX.ACTIVATE_COIN') }
         </button>
       </div>
-      <div className="col-sm-11 text-center add-coin-modes">
-        <div className="form-group col-lg-4 col-md-4 col-sm-6 col-xs-6 style-addcoin-lbl-mdl-login">
-          <input
-            type="radio"
-            className="to-labelauty labelauty"
-            name={ `mode-${i}` }
-            id={ `addcoin_mdl_basilisk_mode_login-${i}` }
-            disabled={ item.spvMode.disabled }
-            checked={ item.spvMode.checked } />
-          <label
-            htmlFor={ `addcoin_mdl_basilisk_mode_login-${i}` }
-            onClick={ () => this.updateSelectedMode('0', i) }
-            style={{ pointerEvents: item.spvMode.disabled ? 'none' : 'all' }}>
-            <span
-              className="labelauty-unchecked-image"
-              style={{ display: item.spvMode.checked ? 'none' : 'inline-block' }}></span>
-            <span
-              className="labelauty-unchecked"
-              style={{ display: item.spvMode.checked ? 'none' : 'inline-block' }}>
-                { translate('INDEX.SPV_MODE') }
-            </span>
-            <span
-              className="labelauty-checked-image"
-              style={{ display: item.spvMode.checked ? 'inline-block' : 'none' }}></span>
-            <span
-              className="labelauty-checked"
-              style={{ display: item.spvMode.checked ? 'inline-block' : 'none' }}>
-                { translate('INDEX.SPV_MODE') }
-            </span>
-          </label>
-        </div>
+      <div className="col-sm-11 text-center add-coin-modes">        
         { mainWindow.arch === 'x64' &&
           <div
             className="form-group col-lg-4 col-md-4 col-sm-6 col-xs-6"

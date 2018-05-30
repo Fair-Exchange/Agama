@@ -99,8 +99,8 @@ networks.xzc = {
 networks.safecoin = {
   messagePrefix: '\x19Safecoin Signed Message:\n',
   bip32: {
-    public: 0x0488b21e,
-    private: 0x0488ade4,
+    public: 0x0488b21f,
+    private: 0x0488ade5,
   },
   pubKeyHash: 0x3d,
   scriptHash: 0x56,

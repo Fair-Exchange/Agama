@@ -3,7 +3,7 @@ import mainWindow from '../../util/mainWindow';
 
 const addCoinOptionsAC = () => {
   const _assetChains = [
-    'bet',
+   /* 'bet',
     'bots',
     'ceal',
     'coqui',
@@ -25,7 +25,7 @@ const addCoinOptionsAC = () => {
     'beer',
     'pizza',
     'vote2018',
-    'ninja'
+    'ninja'*/
   ];
   let _items = [];
 

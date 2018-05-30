@@ -48,8 +48,8 @@ class About extends React.Component {
           <br /><br />
 
           <div className="font-weight-600">{ translate('ABOUT.TESTERS') }</div>
-          { translate('ABOUT.TESTERS_P1') } <a className="link" onClick={ () => this.openExternalWindow('https://ipv6admin.com/en/products/safewallet-wallet') }>{ translate('ABOUT.TESTERS_P2') }</a>.
-          { translate('ABOUT.TESTERS_P3') } <a className="link" onClick={ () => this.openExternalWindow('https://sprnt.slack.com/messages/C0HT9MH96/') }>#testing-safewallet</a> Slack { translate('ABOUT.CHANNEL') }. <a className="link" onClick={ () => this.openExternalWindow('http://slackinvite.ipv6admin.com/') }>{ translate('ABOUT.GET_AN_INVITE') }</a> { translate('ABOUT.GET_AN_INVITE_P2') }.
+          { translate('ABOUT.TESTERS_P1') } <a className="link" onClick={ () => this.openExternalWindow('https://safecoin.org/wallets/') }>{ translate('ABOUT.TESTERS_P2') }</a>.
+          { translate('ABOUT.TESTERS_P3') } <a className="link" onClick={ () => this.openExternalWindow('https://discord.gg/wvteEF3') }>#wallet-pre-release</a> Discord { translate('ABOUT.CHANNEL') }. <a className="link" onClick={ () => this.openExternalWindow('https://discord.gg/wvteEF3') }>{ translate('ABOUT.GET_AN_INVITE') }</a> { translate('ABOUT.GET_AN_INVITE_P2') }.
           { translate('ABOUT.TESTERS_P4') }
 
           <br /><br />

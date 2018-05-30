@@ -4,6 +4,10 @@ const Promise = require('bluebird');
 
 module.exports = (shepherd) => {
   shepherd.zcashParamsDownloadLinks = {
+    'no download source selected': {        // dummy
+      proving: 'https://forge.plus/sprout-proving.key',
+      verifying: 'https://forge.plus/sprout-verifying.key',
+    },
     'Main Download Link': {
       proving: 'https://forge.plus/sprout-proving.key',
       verifying: 'https://forge.plus/sprout-verifying.key',

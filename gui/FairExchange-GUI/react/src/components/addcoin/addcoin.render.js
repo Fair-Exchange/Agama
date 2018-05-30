@@ -26,27 +26,7 @@ const AddCoinRender = function() {
                 { translate('INDEX.SELECT_A_COIN') }
               </h4>
             </div>
-            <div className="modal-body">
-              <button
-                className="btn btn-primary btn-add-coin-item"
-                onClick={ this.addNewItem }>+</button>
-              <button
-                className="btn btn-outline-primary btn-add-coin-item-options"
-                onClick={ this.toggleActionsMenu }>
-                <i className={ 'fa-chevron-' + (this.state.actionsMenu ? 'up' : 'down') }></i>
-              </button>
-              <span className={ !this.state.actionsMenu ? 'hide' : '' }>
-                <button
-                  className="btn btn-outline-primary btn-save-coin-selection"
-                  onClick={ this.saveCoinSelection }>
-                    { translate('ADD_COIN.SAVE_SELECTION') }
-                </button>
-                <button
-                  className="btn btn-outline-primary btn-load-coin-selection"
-                  onClick={ this.loadCoinSelection }>
-                    { translate('ADD_COIN.LOAD_SELECTION') }
-                </button>
-              </span>
+            <div className="modal-body">              
               { this.renderCoinSelectors() }
               <div className={ 'text-align-center vertical-margin-20 horizontal-margin-0 padding-bottom-20 ' + (this.hasMoreThanOneCoin() ? 'col-sm-12' : 'hide') }>
                 <button
@@ -57,10 +37,7 @@ const AddCoinRender = function() {
                 </button>
               </div>
               { mainWindow.arch === 'x64' &&
-                <div className="col-sm-12">
-                  <p>
-                    <strong>{ translate('INDEX.SPV_MODE') }:</strong> { translate('ADD_COIN.LITE_MODE_DESC') }.
-                  </p>
+                <div className="col-sm-12">                  
                   <p>
                     <strong>{ translate('INDEX.NATIVE_MODE') }:</strong> { translate('INDEX.NATIVE_MODE_DESC1') }&nbsp;
                     <strong>Safecoin Daemon</strong> { translate('INDEX.NATIVE_MODE_DESC2') }.

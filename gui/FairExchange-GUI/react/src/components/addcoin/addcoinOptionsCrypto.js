@@ -3,17 +3,17 @@ import mainWindow from '../../util/mainWindow';
 import config from '../../config';
 
 const addCoinOptionsCrypto = () => {
-  const availableSAFEModes = mainWindow.arch === 'x64' ? 'spv|native' : 'spv';
+  const availableSAFEModes = mainWindow.arch === 'x64' ? /*'spv|native'*/ 'native' : 'spv';
 
   let _coins = [{
     label: 'Safecoin (SAFE)',
     icon: 'SAFE',
     value: `SAFE|${availableSAFEModes}`,
-  }, {
+  }/*, {
     label: 'Chips (CHIPS)',
     icon: 'CHIPS',
     value: `CHIPS|spv`,
-  }];
+  }*/];
 
   if (config.experimentalFeatures) {
     _coins.push({

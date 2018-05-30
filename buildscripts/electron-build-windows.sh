@@ -20,7 +20,7 @@ electron-packager . --platform=win32 \
   --ignore=react/src \
   --ignore=react/www \
   --overwrite \
-  --version-string.CompanyName="SuperNET" \
+  --version-string.CompanyName="SafeCoin" \
   --version-string.FileDescription="Safewallet" \
   --version-string.OriginalFilename="Safewallet" \
   --version-string.ProductName="Safewallet" \
