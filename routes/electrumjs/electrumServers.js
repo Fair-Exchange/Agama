@@ -291,14 +291,16 @@ let electrumServers = {
     ],
   },
   safecoin: { // !estimatefee
-    address: 'electrum1.ipv6admin.com',
+    address: 'local.support',
     port: 10001,
     proto: 'tcp',
     txfee: 10000,
     abbr: 'SAFE',
     serverList: [
-      'electrum1.ipv6admin.com:10001',
-      'electrum2.ipv6admin.com:10001',
+      'local.support:10001',
+      'local.support:10002',
+      '45.63.13.60:10001',
+      '45.63.13.60:10002'
     ],
   },
   dogecoin: { // !estimatefee
