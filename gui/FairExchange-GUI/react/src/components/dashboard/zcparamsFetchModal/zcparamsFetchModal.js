@@ -30,7 +30,7 @@ class ZcparamsFetchModal extends React.Component {
       display: true,
       updateLog: [],
       zcparamsSources: {},
-      dlOption: 'safewallet.safecoin.org',
+      dlOption: 'safewallet.safecoin.com', //TODO
       done: false,
     };
     this.dismiss = this.dismiss.bind(this);

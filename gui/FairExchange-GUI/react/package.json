@@ -17,16 +17,17 @@
     "e2e": "protractor",
     "e2e-live": "protractor --elementExplorer"
   },
-  "repository": "https://github.com/fair-exchange/FairExchange-GUI",
-  "homepage": "http://ipv6admin.com",
+  "repository": "https://github.com/OleksandrBlack/FairExchange-GUI",
+  "homepage": "",
   "keywords": [
     "safewallet",
+    "FairExchange",
     "safecoin",
     "multicoin",
     "wallet",
     "spv"
   ],
-  "author": "SuperNET Team",
+  "author": "FairExchange Team",
   "license": "MIT",
   "dependencies": {
     "babel-core": "^6.14.0",
@@ -98,7 +99,7 @@
     "socket.io-client": "^1.7.3",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
-    "webpack": "^2.7.0",
+    "webpack": "^2.2.1",
     "webpack-dashboard": "^0.2.1",
     "webpack-dev-server": "^2.2.1"
   }

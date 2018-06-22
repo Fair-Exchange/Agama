@@ -1,7 +1,7 @@
 // TODO: add at least 2 explorers per coin
 
 const explorerList = {
-  SAFE: 'http://www.safeexplorer.ru',
+  SAFE: 'https://explorer.safecoin.org/',
   MSHARK: 'http://MSHARK.explorer.ipv6admin.com',
   REVS: 'http://revs.explorer.ipv6admin.com',
   SUPERNET: 'http://SUPERNET.explorer.ipv6admin.com',
