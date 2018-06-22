@@ -251,8 +251,8 @@ const LoginRender = function() {
                 <span className="ladda-label">
                   { translate('INDEX.ACTIVATE_COIN') }
                 </span>
-             </button>
-             <div className="line">{ translate('LOGIN.OR_USE_A_SHORTCUT') }</div>
+              </button>
+              <div className="line">{ translate('LOGIN.OR_USE_A_SHORTCUT') }</div>
               <div className="addcoin-shortcut">
                 <div>
                   <i className="icon fa-cube margin-right-5"></i>
@@ -295,7 +295,7 @@ const LoginRender = function() {
                 <Select
                   name="selectedShortcutSPV"
                   value={ this.state.selectedShortcutSPV }
-                 onChange={ (event) => this.updateSelectedShortcut(event, 'spv') }
+                  onChange={ (event) => this.updateSelectedShortcut(event, 'spv') }
                   optionRenderer={ this.renderShortcutOption }
                   valueRenderer={ this.renderShortcutOption }
                   options={[
@@ -308,7 +308,6 @@ const LoginRender = function() {
                     { value: 'safe+revs+jumblr', label: 'safe+revs+jumblr' },
                   ]} />
               </div>
- 
             </div>
           </div>
 

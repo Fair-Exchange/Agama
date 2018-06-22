@@ -28,7 +28,7 @@ const LoginModalRender = function() {
                 <div className="page animsition vertical-align text-center fade-in">
                   <div className="page-content vertical-align-middle">
                     <div className="brand">
-                      <img className="brand-img" src="assets/images/fairexchange-logo-big.png" alt="SuperNET Iguana" />
+                      <img className="brand-img" src="assets/images/fairexchange-logo-big.png" alt="FairExchange Iguana" />
                     </div>
                     <div id="section-login" className={ this.state.activeLoginSection === 'login' ? 'show' : 'hide' }>
                       <h4 className="color-white" id="login-welcome">{ translate('INDEX.WELCOME_LOGIN') }</h4>

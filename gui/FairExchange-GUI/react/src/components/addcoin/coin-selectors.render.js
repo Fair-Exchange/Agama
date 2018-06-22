@@ -58,7 +58,7 @@ const CoinSelectorsRender = function(item, coin, i) {
             id={ `addcoin_mdl_basilisk_mode_login-${i}` }
             disabled={ item.spvMode.disabled }
             checked={ item.spvMode.checked } />
-         <label
+          <label
             htmlFor={ `addcoin_mdl_basilisk_mode_login-${i}` }
             onClick={ () => this.updateSelectedMode('0', i) }
             style={{ pointerEvents: item.spvMode.disabled ? 'none' : 'all' }}>

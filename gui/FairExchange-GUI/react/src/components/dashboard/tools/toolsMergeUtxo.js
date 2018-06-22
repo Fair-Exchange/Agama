@@ -225,7 +225,7 @@ class ToolsMergeUTXO extends React.Component {
   }
 
   openExplorerWindow(txid, coin) {
-    const url = `http://${coin}.explorer.ipv6admin.com/tx/${txid}`;
+    const url = `https://explorer.safecoin.org/tx/${txid}`;
     const remote = window.require('electron').remote;
     const BrowserWindow = remote.BrowserWindow;
 

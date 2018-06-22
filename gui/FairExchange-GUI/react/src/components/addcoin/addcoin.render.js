@@ -38,7 +38,7 @@ const AddCoinRender = function() {
               <span className={ !this.state.actionsMenu ? 'hide' : '' }>
                 <button
                   className="btn btn-outline-primary btn-save-coin-selection"
-                 onClick={ this.saveCoinSelection }>
+                  onClick={ this.saveCoinSelection }>
                     { translate('ADD_COIN.SAVE_SELECTION') }
                 </button>
                 <button
