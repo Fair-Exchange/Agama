@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import Store from '../../../store';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import BodyEnd from '../bodyBottom/bodyBottom';
 import {
   InvoiceModalRender,
@@ -65,7 +65,7 @@ class InvoiceModal extends React.Component {
     });
   }
 
-  closeModal() {
+   closeModal() {
     this.setState({
       modalIsOpen: false,
     });
@@ -107,7 +107,7 @@ class InvoiceModal extends React.Component {
             this,
             {
               address: this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub,
-              amount: this.props.ActiveCoin.balance.balance,
+              amount: this.props.ActiveCoin.balance.balance
             },
             'public'
           )

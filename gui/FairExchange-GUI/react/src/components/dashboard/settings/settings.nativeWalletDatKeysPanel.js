@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import { connect } from 'react-redux';
 import { getWalletDatKeys } from '../../../actions/actionCreators';
 import { coindList } from '../../../util/coinHelper';
@@ -37,10 +37,7 @@ class NativeWalletDatKeysPanel extends React.Component {
     });
 
     setTimeout(() => {
-      getWalletDatKeys(
-        _coin,
-        this.state.keyMatchPattern.length ? this.state.keyMatchPattern : null
-      )
+      getWalletDatKeys(_coin, this.state.keyMatchPattern.length ? this.state.keyMatchPattern : null)
       .then((res) => {
         this.setState({
           keys: res,
@@ -74,7 +71,6 @@ class NativeWalletDatKeysPanel extends React.Component {
         key={ `coind-walletdat-coins-none` }
         value="none">{ translate('SETTINGS.PICK_A_COIN') }</option>
     );
-
     for (let i = 0; i < _nativeCoins.length; i++) {
       _items.push(
         <option
@@ -163,10 +159,7 @@ class NativeWalletDatKeysPanel extends React.Component {
                 <button
                   type="button"
                   className="btn btn-primary waves-effect waves-light margin-top-20"
-                  disabled={
-                    this.state.loading ||
-                    this.state.coin === 'none'
-                  }
+                  disabled={ this.state.loading || this.state.coin === 'none' }
                   onClick={ this._getWalletDatKeys }>{ this.state.loading ? translate('SETTINGS.FETCHING_KEYS') + '...' : translate('SETTINGS.GET_KEYS') }</button>
               </div>
             </div>

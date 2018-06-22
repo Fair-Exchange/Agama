@@ -4,9 +4,8 @@ import {
 } from '../actionCreators';
 import Config from '../../config';
 import Store from '../../store';
-import fetchType from '../../util/fetchType';
 
-const getNewAddress = (coin) => {
+function getNewAddress(coin) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -16,9 +15,17 @@ const getNewAddress = (coin) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -37,7 +44,7 @@ const getNewAddress = (coin) => {
   });
 }
 
-export const setJumblrAddress = (coin, type, address) => {
+export function setJumblrAddress(coin, type, address) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -48,9 +55,17 @@ export const setJumblrAddress = (coin, type, address) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post      
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -69,7 +84,7 @@ export const setJumblrAddress = (coin, type, address) => {
   });
 }
 
-export const pauseJumblr = (coin) => {
+export function pauseJumblr(coin) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -80,9 +95,17 @@ export const pauseJumblr = (coin) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post      
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -101,7 +124,7 @@ export const pauseJumblr = (coin) => {
   });
 }
 
-export const resumeJumblr = (coin) => {
+export function resumeJumblr(coin) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -112,9 +135,17 @@ export const resumeJumblr = (coin) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post      
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -133,7 +164,7 @@ export const resumeJumblr = (coin) => {
   });
 }
 
-const dumpPrivkey = (coin, key) => {
+function dumpPrivkey(coin, key) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -144,9 +175,17 @@ const dumpPrivkey = (coin, key) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -165,16 +204,13 @@ const dumpPrivkey = (coin, key) => {
   });
 }
 
-export const importPrivkey = (coin, key, rescan = false, isZKey) => {
+export function importPrivkey(coin, key, rescan = false) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
       chain: coin,
-      cmd: isZKey ? 'z_importkey' : 'importprivkey',
-      params: isZKey ? [
-        key,
-        rescan
-      ] : [
+      cmd: 'importprivkey',
+      params: [
         key,
         '',
         rescan
@@ -183,9 +219,17 @@ export const importPrivkey = (coin, key, rescan = false, isZKey) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);

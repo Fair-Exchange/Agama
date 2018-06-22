@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import mainWindow from '../../../util/mainWindow';
 import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
@@ -61,8 +61,7 @@ const NavbarRender = function() {
               </a>
             </li>
             { this.props.ActiveCoin &&
-              (/*this._checkAC() || */
-              this.props.ActiveCoin.coin === 'SAFE' &&
+              (/*this._checkAC() || */this.props.ActiveCoin.coin === 'SAFE' &&
                 this.props.ActiveCoin.mode === 'native') &&
               <li className={ this.isSectionActive('jumblr') ? 'active nav-top-menu' : 'nav-top-menu' }>
                 <a onClick={ () => this.dashboardChangeSection('jumblr') }>

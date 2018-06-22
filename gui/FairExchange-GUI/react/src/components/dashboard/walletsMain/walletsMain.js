@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import WalletsMainRender from './walletsMain.render';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import {
   triggerToaster,
   prices,
@@ -43,21 +43,18 @@ class WalletsMain extends React.Component {
         !mainWindow.createSeed.secondaryLoginPH) {
       Store.dispatch(
         triggerToaster(
-          translate('LOGIN.PLEASE_WRITE_DOWN_YOUR_PUB'),
-          translate('LOGIN.FIRST_TIME_SEED_USE'),
+          'Please write down your public address, logout and login into Safewallet again to verify that your seed is correct.',
+          'First time seed use',
           'info',
           false
         )
       );
-    } else if (
-      mainWindow.createSeed.triggered &&
-      mainWindow.createSeed.secondaryLoginPH
-    ) {
+    } else if (mainWindow.createSeed.triggered && mainWindow.createSeed.secondaryLoginPH) {
       if (mainWindow.createSeed.secondaryLoginPH === mainWindow.createSeed.firstLoginPH) {
         Store.dispatch(
           triggerToaster(
-            translate('LOGIN.YOUR_ADDR_APPEARS_CORRECT'),
-            translate('LOGIN.CONGRATS_ALL_SET'),
+            'Your seed appears to be correct. As a final check up please double check that the public address you wrote down earlier is matching the one you see right now.',
+            'Congrats, you are all set!',
             'success',
             false
           )
@@ -70,8 +67,8 @@ class WalletsMain extends React.Component {
       } else {
         Store.dispatch(
           triggerToaster(
-            translate('LOGIN.YOUR_SEED_DOESNT_SEEM_CORRECT'),
-            translate('LOGIN.SEED_VERIFICATION_ERROR'),
+            'Your seed doesn\'t seem to be correct. Please logout and repeat wallet creation procedure again.',
+            'Seed verification error!',
             'error',
             false
           )
@@ -106,8 +103,7 @@ class WalletsMain extends React.Component {
 
   getCoinStyle(type) {
     if (type === 'transparent') {
-      if (getCoinTitle(this.props.ActiveCoin.coin).transparentBG &&
-          getCoinTitle().logo) {
+      if (getCoinTitle(this.props.ActiveCoin.coin).transparentBG && getCoinTitle().logo) {
         return { 'backgroundImage': `url("assets/images/bg/${getCoinTitle().logo.toLowerCase()}_transparent_header_bg.png")` };
       }
     } else if (type === 'title') {
@@ -115,10 +111,7 @@ class WalletsMain extends React.Component {
 
       if (getCoinTitle(this.props.ActiveCoin.coin).titleBG) {
         _iconPath = `assets/images/native/${getCoinTitle(this.props.ActiveCoin.coin).logo.toLowerCase()}_header_title_logo.png`;
-      } else if (
-        !getCoinTitle(this.props.ActiveCoin.coin).titleBG &&
-        getCoinTitle(this.props.ActiveCoin.coin).logo
-      ) {
+      } else if (!getCoinTitle(this.props.ActiveCoin.coin).titleBG && getCoinTitle(this.props.ActiveCoin.coin).logo) {
         _iconPath = `assets/images/cryptologo/${getCoinTitle(this.props.ActiveCoin.coin).logo.toLowerCase()}.png`;
       }
 

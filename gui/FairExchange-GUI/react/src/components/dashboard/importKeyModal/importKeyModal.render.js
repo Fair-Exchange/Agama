@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import ReactTooltip from 'react-tooltip';
 
 export const ImportKeyModalRender = function() {
@@ -28,17 +28,14 @@ export const ImportKeyModalRender = function() {
                 { translate('IMPORT_KEY.TWO_FORMS_BELOW_P1') }&nbsp;
                 <strong>Iguana Core / ICO</strong>&nbsp;
                 { translate('IMPORT_KEY.TWO_FORMS_BELOW_P2') }&nbsp;
-                <strong>WIF ({ translate('IMPORT_KEY.WIF_DESC') })</strong>&nbsp;
+                <strong>WIF (Wallet Import Format)</strong>&nbsp;
                 { translate('IMPORT_KEY.TWO_FORMS_BELOW_P3') }.
               </div>
               <div>
                 <strong>{ translate('IMPORT_KEY.PASSPHRASE') }</strong>
                 <p className="margin-top-10">
-                  <strong>{ translate('IMPORT_KEY.NOTICE') }:</strong>&nbsp;
-                  { translate('IMPORT_KEY.NOTICE_DESC') }.&nbsp;
-                  <span className={ this.props.ActiveCoin.coin === 'SAFE' ? '' : 'hide' }>
-                  { translate('IMPORT_KEY.SAFE_RESCAN_WARNING_TIME') }.
-                  </span>
+                  <strong>{ translate('IMPORT_KEY.NOTICE') }:</strong> { translate('IMPORT_KEY.NOTICE_DESC') }.&nbsp;
+                  <span className={ this.props.ActiveCoin.coin === 'SAFE' ? '' : 'hide' }>{ translate('IMPORT_KEY.SAFE_RESCAN_WARNING_TIME') }.</span>
                 </p>
                 <div
                   className="wifkeys-form"
@@ -70,7 +67,7 @@ export const ImportKeyModalRender = function() {
                     { this.state.seedExtraSpaces &&
                       <span>
                         <i className="icon fa-warning seed-extra-spaces-warning"
-                          data-tip={ translate('LOGIN.SEED_TRAILING_CHARS') }
+                          data-tip="Your seed contains leading/trailing space characters"
                           data-html={ true }></i>
                         <ReactTooltip
                           effect="solid"
@@ -82,15 +79,11 @@ export const ImportKeyModalRender = function() {
                     <button
                       type="button"
                       className="btn btn-primary waves-effect waves-light margin-right-20"
-                      onClick={ this.importFromPassphrase }>
-                      { translate('IMPORT_KEY.IMPORT') }
-                    </button>
+                      onClick={ this.importFromPassphrase }>{ translate('IMPORT_KEY.IMPORT') }</button>
                     <button
                       type="button"
                       className="btn btn-primary waves-effect waves-light"
-                      onClick={ this.showPassphraseAddress }>
-                      { translate('IMPORT_KEY.SHOW_ADDRESS_AND_WIF') }
-                    </button>
+                      onClick={ this.showPassphraseAddress }>{ translate('IMPORT_KEY.SHOW_ADDRESS_AND_WIF') }</button>
                   </div>
                 </div>
                 { this.state.passphraseAddress &&
@@ -102,7 +95,7 @@ export const ImportKeyModalRender = function() {
                         className="btn btn-default btn-xs clipboard-edexaddr copy-string-btn"
                         title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                         onClick={ () => this._copyCoinAddress(this.state.passphraseAddress) }>
-                        <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                          <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                       </button>
                     </p>
                     <p>
@@ -111,7 +104,7 @@ export const ImportKeyModalRender = function() {
                         className="btn btn-default btn-xs clipboard-edexaddr copy-string-btn"
                         title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                         onClick={ () => this._copyCoinAddress(this.state.passphraseWif) }>
-                        <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                          <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                       </button>
                     </p>
                   </div>
@@ -119,7 +112,7 @@ export const ImportKeyModalRender = function() {
               </div>
               <div className="line">{ translate('IMPORT_KEY.OR') }</div>
               <div>
-                <strong>WIF ({ translate('IMPORT_KEY.WIF_DESC') })</strong>
+                <strong>WIF (Wallet Import Format)</strong>
                 <div className="toggle-box padding-top-20">
                   <span className="pointer">
                     <label className="switch">
@@ -143,30 +136,7 @@ export const ImportKeyModalRender = function() {
                     </div>
                   </span>
                 </div>
-                <div className="toggle-box padding-top-20">
-                  <span className="pointer">
-                    <label className="switch">
-                      <input
-                        type="checkbox"
-                        checked={ this.state.importMulti } />
-                      <div
-                        className="slider"
-                        onClick={ this.toggleImportMulti }></div>
-                    </label>
-                    <div
-                      className="toggle-label"
-                      onClick={ this.toggleImportMulti }>
-                      { translate('IMPORT_KEY.IMPORT_MULTI_KEYS') }
-                      <i
-                        className="icon fa-question-circle settings-help"
-                        data-tip={ translate('IMPORT_KEY.IMPORT_MULTI_KEYS_DESC') }></i>
-                      <ReactTooltip
-                        effect="solid"
-                        className="text-left" />
-                    </div>
-                  </span>
-                </div>
-                <div className={ !this.state.importMulti ? 'margin-top-20' : 'hide' }>
+                <div className="margin-top-20">
                   <label
                     htmlFor="wif"
                     className="bold">{ translate('IMPORT_KEY.WIF_KEY') }</label>
@@ -185,28 +155,10 @@ export const ImportKeyModalRender = function() {
                       onClick={ this.toggleWifInputVisibility }></i>
                   </div>
                 </div>
-                <div className={ this.state.importMulti ? 'margin-top-20' : 'hide' }>
-                  <label
-                    htmlFor="multipleWif"
-                    className="bold">{ translate('IMPORT_KEY.KEYS_SEPARATED_BY_LINE') }</label>
-                  <div className="form-group form-material">
-                    <textarea
-                      autoComplete="off"
-                      className="form-control"
-                      name="multipleWif"
-                      id="multipleWif"
-                      ref="multipleWif"
-                      rows="5"
-                      onChange={ this.updateInput }
-                      value={ this.state.multipleWif } />
-                  </div>
-                </div>
                 <button
                   type="button"
                   className="btn btn-primary waves-effect waves-light margin-top-10"
-                  onClick={ this.importFromWif }>
-                  { this.state.importWithRescan ? translate('IMPORT_KEY.IMPORT_AND_RESCAN') : translate('IMPORT_KEY.IMPORT') }
-                </button>
+                  onClick={ this.importFromWif }>{ this.state.importWithRescan ? translate('IMPORT_KEY.IMPORT_AND_RESCAN') : translate('IMPORT_KEY.IMPORT') }</button>
               </div>
             </div>
           </div>

@@ -3,58 +3,28 @@ import {
   DASHBOARD_ELECTRUM_TRANSACTIONS,
   DASHBOARD_ELECTRUM_COINS,
 } from '../storeType';
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
 import Config from '../../config';
 import {
   triggerToaster,
   sendToAddressState,
 } from '../actionCreators';
 import Store from '../../store';
-import urlParams from '../../util/url';
-import fetchType from '../../util/fetchType';
-
-// TODO: dev display errors
 
 // src: atomicexplorer
-export const shepherdGetRemoteBTCFees = () => {
+export function shepherdGetRemoteBTCFees() {
   return new Promise((resolve, reject) => {
-    fetch(
-      `https://www.atomicexplorer.com/api/btc/fees`,
-      fetchType.get
-    )
-    .catch((error) => {
-      console.log(error);
-      /*Store.dispatch(
-        triggerToaster(
-          'shepherdGetRemoteBTCFees',
-          'Error',
-          'error'
-        )
-      );*/
-      resolve({ msg: 'error' });
+    fetch(`https://atomicexplorer.com/api/btc/fees`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
-    .then(response => response.json())
-    .then(json => {
-      resolve(json);
-    });
-  });
-}
-
-// btc fees fallback
-export const shepherdGetLocalBTCFees = () => {
-  return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/btcfees${urlParams(_urlParams)}`,
-      fetchType.get
-    )
     .catch((error) => {
       console.log(error);
       Store.dispatch(
         triggerToaster(
-          'shepherdGetLocalBTCFees',
+          'shepherdGetRemoteBTCFees',
           'Error',
           'error'
         )
@@ -67,18 +37,14 @@ export const shepherdGetLocalBTCFees = () => {
   });
 }
 
-export const shepherdElectrumSetServer = (coin, address, port) => {
+export function shepherdElectrumSetServer(coin, address, port) {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      coin,
-      address,
-      port,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/coins/server/set${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/coins/server/set?address=${address}&port=${port}&coin=${coin}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -96,17 +62,14 @@ export const shepherdElectrumSetServer = (coin, address, port) => {
   });
 }
 
-export const shepherdElectrumCheckServerConnection = (address, port) => {
+export function shepherdElectrumCheckServerConnection(address, port) {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      address,
-      port,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/servers/test${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/servers/test?address=${address}&port=${port}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -124,19 +87,20 @@ export const shepherdElectrumCheckServerConnection = (address, port) => {
   });
 }
 
-export const shepherdElectrumKeys = (seed) => {
+export function shepherdElectrumKeys(seed) {
   return new Promise((resolve, reject) => {
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/keys`,
-      fetchType(
-        JSON.stringify({
-          seed,
-          active: true,
-          iguana: true,
-          token: Config.token,
-        })
-      ).post
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/keys`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        seed,
+        active: true,
+        iguana: true,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -154,17 +118,14 @@ export const shepherdElectrumKeys = (seed) => {
   });
 }
 
-export const shepherdElectrumBalance = (coin, address) => {
+export function shepherdElectrumBalance(coin, address) {
   return dispatch => {
-    const _urlParams = {
-      token: Config.token,
-      address,
-      coin,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/getbalance${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/getbalance?coin=${coin}&address=${address}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -182,26 +143,21 @@ export const shepherdElectrumBalance = (coin, address) => {
   }
 }
 
-export const shepherdElectrumBalanceState = (json) => {
+export function shepherdElectrumBalanceState(json) {
   return {
     type: DASHBOARD_ELECTRUM_BALANCE,
     balance: json.result,
   }
 }
 
-export const shepherdElectrumTransactions = (coin, address) => {
+export function shepherdElectrumTransactions(coin, address) {
   return dispatch => {
-    const _urlParams = {
-      token: Config.token,
-      address,
-      coin,
-      full: true,
-      maxlength: 20,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/listtransactions${urlParams(_urlParams)}`,
-      fetchType.get  
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/listtransactions?coin=${coin}&address=${address}&full=true&maxlength=20&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -219,7 +175,7 @@ export const shepherdElectrumTransactions = (coin, address) => {
   }
 }
 
-export const shepherdElectrumTransactionsState= (json) => {
+export function shepherdElectrumTransactionsState(json) {
   json = json.result;
 
   if (json &&
@@ -235,15 +191,14 @@ export const shepherdElectrumTransactionsState= (json) => {
   }
 }
 
-export const shepherdElectrumCoins = () => {
+export function shepherdElectrumCoins() {
   return dispatch => {
-    const _urlParams = {
-      token: Config.token,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/coins${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/coins?token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -261,7 +216,7 @@ export const shepherdElectrumCoins = () => {
   }
 }
 
-export const shepherdElectrumCoinsState = (json) => {
+export function shepherdElectrumCoinsState(json) {
   return {
     type: DASHBOARD_ELECTRUM_COINS,
     electrumCoins: json.result,
@@ -269,24 +224,16 @@ export const shepherdElectrumCoinsState = (json) => {
 }
 
 // value in sats
-export const shepherdElectrumSend = (coin, value, sendToAddress, changeAddress, btcFee) => {
+export function shepherdElectrumSend(coin, value, sendToAddress, changeAddress, btcFee) {
   value = Math.floor(value);
 
   return dispatch => {
-    const _urlParams = {
-      token: Config.token,
-      coin,
-      value,
-      address: sendToAddress,
-      change: changeAddress,
-      gui: true,
-      push: true,
-      verify: true,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}${btcFee ? '&btcfee=' + btcFee : ''}`,
-      fetchType.get
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx?coin=${coin}&address=${sendToAddress}&value=${value}&change=${changeAddress}${btcFee ? '&btcfee=' + btcFee : ''}&gui=true&push=true&verify=true&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -304,24 +251,16 @@ export const shepherdElectrumSend = (coin, value, sendToAddress, changeAddress, 
   }
 }
 
-export const shepherdElectrumSendPromise = (coin, value, sendToAddress, changeAddress, btcFee) => {
+export function shepherdElectrumSendPromise(coin, value, sendToAddress, changeAddress, btcFee) {
   value = Math.floor(value);
 
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      coin,
-      value,
-      address: sendToAddress,
-      change: changeAddress,
-      gui: true,
-      verify: true,
-      push: true,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}${btcFee ? '&btcfee=' + btcFee : ''}`,
-      fetchType.get  
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx?coin=${coin}&address=${sendToAddress}&value=${value}&change=${changeAddress}${btcFee ? '&btcfee=' + btcFee : ''}&gui=true&push=true&verify=true&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -339,24 +278,16 @@ export const shepherdElectrumSendPromise = (coin, value, sendToAddress, changeAd
   });
 }
 
-export const shepherdElectrumSendPreflight = (coin, value, sendToAddress, changeAddress, btcFee) => {
+export function shepherdElectrumSendPreflight(coin, value, sendToAddress, changeAddress, btcFee) {
   value = Math.floor(value);
 
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      coin,
-      value,
-      address: sendToAddress,
-      change: changeAddress,
-      gui: true,
-      verify: true,
-      push: false,
-    };  
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}${btcFee ? '&btcfee=' + btcFee : ''}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx?coin=${coin}&address=${sendToAddress}&value=${value}&change=${changeAddress}${btcFee ? '&btcfee=' + btcFee : ''}&gui=true&push=false&verify=true&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -374,18 +305,14 @@ export const shepherdElectrumSendPreflight = (coin, value, sendToAddress, change
   });
 }
 
-export const shepherdElectrumListunspent = (coin, address) => {
+export function shepherdElectrumListunspent(coin, address) {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      coin,
-      address,
-      full: true,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/listunspent${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/listunspent?coin=${coin}&address=${address}&full=true&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -403,20 +330,21 @@ export const shepherdElectrumListunspent = (coin, address) => {
   });
 }
 
-export const shepherdElectrumBip39Keys = (seed, match, addressdepth, accounts) => {
+export function shepherdElectrumBip39Keys(seed, match, addressdepth, accounts) {
   return new Promise((resolve, reject) => {
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/seed/bip39/match`,
-      fetchType(
-        JSON.stringify({
-          seed,
-          match,
-          addressdepth,
-          accounts,
-          token: Config.token,
-        })
-      ).post
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/seed/bip39/match`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        seed,
+        match,
+        addressdepth,
+        accounts,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -435,19 +363,20 @@ export const shepherdElectrumBip39Keys = (seed, match, addressdepth, accounts) =
 }
 
 // split utxo
-export const shepherdElectrumSplitUtxoPromise = (payload) => {
-  console.warn('shepherdElectrumSplitUtxoPromise', payload);
+export function shepherdElectrumSplitUtxoPromise(payload) {
+  console.warn(payload);
 
   return new Promise((resolve, reject) => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx-split`,
-      fetchType(
-        JSON.stringify({
-          payload,
-          token: Config.token,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx-split`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        payload,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(

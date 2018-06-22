@@ -1,16 +1,17 @@
 import { triggerToaster } from '../actionCreators';
 import Config from '../../config';
 import Store from '../../store';
-import translate from '../../translate/translate';
-import urlParams from '../../util/url';
-import fetchType from '../../util/fetchType';
+import { translate } from '../../translate/translate';
 
-export const shepherdElectrumLock = () => {
+export function shepherdElectrumLock() {
   return new Promise((resolve, reject) => {
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/lock`,
-      fetchType(JSON.stringify({ token: Config.token })).post
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/lock`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: Config.token }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -26,12 +27,15 @@ export const shepherdElectrumLock = () => {
   });
 }
 
-export const shepherdElectrumLogout = () => {
+export function shepherdElectrumLogout() {
   return new Promise((resolve, reject) => {
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/logout`,
-      fetchType(JSON.stringify({ token: Config.token })).post
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: Config.token }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -47,12 +51,15 @@ export const shepherdElectrumLogout = () => {
   });
 }
 
-export const shepherdStopCoind = (coin) => {
+export function shepherdStopCoind(coin) {
   return new Promise((resolve, reject) => {
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/coind/stop`,
-      fetchType(coin === 'SAFE' ? JSON.stringify({ token: Config.token }) : JSON.stringify({ chain: coin, token: Config.token })).post
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/coind/stop`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: coin === 'SAFE' ? JSON.stringify({ token: Config.token }) : JSON.stringify({ chain: coin, token: Config.token }),
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -68,21 +75,22 @@ export const shepherdStopCoind = (coin) => {
   });
 }
 
-export const shepherdRemoveCoin = (coin, mode) => {
+export function shepherdRemoveCoin(coin, mode) {
   return new Promise((resolve, reject, dispatch) => {
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/coins/remove`,
-      fetchType(
-        JSON.stringify(coin === 'SAFE' && mode === 'native' ? {
-          mode,
-          token: Config.token,
-        } : {
-          mode,
-          chain: coin,
-          token: Config.token,
-        })
-      ).post
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/coins/remove`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(coin === 'SAFE' && mode === 'native' ? {
+        mode,
+        token: Config.token,
+      } : {
+        mode,
+        chain: coin,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -109,15 +117,14 @@ export const shepherdRemoveCoin = (coin, mode) => {
   });
 }
 
-export const shepherdGetCoinList = () => {
+export function shepherdGetCoinList() {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/coinslist${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/coinslist?token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -133,16 +140,18 @@ export const shepherdGetCoinList = () => {
   });
 }
 
-export const shepherdPostCoinList = (data) => {
+export function shepherdPostCoinList(data) {
   return new Promise((resolve, reject) => {
-    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/coinslist`,
-      fetchType(
-        JSON.stringify({
-          payload: data,
-          token: Config.token,
-        })
-      ).post
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/coinslist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        payload: data,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -158,21 +167,14 @@ export const shepherdPostCoinList = (data) => {
   });
 }
 
-export const shepherdClearCoindFolder = (coin, keepWalletDat) => {
+export function shepherdClearCoindFolder(coin, keepWalletDat) {
   return new Promise((resolve, reject) => {
-    const _urlParams1 = {
-      token: Config.token,
-      coin,
-      keepwallet: true,
-    };
-    const _urlParams2 = {
-      token: Config.token,
-      coin,
-    };
-    fetch(
-      keepWalletDat ? `http://127.0.0.1:${Config.safewalletPort}/shepherd/kick${urlParams(_urlParams1)}` : `http://127.0.0.1:${Config.safewalletPort}/shepherd/kick${urlParams(_urlParams2)}`,
-      fetchType.get
-    )
+    fetch(keepWalletDat ? `http://127.0.0.1:${Config.safewalletPort}/shepherd/kick?coin=${coin}&keepwallet=true&token=${Config.token}` : `http://127.0.0.1:${Config.safewalletPort}/shepherd/kick?coin=${coin}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(

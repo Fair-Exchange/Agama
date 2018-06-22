@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
 import addCoinOptionsCrypto from '../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../addcoin/addcoinOptionsAC';
 // import addCoinOptionsACFiat from '../addcoin/addcoinOptionsACFiat';
@@ -11,8 +11,12 @@ const CoinSelectorsRender = function(item, coin, i) {
     <div
       className={ this.hasMoreThanOneCoin() ? 'multi' : 'single' }
       key={ `add-coin-${i}` }>
-      <div className={ (this.hasMoreThanOneCoin() ? 'col-sm-10' : 'col-sm-8') + (!this.hasMoreThanOneCoin() ? ' padding-left-none' : ' padding-left-15') }>
-        <div className={ (this.hasMoreThanOneCoin() && (item.mode === '-1' || item.mode === -1) ? 'col-sm-6 form-group' : 'form-group') + (this.hasMoreThanOneCoin() ? ' padding-left-none' : ' padding-left-15') }>
+      <div
+        className={ this.hasMoreThanOneCoin() ? 'col-sm-10' : 'col-sm-8' }
+        style={{ paddingLeft: !this.hasMoreThanOneCoin() ? '0' : '15px' }}>
+        <div
+          className={ this.hasMoreThanOneCoin() && (item.mode === '-1' || item.mode === -1) ? 'col-sm-6 form-group' : 'form-group' }
+          style={{ paddingLeft: this.hasMoreThanOneCoin() ? '0' : '15px' }}>
           <Select
             name="selectedCoin"
             value={ coin }
@@ -28,7 +32,7 @@ const CoinSelectorsRender = function(item, coin, i) {
               name="daemonParam"
               onChange={ (event) => this.updateDaemonParam(event, i) }
               autoFocus>
-              <option>{ translate('INDEX.DAEMON_PARAM') }: { translate('ADD_COIN.NONE') }</option>
+              <option>{ translate('INDEX.DAEMON_PARAM') }: none</option>
               <option value="silent">{ translate('INDEX.DAEMON_PARAM') }: { translate('INDEX.BACKGROUND_PROCESS') }</option>
               <option value="reindex">{ translate('INDEX.DAEMON_PARAM') }: { translate('INDEX.REINDEX') }</option>
               <option value="rescan">{ translate('INDEX.DAEMON_PARAM') }: { translate('INDEX.RESCAN') }</option>
@@ -42,7 +46,7 @@ const CoinSelectorsRender = function(item, coin, i) {
           className="btn btn-primary"
           onClick={ () => this.activateCoin(i) }
           disabled={ item.mode === -2 }>
-          { translate('INDEX.ACTIVATE_COIN') }
+            { translate('INDEX.ACTIVATE_COIN') }
         </button>
       </div>
       <div className="col-sm-11 text-center add-coin-modes">
@@ -54,7 +58,7 @@ const CoinSelectorsRender = function(item, coin, i) {
             id={ `addcoin_mdl_basilisk_mode_login-${i}` }
             disabled={ item.spvMode.disabled }
             checked={ item.spvMode.checked } />
-          <label
+         <label
             htmlFor={ `addcoin_mdl_basilisk_mode_login-${i}` }
             onClick={ () => this.updateSelectedMode('0', i) }
             style={{ pointerEvents: item.spvMode.disabled ? 'none' : 'all' }}>
@@ -64,7 +68,7 @@ const CoinSelectorsRender = function(item, coin, i) {
             <span
               className="labelauty-unchecked"
               style={{ display: item.spvMode.checked ? 'none' : 'inline-block' }}>
-              { translate('INDEX.SPV_MODE') }
+                { translate('INDEX.SPV_MODE') }
             </span>
             <span
               className="labelauty-checked-image"
@@ -72,12 +76,14 @@ const CoinSelectorsRender = function(item, coin, i) {
             <span
               className="labelauty-checked"
               style={{ display: item.spvMode.checked ? 'inline-block' : 'none' }}>
-              { translate('INDEX.SPV_MODE') }
+                { translate('INDEX.SPV_MODE') }
             </span>
           </label>
         </div>
         { mainWindow.arch === 'x64' &&
-          <div className="form-group col-lg-4 col-md-4 col-sm-6 col-xs-6 padding-left-none">
+          <div
+            className="form-group col-lg-4 col-md-4 col-sm-6 col-xs-6"
+            style={{ paddingLeft: '0' }}>
             <input
               type="radio"
               className="to-labelauty labelauty"
@@ -95,7 +101,7 @@ const CoinSelectorsRender = function(item, coin, i) {
               <span
                 className="labelauty-unchecked"
                 style={{ display: item.nativeMode.checked ? 'none' : 'inline-block' }}>
-                { translate('INDEX.NATIVE_MODE') }
+                  { translate('INDEX.NATIVE_MODE') }
               </span>
               <span
                 className="labelauty-checked-image"
@@ -103,7 +109,7 @@ const CoinSelectorsRender = function(item, coin, i) {
               <span
                 className="labelauty-checked"
                 style={{ display: item.nativeMode.checked ? 'inline-block' : 'none' }}>
-                { translate('INDEX.NATIVE_MODE') }
+                  { translate('INDEX.NATIVE_MODE') }
               </span>
             </label>
           </div>
@@ -114,7 +120,7 @@ const CoinSelectorsRender = function(item, coin, i) {
           type="button"
           className="btn btn-primary"
           onClick={ () => this.removeCoin(i) }>
-          <i className="fa fa-trash-o"></i>
+            <i className="fa fa-trash-o"></i>
         </button>
       </div>
       <div className={ !this.hasMoreThanOneCoin() && (item.mode === '-1' || item.mode === -1) ? 'col-sm-5 padding-bottom-30' : 'hide' }>
@@ -124,7 +130,7 @@ const CoinSelectorsRender = function(item, coin, i) {
             name="daemonParam"
             onChange={ (event) => this.updateDaemonParam(event, i) }
             autoFocus>
-            <option>{ translate('INDEX.DAEMON_PARAM') }: { translate('ADD_COIN.NONE') }</option>
+            <option>{ translate('INDEX.DAEMON_PARAM') }: none</option>
             <option value="silent">{ translate('INDEX.DAEMON_PARAM') }: { translate('INDEX.BACKGROUND_PROCESS') }</option>
             <option value="reindex">{ translate('INDEX.DAEMON_PARAM') }: { translate('INDEX.REINDEX') }</option>
             <option value="rescan">{ translate('INDEX.DAEMON_PARAM') }: { translate('INDEX.RESCAN') }</option>

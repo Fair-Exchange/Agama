@@ -5,29 +5,26 @@ import {
   GET_PEERS_LIST,
   LOAD_APP_CONFIG,
 } from '../storeType';
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
 import { triggerToaster } from '../actionCreators';
 import Config from '../../config';
 import Store from '../../store';
-import urlParams from '../../util/url';
-import fetchType from '../../util/fetchType';
 
-const getAppInfoState = (json) => {
+function getAppInfoState(json) {
   return {
     type: LOAD_APP_INFO,
     info: json,
   }
 }
 
-export const getAppInfo = () => {
+export function getAppInfo() {
   return dispatch => {
-    const _urlParams = {
-      token: Config.token,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/appinfo${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/appinfo?token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -43,7 +40,7 @@ export const getAppInfo = () => {
   }
 }
 
-export const settingsWifkeyState = (json, coin) => {
+export function settingsWifkeyState(json, coin) {
   return {
     type: GET_WIF_KEY,
     wifkey: json,
@@ -51,7 +48,7 @@ export const settingsWifkeyState = (json, coin) => {
   }
 }
 
-const parseImportPrivKeyResponse = (json, dispatch) => {
+function parseImportPrivKeyResponse(json, dispatch) {
   if (json.error === 'illegal privkey') {
     return dispatch => {
       dispatch(
@@ -89,7 +86,7 @@ const parseImportPrivKeyResponse = (json, dispatch) => {
   }
 }
 
-const getDebugLogState = (json) => {
+function getDebugLogState(json) {
   const _data = json.result.replace('\n', '\r\n');
 
   return {
@@ -98,8 +95,8 @@ const getDebugLogState = (json) => {
   }
 }
 
-export const getDebugLog = (target, linesCount, acName) => {
-  let payload = {
+export function getDebugLog(target, linesCount, acName) {
+  const payload = {
     herdname: target,
     lastLines: linesCount,
     token: Config.token,
@@ -110,10 +107,13 @@ export const getDebugLog = (target, linesCount, acName) => {
   }
 
   return dispatch => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/debuglog`,
-      fetchType(JSON.stringify(payload)).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/debuglog`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -129,17 +129,18 @@ export const getDebugLog = (target, linesCount, acName) => {
   }
 }
 
-export const saveAppConfig = (_payload) => {
+export function saveAppConfig(_payload) {
   return dispatch => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/appconf`,
-      fetchType(
-        JSON.stringify({
-          payload: _payload,
-          token: Config.token,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/appconf`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        payload: _payload,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -164,7 +165,7 @@ export const saveAppConfig = (_payload) => {
   }
 }
 
-const getAppConfigState = (json) => {
+function getAppConfigState(json) {
   return {
     type: LOAD_APP_CONFIG,
     config: json,
@@ -173,13 +174,12 @@ const getAppConfigState = (json) => {
 
 export function getAppConfig() {
   return dispatch => {
-    const _urlParams = {
-      token: Config.token,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/appconf${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/appconf?token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -195,12 +195,15 @@ export function getAppConfig() {
   }
 }
 
-export const resetAppConfig = () => {
+export function resetAppConfig() {
   return dispatch => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/appconf/reset`,
-      fetchType(JSON.stringify({ token: Config.token })).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/appconf/reset`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: Config.token })
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -225,18 +228,16 @@ export const resetAppConfig = () => {
   }
 }
 
-export const coindGetStdout = (chain) => {
+export function coindGetStdout(chain) {
   const _chain = chain === 'SAFE' ? 'safecoind' : chain;
 
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      chain,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/coind/stdout${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/coind/stdout?chain=${chain}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -254,23 +255,16 @@ export const coindGetStdout = (chain) => {
   });
 }
 
-export const getWalletDatKeys = (chain, keyMatchPattern) => {
+export function getWalletDatKeys(chain, keyMatchPattern) {
   const _chain = chain === 'SAFE' ? null : chain;
 
   return new Promise((resolve, reject) => {
-    const _urlParams1 = {
-      token: Config.token,
-      chain,
-      search: keyMatchPattern,
-    };
-    const _urlParams2 = {
-      token: Config.token,
-      chain,
-    };
-    fetch(
-      keyMatchPattern ? `http://127.0.0.1:${Config.safewalletPort}/shepherd/coindwalletkeys${urlParams(_urlParams1)}` : `http://127.0.0.1:${Config.safewalletPort}/shepherd/coindwalletkeys${urlParams(_urlParams2)}`,
-      fetchType.get
-    )
+    fetch(keyMatchPattern ? `http://127.0.0.1:${Config.safewalletPort}/shepherd/coindwalletkeys?chain=${_chain}&search=${keyMatchPattern}&token=${Config.token}` : `http://127.0.0.1:${Config.safewalletPort}/shepherd/coindwalletkeys?chain=${_chain}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -288,7 +282,7 @@ export const getWalletDatKeys = (chain, keyMatchPattern) => {
   });
 }
 
-export const dumpPrivKey = (coin, address, isZaddr) => {
+export function dumpPrivKey(coin, address, isZaddr) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -299,9 +293,17 @@ export const dumpPrivKey = (coin, address, isZaddr) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch(function(error) {
       console.log(error);
@@ -320,7 +322,7 @@ export const dumpPrivKey = (coin, address, isZaddr) => {
   });
 }
 
-export const validateAddress = (coin, address, isZaddr) => {
+export function validateAddress(coin, address, isZaddr) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -331,9 +333,17 @@ export const validateAddress = (coin, address, isZaddr) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch(function(error) {
       console.log(error);

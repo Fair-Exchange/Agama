@@ -1,26 +1,25 @@
 import {
   triggerToaster,
-  dashboardCoinsState,
+  dashboardCoinsState
 } from '../actionCreators';
 import Config from '../../config';
-import urlParams from '../../util/url';
-import fetchType from '../../util/fetchType';
 
 // TODO: find out why it errors on slow systems
-export const getDexCoins = () => {
+export function getDexCoins() {
   return dispatch => {
-    const _urlParams = {
-      token: Config.token,
-    };
     return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/InstantDEX/allcoins${urlParams(_urlParams)}`,
-      fetchType.get
+      `http://127.0.0.1:${Config.safewalletPort}/shepherd/InstantDEX/allcoins?token=${Config.token}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
     )
     .catch((error) => {
       console.log(error);
       dispatch(
         triggerToaster(
-          'getDexCoins',
+          'Error getDexCoins',
           'Error',
           'error'
         )

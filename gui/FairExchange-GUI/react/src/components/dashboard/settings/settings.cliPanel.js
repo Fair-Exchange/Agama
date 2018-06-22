@@ -1,7 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import translate from '../../../translate/translate';
-import { shepherdCli } from '../../../actions/actionCreators';
+import { translate } from '../../../translate/translate';
+import {
+  shepherdCli,
+} from '../../../actions/actionCreators';
 import Store from '../../../store';
 
 class CliPanel extends React.Component {
@@ -25,8 +27,8 @@ class CliPanel extends React.Component {
 
     if (allCoins) {
       if (mode === 'all') {
-        modes.map((mode) => {
-          allCoins[mode].map((coin) => {
+        modes.map(function(mode) {
+          allCoins[mode].map(function(coin) {
             items.push(
               <option
                 value={ coin }
@@ -37,7 +39,7 @@ class CliPanel extends React.Component {
           });
         });
       } else {
-        allCoins[mode].map((coin) => {
+        allCoins[mode].map(function(coin) {
           items.push(
             <option
               value={ coin }
@@ -177,10 +179,7 @@ class CliPanel extends React.Component {
             <button
               type="button"
               className="btn btn-primary waves-effect waves-light"
-              disabled={
-                !this.state.cliCoin ||
-                !this.state.cliCmdString
-              }
+              disabled={ !this.state.cliCoin || !this.state.cliCmdString }
               onClick={ () => this.execCliCmd() }>{ translate('INDEX.EXECUTE') }</button>
           </div>
           <div className="col-sm-12 col-xs-12 text-align-left">

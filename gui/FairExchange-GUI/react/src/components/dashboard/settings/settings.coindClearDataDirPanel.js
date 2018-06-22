@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import {
   shepherdClearCoindFolder,
   triggerToaster,
@@ -37,10 +37,7 @@ class CoindClearDataDirPanel extends React.Component {
     });
 
     setTimeout(() => {
-      shepherdClearCoindFolder(
-        _coin,
-        this.state.keepWalletDat ? this.state.keepWalletDat : null
-      )
+      shepherdClearCoindFolder(_coin, this.state.keepWalletDat ? this.state.keepWalletDat : null)
       .then((res) => {
         if (res.msg === 'success') {
           this.setState({
@@ -89,7 +86,6 @@ class CoindClearDataDirPanel extends React.Component {
         key={ `coind-clear-data-coins-none` }
         value="none">{ translate('SETTINGS.PICK_A_COIN') }</option>
     );
-
     for (let i = 0; i < _nativeCoins.length; i++) {
       if (_nativeCoins[i] !== 'CHIPS') {
         _items.push(
@@ -109,18 +105,16 @@ class CoindClearDataDirPanel extends React.Component {
         <div className="row">
           <div className="col-sm-12 padding-bottom-10">
             <h4 className="col-red">
-              <i className="fa fa-warning"></i> { translate('SETTINGS.COIND_DATADIR_CLEAR_P1') }
-              <br />
-              { translate('SETTINGS.COIND_DATADIR_CLEAR_P2') }
+              <i className="fa fa-warning"></i> { translate('SETTINGS.COIND_DATADIR_CLEAR_P1') }<br />{ translate('SETTINGS.COIND_DATADIR_CLEAR_P2') }
             </h4>
             <div>
               <div className="col-sm-4 no-padding-left text-center">
                 <select
-                  autoFocus
-                  name="coin"
                   className="form-control form-material margin-top-20 margin-bottom-10"
+                  name="coin"
                   value={ this.state.coin }
-                  onChange={ (event) => this.updateInput(event) }>
+                  onChange={ (event) => this.updateInput(event) }
+                  autoFocus>
                   { this.renderCoinListSelectorOptions() }
                 </select>
                 <span className="pointer toggle margin-top-20 block text-left">
@@ -142,13 +136,8 @@ class CoindClearDataDirPanel extends React.Component {
                   <button
                     type="button"
                     className="btn btn-primary waves-effect waves-light margin-top-20"
-                    disabled={
-                      this.state.loading ||
-                      this.state.coin === 'none'
-                    }
-                    onClick={ this.displayYesNo }>
-                    { this.state.loading ? translate('SETTINGS.COIND_DELETING', this.state.coin) : translate('SETTINGS.DELETE') }
-                  </button>
+                    disabled={ this.state.loading || this.state.coin === 'none' }
+                    onClick={ this.displayYesNo }>{ this.state.loading ? translate('SETTINGS.COIND_DELETING', this.state.coin) : translate('SETTINGS.DELETE') }</button>
                 }
                 { this.state.displayYesNo &&
                   <div className="margin-top-20">{ translate('SETTINGS.DATADIR_DELETE_PROMPT', this.state.coin) }</div>
@@ -157,17 +146,13 @@ class CoindClearDataDirPanel extends React.Component {
                   <button
                     type="button"
                     className="btn btn-primary waves-effect waves-light margin-top-20 margin-right-20"
-                    onClick={ this.removeCoindData }>
-                    { translate('SETTINGS.YES') }
-                  </button>
+                    onClick={ this.removeCoindData }>{ translate('SETTINGS.YES') }</button>
                 }
                 { this.state.displayYesNo &&
                   <button
                     type="button"
                     className="btn btn-primary waves-effect waves-light margin-top-20"
-                    onClick={ this.displayYesNo }>
-                    { translate('SETTINGS.NO') }
-                  </button>
+                    onClick={ this.displayYesNo }>{ translate('SETTINGS.NO') }</button>
                 }
               </div>
             </div>

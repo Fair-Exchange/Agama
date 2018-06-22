@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
 import Select from 'react-select';
@@ -42,7 +42,7 @@ class ToolsGetUtxos extends React.Component {
         Store.dispatch(
           triggerToaster(
             res.result,
-            translate('TOOLS.ERR_GET_UTXO'),
+            'Get UTXO error',
             'error'
           )
         );
@@ -76,9 +76,9 @@ class ToolsGetUtxos extends React.Component {
       <table className="table table-hover dataTable table-striped">
         <thead>
           <tr>
-            <th>{ translate('TOOLS.AMOUNT') }</th>
-            <th>{ translate('TOOLS.CONFS') }</th>
-            <th>{ translate('TOOLS.VOUT') }</th>
+            <th>Amount</th>
+            <th>Confirmations</th>
+            <th>Vout</th>
             { _coin[0] === 'SAFE' &&
               <th>Locktime</th>
             }
@@ -90,9 +90,9 @@ class ToolsGetUtxos extends React.Component {
         </tbody>
         <tfoot>
           <tr>
-            <th>{ translate('TOOLS.AMOUNT') }</th>
-            <th>{ translate('TOOLS.CONFS') }</th>
-            <th>{ translate('TOOLS.VOUT') }</th>
+            <th>Amount</th>
+            <th>Confirmations</th>
+            <th>Vout</th>
             { _coin[0] === 'SAFE' &&
               <th>Locktime</th>
             }
@@ -136,12 +136,12 @@ class ToolsGetUtxos extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>{ translate('TOOLS.GET_UTXO_LIST') }</h4>
+          <h4>Get UTXO list</h4>
         </div>
         <div className="col-xlg-12 form-group form-material no-padding-left padding-top-20 padding-bottom-70">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">{ translate('TOOLS.COIN') }</label>
+            htmlFor="safeWalletSendTo">Coin</label>
           <Select
             name="utxoCoin"
             className="col-sm-3"
@@ -154,7 +154,7 @@ class ToolsGetUtxos extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">{ translate('TOOLS.ADDR') }</label>
+            htmlFor="safeWalletSendTo">Address</label>
           <input
             type="text"
             className="form-control col-sm-3"
@@ -170,7 +170,7 @@ class ToolsGetUtxos extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.getUtxos }>
-            { translate('TOOLS.GET_UTXO') }
+              Get UTXO(s)
           </button>
         </div>
         { this.state.utxoResult &&

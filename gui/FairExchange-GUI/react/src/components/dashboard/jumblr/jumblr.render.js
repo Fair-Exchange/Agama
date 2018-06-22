@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 
 import WalletsHeader from '../walletsHeader/walletsHeader';
 import SendCoin from '../sendCoin/sendCoin';
@@ -81,7 +81,7 @@ export const JumblrRender = function() {
                 <span
                   className="labelauty-unchecked"
                   style={{ display: this.state.jumblrMode === 'public' ? 'none' : 'inline-block' }}>
-                  { translate('JUMBLR.PUBLIC_NODE') }
+                    { translate('JUMBLR.PUBLIC_NODE') }
                 </span>
                 <span
                   className="labelauty-checked-image"
@@ -89,7 +89,7 @@ export const JumblrRender = function() {
                 <span
                   className="labelauty-checked"
                   style={{ display: this.state.jumblrMode === 'public' ? 'inline-block' : 'none' }}>
-                  { translate('JUMBLR.PUBLIC_NODE') }
+                    { translate('JUMBLR.PUBLIC_NODE') }
                 </span>
               </label>
             </div>
@@ -111,7 +111,7 @@ export const JumblrRender = function() {
                 <span
                   className="labelauty-unchecked"
                   style={{ display: this.state.jumblrMode === 'private' ? 'none' : 'inline-block' }}>
-                  { translate('JUMBLR.PRIVATE_NODE') }
+                    { translate('JUMBLR.PRIVATE_NODE') }
                 </span>
                 <span
                   className="labelauty-checked-image"
@@ -119,7 +119,7 @@ export const JumblrRender = function() {
                 <span
                   className="labelauty-checked"
                   style={{ display: this.state.jumblrMode === 'private' ? 'inline-block' : 'none' }}>
-                  { translate('JUMBLR.PRIVATE_NODE') }
+                    { translate('JUMBLR.PRIVATE_NODE') }
                 </span>
               </label>
             </div>
@@ -150,7 +150,7 @@ export const JumblrRender = function() {
                   <img
                     className="image"
                     src={ `assets/images/cryptologo/${this.props.ActiveCoin.coin.toLowerCase()}.png` }
-                    alt={ this.props.ActiveCoin.coin } />
+                    alt={ this.props.ActiveCoin.coin }/>
                 </div>
                 <ul className="nav nav-tabs">
                   <li
@@ -200,9 +200,7 @@ export const JumblrRender = function() {
                     <button
                       type="button"
                       className="btn btn-success waves-effect waves-light btn-next"
-                      onClick={ () => this.openTab(2) }>
-                      { translate('INDEX.NEXT') }
-                    </button>
+                      onClick={ () => this.openTab(2) }>{ translate('INDEX.NEXT') }</button>
                     <h5>{ translate('JUMBLR.FEW_SECURITY_NOTES') }</h5>
                     <div className="col-xs-12 nofloat">
                       <ul className="padding-bottom-20">
@@ -236,7 +234,7 @@ export const JumblrRender = function() {
                           className="btn btn-default btn-xs clipboard-edexaddr copy-string-btn"
                           title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                           onClick={ () => this.copyPassphrase() }>
-                          <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                            <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                         </button>
                       </div>
                     }
@@ -256,7 +254,7 @@ export const JumblrRender = function() {
                             className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
                             title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                             onClick={ () => this._copyCoinAddress(this.state.jumblrDepositAddress.address) }>
-                            <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                              <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                           </button>
                         </p>
                         <p>
@@ -265,7 +263,7 @@ export const JumblrRender = function() {
                             className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
                             title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                             onClick={ () => this._copyCoinAddress(this.state.jumblrDepositAddress.wif) }>
-                            <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                              <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                           </button>
                         </p>
                       </div>
@@ -301,7 +299,7 @@ export const JumblrRender = function() {
                           className="btn btn-default btn-xs clipboard-edexaddr copy-string-btn"
                           title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                           onClick={ () => this.copyPassphrase() }>
-                          <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                            <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                         </button>
                       </div>
                     }
@@ -340,7 +338,7 @@ export const JumblrRender = function() {
                         <div
                           className="toggle-label"
                           onClick={ () => this.toggle('jumblrSecretAddressShow') }>
-                          { translate('JUMBLR.SHOW_ADDRESS_LIST') }
+                            { translate('JUMBLR.SHOW_ADDRESS_LIST') }
                         </div>
                       </span>
                     </div>
@@ -451,7 +449,7 @@ export const JumblrRender = function() {
                           <div
                             className="toggle-label"
                             onClick={ () => this.toggle('jumblrSecretAddressShowImport') }>
-                            { translate('JUMBLR.SHOW_ADDRESS_LIST') }
+                              { translate('JUMBLR.SHOW_ADDRESS_LIST') }
                           </div>
                         </span>
                       </div>

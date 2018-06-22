@@ -13,19 +13,21 @@ import {
   toggleZcparamsFetchModal,
   toggleNotaryElectionsModal,
   activeHandle,
-  encryptPassphrase,
-  loadPinList,
-  loginWithPin,
 } from '../../actions/actionCreators';
 import Config from '../../config';
 import Store from '../../store';
-import PassPhraseGenerator from '../../util/crypto/passphrasegenerator';
-import zcashParamsCheckErrors from '../../util/zcashParams';
+import { PassPhraseGenerator } from '../../util/crypto/passphrasegenerator';
+import { zcashParamsCheckErrors } from '../../util/zcashParams';
 import SwallModalRender from './swall-modal.render';
 import LoginRender from './login.render';
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
+import {
+  encryptPassphrase,
+  loadPinList,
+  loginWithPin,
+} from '../../actions/actions/pin';
 import mainWindow from '../../util/mainWindow';
-import md5 from '../../util/crypto/md5';
+import { md5 } from '../../util/crypto/md5';
 
 const IGUNA_ACTIVE_HANDLE_TIMEOUT = 3000;
 const IGUNA_ACTIVE_COINS_TIMEOUT = 10000;
@@ -50,18 +52,17 @@ class Login extends React.Component {
       displaySeedBackupModal: false,
       customWalletSeed: false,
       isCustomSeedWeak: false,
+      nativeOnly: Config.iguanaLessMode,
       trimPassphraseTimer: null,
       displayLoginSettingsDropdown: false,
       displayLoginSettingsDropdownSection: null,
       shouldEncryptSeed: false,
       encryptKey: '',
-      encryptKeyConfirm: '',
+      pubKey: '',
       decryptKey: '',
       selectedPin: '',
       isExperimentalOn: false,
-      enableEncryptSeed: true,
-      isCustomPinFilename: false,
-      customPinFilename: '',
+      enableEncryptSeed: false,
       selectedShortcutNative: '',
       selectedShortcutSPV: '',
       seedExtraSpaces: false,
@@ -78,11 +79,12 @@ class Login extends React.Component {
     this.execWalletCreate = this.execWalletCreate.bind(this);
     this.resizeLoginTextarea = this.resizeLoginTextarea.bind(this);
     this.toggleLoginSettingsDropdown = this.toggleLoginSettingsDropdown.bind(this);
-    this.updateInput = this.updateInput.bind(this);
+    this.updateEncryptKey = this.updateEncryptKey.bind(this);
+    this.updatePubKey = this.updatePubKey.bind(this);
+    this.updateDecryptKey = this.updateDecryptKey.bind(this);
     this.loadPinList = this.loadPinList.bind(this);
     this.updateSelectedShortcut = this.updateSelectedShortcut.bind(this);
     this.setRecieverFromScan = this.setRecieverFromScan.bind(this);
-    this.toggleCustomPinFilename = this.toggleCustomPinFilename.bind(this);
   }
 
   _toggleNotaryElectionsModal() {
@@ -112,8 +114,8 @@ class Login extends React.Component {
     } else {
       Store.dispatch(
         triggerToaster(
-          translate('INDEX.QR_UNABLE_TO_DECODE'),
-          translate('INDEX.QR_ERROR'),
+          'Unable to recognize QR code',
+          'QR scan Error',
           'error'
         )
       );
@@ -156,15 +158,21 @@ class Login extends React.Component {
     });
   }
 
-  toggleCustomPinFilename() {
+  updateEncryptKey(e) {
     this.setState({
-      isCustomPinFilename: !this.state.isCustomPinFilename,
+      encryptKey: e.target.value,
     });
   }
 
-  updateInput(e) {
+  updatePubKey(e) {
     this.setState({
-      [e.target.name]: e.target.value,
+      pubKey: e.target.value,
+    });
+  }
+
+  updateDecryptKey(e) {
+    this.setState({
+      decryptKey: e.target.value,
     });
   }
 
@@ -172,8 +180,6 @@ class Login extends React.Component {
     this.setState({
       isExperimentalOn: mainWindow.experimentalFeatures,
     });
-
-    this.loadPinList();
   }
 
   toggleSeedInputVisibility() {
@@ -201,15 +207,6 @@ class Login extends React.Component {
   componentWillReceiveProps(props) {
     if (props.Login.pinList === 'no pins') {
       props.Login.pinList = [];
-    }
-
-    if (props.Login.pinList !== 'no pins' &&
-        props.Login.pinList.length === 1) {
-      setTimeout(() => {
-        this.setState({
-          selectedPin: props.Login.pinList[0],
-        });
-      }, 100);
     }
 
     if (props &&
@@ -338,59 +335,29 @@ class Login extends React.Component {
   }
 
   loginSeed() {
-    if (!this.state.selectedPin ||
-        !this.state.decryptKey) {
-      const stringEntropy = mainWindow.checkStringEntropy(this.state.loginPassphrase);
+    mainWindow.createSeed.secondaryLoginPH = md5(this.state.loginPassphrase);
+    // reset the login pass phrase values so that when the user logs out, the values are clear
+    this.setState({
+      loginPassphrase: '',
+      loginPassPhraseSeedType: null,
+    });
 
-      mainWindow.pinAccess = false;
+    // reset login input vals
+    this.refs.loginPassphrase.value = '';
+    this.refs.loginPassphraseTextarea.value = '';
 
-      if (!stringEntropy) {
-        Store.dispatch(
-          triggerToaster(
-            [translate('LOGIN.SEED_ENTROPY_CHECK_LOGIN_P1'),
-              '',
-              translate('LOGIN.SEED_ENTROPY_CHECK_LOGIN_P2')],
-            translate('LOGIN.SEED_ENTROPY_CHECK_TITLE'),
-            'warning toastr-wide',
-            false
-          )
-        );
-      }
+    if (this.state.shouldEncryptSeed) {
+      Store.dispatch(encryptPassphrase(this.state.loginPassphrase, this.state.encryptKey, this.state.pubKey));
+    }
 
-      mainWindow.createSeed.secondaryLoginPH = md5(this.state.loginPassphrase);
-      // reset the login pass phrase values so that when the user logs out, the values are clear
-      this.setState({
-        loginPassphrase: '',
-        loginPassPhraseSeedType: null,
-      });
-
-      // reset login input vals
-      this.refs.loginPassphrase.value = '';
-      this.refs.loginPassphraseTextarea.value = '';
-
-      this.setState(this.defaultState);
-
+    if (this.state.selectedPin) {
+      Store.dispatch(loginWithPin(this.state.decryptKey, this.state.selectedPin));
+    } else {
       Store.dispatch(shepherdElectrumAuth(this.state.loginPassphrase));
       Store.dispatch(shepherdElectrumCoins());
-    } else {
-      mainWindow.pinAccess = this.state.selectedPin;
-
-      loginWithPin(this.state.decryptKey, this.state.selectedPin)
-      .then((res) => {
-        if (res.msg === 'success') {
-          // reset login input vals
-          this.refs.loginPassphrase.value = '';
-          this.refs.loginPassphraseTextarea.value = '';
-          this.refs.decryptKey.value = '';
-          this.refs.selectedPin.value = '';
-
-          this.setState(this.defaultState);
-
-          Store.dispatch(shepherdElectrumAuth(res.result));
-          Store.dispatch(shepherdElectrumCoins());
-        }
-      });
     }
+
+    this.setState(this.defaultState);
   }
 
   loadPinList() {
@@ -410,7 +377,7 @@ class Login extends React.Component {
 
     const passPhraseWords = passPhrase.split(' ');
 
-    if (!PassPhraseGenerator.arePassPhraseWordsValid(passPhrase)) {
+    if (!PassPhraseGenerator.arePassPhraseWordsValid(passPhraseWords)) {
       return null;
     }
 
@@ -465,25 +432,18 @@ class Login extends React.Component {
     });
   }
 
+  // TODO: disable register btn if seed or seed conf is incorrect
   handleRegisterWallet() {
     const enteredSeedsMatch = this.state.randomSeed === this.state.randomSeedConfirm;
     const isSeedBlank = this.isBlank(this.state.randomSeed);
-    const stringEntropy = mainWindow.checkStringEntropy(this.state.customWalletSeed);
-    const _customSeed = this.state.customWalletSeed;
 
-    if (!stringEntropy &&
-        _customSeed) {
-      Store.dispatch(
-        triggerToaster(
-          [translate('LOGIN.SEED_ENTROPY_CHECK_P1'),
-            '',
-            translate('LOGIN.SEED_ENTROPY_CHECK_P3')],
-            translate('LOGIN.SEED_ENTROPY_CHECK_TITLE'),
-          'warning toastr-wide',
-          false
-        )
-      );
-    }
+    // if custom seed check for string strength
+    // at least 1 letter in upper case
+    // at least 1 digit
+    // at least one special char
+    // min length 10 chars
+
+    const _customSeed = this.state.customWalletSeed ? this.state.randomSeed.match('^(?=.*[A-Z])(?=.*[^<>{}\"/|;:.,~!?@#$%^=&*\\]\\\\()\\[_+]*$)(?=.*[0-9])(?=.*[a-z]).{10,99}$') : false;
 
     this.setState({
       isCustomSeedWeak: _customSeed === null ? true : false,
@@ -491,111 +451,10 @@ class Login extends React.Component {
       isSeedBlank: isSeedBlank ? true : false,
     });
 
-    if (this.state.shouldEncryptSeed &&
-        !this.isCustomWalletSeed()) {
-      if (this.state.encryptKey !== this.state.encryptKeyConfirm) {
-        Store.dispatch(
-          triggerToaster(
-            translate('LOGIN.ENCRYPTION_KEYS_DONT_MATCH'),
-            translate('LOGIN.SEED_ENCRYPT'),
-            'error'
-          )
-        );
-      } else {
-        if (!this.state.encryptKey ||
-            !this.state.encryptKeyConfirm) {
-          Store.dispatch(
-            triggerToaster(
-              translate('LOGIN.ENCRYPTION_KEY_EMPTY'),
-              translate('LOGIN.SEED_ENCRYPT'),
-              'error'
-            )
-          );
-        } else if (this.state.encryptKey === this.state.encryptKeyConfirm) {
-          const seedEncryptionKeyEntropy = mainWindow.checkStringEntropy(this.state.encryptKey);
-
-          if (!seedEncryptionKeyEntropy) {
-            Store.dispatch(
-              triggerToaster(
-                translate('LOGIN.SEED_ENCRYPTION_WEAK_PW'),
-                translate('LOGIN.WEAK_PW'),
-                'error'
-              )
-            );
-          } else {
-            if (this.state.isCustomPinFilename) {
-              const _customPinFilenameTest = /^[0-9a-zA-Z-_]+$/g;
-
-              if (this.state.customPinFilename &&
-                  _customPinFilenameTest.test(this.state.customPinFilename)) {
-                encryptPassphrase(
-                  this.state.randomSeed,
-                  this.state.encryptKey,
-                  false,
-                  this.state.customPinFilename,
-                )
-                .then((res) => {
-                  if (res.msg === 'success') {
-                    this.loadPinList();
-
-                    setTimeout(() => {
-                      this.setState({
-                        selectedPin: res.result,
-                        activeLoginSection: 'login',
-                      });
-                    }, 500);
-                  } else {
-                    Store.dispatch(
-                      triggerToaster(
-                        res.result,
-                        translate('LOGIN.ERR_SEED_STORAGE'),
-                        'error'
-                      )
-                    );
-                  }
-                });
-              } else {
-                Store.dispatch(
-                  triggerToaster(
-                    translate('LOGIN.CUSTOM_PIN_FNAME_INFO'),
-                    translate('LOGIN.ERR_SEED_STORAGE'),
-                    'error'
-                  )
-                );
-              }
-            } else {
-              encryptPassphrase(this.state.randomSeed, this.state.encryptKey)
-              .then((res) => {
-                if (res.msg === 'success') {
-                  this.loadPinList();
-
-                  setTimeout(() => {
-                    this.setState({
-                      selectedPin: res.result,
-                      activeLoginSection: 'login',
-                    });
-                  }, 500);
-                } else {
-                  Store.dispatch(
-                    triggerToaster(
-                      res.result,
-                      translate('LOGIN.ERR_SEED_STORAGE'),
-                      'error'
-                    )
-                  );
-                }
-              });
-            }
-          }
-        }
-      }
-    } else {
-      if (enteredSeedsMatch &&
-          !isSeedBlank &&
-          _customSeed !== null &&
-          ((stringEntropy && this.isCustomWalletSeed()) || !this.isCustomWalletSeed())) {
-        this.toggleSeedBackupModal();
-      }
+    if (enteredSeedsMatch &&
+        !isSeedBlank &&
+        _customSeed !== null) {
+      this.toggleSeedBackupModal();
     }
   }
 
@@ -607,7 +466,7 @@ class Login extends React.Component {
     this.updateLoginPassPhraseInput(e);
 
     if (e.key === 'Enter' &&
-        (this.state.loginPassphrase || (this.state.selectedPin && this.state.decryptKey))) {
+        this.state.loginPassphrase) {
       this.loginSeed();
     }
   }

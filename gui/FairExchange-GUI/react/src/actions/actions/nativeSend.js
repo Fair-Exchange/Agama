@@ -2,13 +2,12 @@ import {
   DASHBOARD_ACTIVE_COIN_NATIVE_OPIDS,
   DASHBOARD_ACTIVE_COIN_SENDTO,
 } from '../storeType';
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
 import { triggerToaster } from '../actionCreators';
 import Config from '../../config';
 import Store from '../../store';
-import fetchType from '../../util/fetchType';
 
-export const sendNativeTx = (coin, _payload) => {
+export function sendNativeTx(coin, _payload) {
   let payload;
   let _apiMethod;
 
@@ -52,9 +51,17 @@ export const sendNativeTx = (coin, _payload) => {
         ]
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -128,8 +135,8 @@ export function getSAFEOPIDState(json) {
   }
 }
 
-// remove?
-export const getSAFEOPID = (opid, coin) => {
+// remove
+export function getSAFEOPID(opid, coin) {
   return dispatch => {
     const payload = {
       mode: null,
@@ -139,9 +146,17 @@ export const getSAFEOPID = (opid, coin) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -161,7 +176,7 @@ export const getSAFEOPID = (opid, coin) => {
   };
 }
 
-export const sendToAddressPromise = (coin, address, amount) => {
+export function sendToAddressPromise(coin, address, amount) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -178,9 +193,17 @@ export const sendToAddressPromise = (coin, address, amount) => {
       ],
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -199,21 +222,21 @@ export const sendToAddressPromise = (coin, address, amount) => {
   });
 }
 
-export const sendToAddressState = (json) => {
+export function sendToAddressState(json) {
   return {
     type: DASHBOARD_ACTIVE_COIN_SENDTO,
     lastSendToResponse: json,
   }
 }
 
-export const clearLastSendToResponseState = () => {
+export function clearLastSendToResponseState() {
   return {
     type: DASHBOARD_ACTIVE_COIN_SENDTO,
     lastSendToResponse: null,
   }
 }
 
-export const validateAddressPromise = (coin, address) => {
+export function validateAddressPromise(coin, address) {
   return new Promise((resolve, reject) => {
     const payload = {
       mode: null,
@@ -224,9 +247,17 @@ export const validateAddressPromise = (coin, address) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);

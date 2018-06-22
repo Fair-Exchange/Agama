@@ -1,7 +1,5 @@
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
-import translate from '../../../translate/translate';
-import mainWindow from '../../../util/mainWindow';
+import { translate } from '../../../translate/translate';
 
 export const WalletsNavNoWalletRender = function() {
   return (
@@ -56,7 +54,6 @@ export const WalletsNavWithWalletRender = function() {
               <i className="icon md-view-dashboard"></i> { translate('INDEX.TRANSACTIONS') }
             </button>
             { this.props.ActiveCoin &&
-              (this.props.ActiveCoin.mode === 'native' || (this.props.ActiveCoin.mode === 'spv' && !mainWindow.isWatchOnly())) &&
               <button
                 type="button"
                 className="btn btn-primary waves-effect waves-light"
@@ -71,16 +68,6 @@ export const WalletsNavWithWalletRender = function() {
               onClick={ () => this.toggleReceiveCoinForm(!this.props.ActiveCoin.receive) }>
               <i className="icon fa-inbox"></i> { translate('INDEX.RECEIVE') }
             </button>
-            { (this.props.ActiveCoin.mode === 'spv' && mainWindow.isWatchOnly()) &&
-              <span>
-                <i
-                  className="icon fa-question-circle settings-help"
-                  data-tip={ translate('INDEX.LITE_MODE_WATCHONLY') }></i>
-                <ReactTooltip
-                  effect="solid"
-                  className="text-top" />
-              </span>
-            }
           </div>
         </div>
       </div>

@@ -1,21 +1,16 @@
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
 import Config from '../../config';
 import { triggerToaster } from '../actionCreators';
 import Store from '../../store';
-import urlParams from '../../util/url';
-import fetchType from '../../util/fetchType';
 
-export const shepherdElectionsBalance = (coin, address) => {
+export function shepherdElectionsBalance(coin, address) {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      coin,
-      address,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/getbalance${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/getbalance?coin=${coin}&address=${address}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -33,20 +28,14 @@ export const shepherdElectionsBalance = (coin, address) => {
   });
 }
 
-export const shepherdElectionsTransactions = (coin, address, type) => {
+export function shepherdElectionsTransactions(coin, address, type) {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      coin,
-      address,
-      full: true,
-      type,
-      maxlength: 20,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/elections/listtransactions${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/elections/listtransactions?coin=${coin}&address=${address}&full=true&type=${type}&maxlength=20&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -64,16 +53,17 @@ export const shepherdElectionsTransactions = (coin, address, type) => {
   });
 }
 
-export const shepherdElectionsStatus = () => {
+export function shepherdElectionsStatus() {
   return new Promise((resolve, reject) => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/elections/status`,
-      fetchType(
-        JSON.stringify({
-          token: Config.token,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/elections/status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -91,19 +81,20 @@ export const shepherdElectionsStatus = () => {
   });
 }
 
-export const shepherdElectionsLogin = (seed, network) => {
+export function shepherdElectionsLogin(seed, network) {
   return new Promise((resolve, reject) => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/elections/login`,
-      fetchType(
-        JSON.stringify({
-          seed,
-          network,
-          iguana: true,
-          token: Config.token,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/elections/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        seed,
+        network,
+        iguana: true,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -121,16 +112,17 @@ export const shepherdElectionsLogin = (seed, network) => {
   });
 }
 
-export const shepherdElectionsLogout = () => {
+export function shepherdElectionsLogout() {
   return new Promise((resolve, reject) => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/elections/logout`,
-      fetchType(
-        JSON.stringify({
-          token: Config.token,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/elections/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -148,25 +140,16 @@ export const shepherdElectionsLogout = () => {
   });
 }
 
-export const shepherdElectionsSend = (coin, value, sendToAddress, changeAddress, opreturn) => {
+export function shepherdElectionsSend(coin, value, sendToAddress, changeAddress, opreturn) {
   value = Math.floor(value);
 
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      coin,
-      address,
-      value,
-      opreturn,
-      change: changeAddress,
-      vote: true,
-      push: true,
-      verify: false
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx?coin=${coin}&address=${sendToAddress}&value=${value}&change=${changeAddress}&vote=true&push=true&verify=false&opreturn=${opreturn}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -184,23 +167,24 @@ export const shepherdElectionsSend = (coin, value, sendToAddress, changeAddress,
   });
 }
 
-export const shepherdElectionsSendMany = (coin, targets, change, opreturn) => {
+export function shepherdElectionsSendMany(coin, targets, change, opreturn) {
   return new Promise((resolve, reject) => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx-multiout`,
-      fetchType(
-        JSON.stringify({
-          token: Config.token,
-          coin,
-          targets,
-          change,
-          opreturn,
-          push: true,
-          verify: false,
-          vote: true,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/createrawtx-multiout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: Config.token,
+        coin,
+        targets,
+        change,
+        opreturn,
+        push: true,
+        verify: false,
+        vote: true,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(

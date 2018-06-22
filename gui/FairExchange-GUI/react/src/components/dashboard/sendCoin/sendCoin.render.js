@@ -1,7 +1,7 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import QRModal from '../qrModal/qrModal';
-import formatValue from '../../../util/formatValue';
+import { formatValue } from '../../../util/formatValue';
 import explorerList from '../../../util/explorerList';
 import ReactTooltip from 'react-tooltip';
 
@@ -156,10 +156,7 @@ export const _SendFormRender = function() {
             type="button"
             className="btn btn-primary waves-effect waves-light pull-right"
             onClick={ this.props.renderFormOnly ? this.handleSubmit : () => this.changeSendCoinStep(1) }
-            disabled={
-              !this.state.sendTo ||
-              !this.state.amount
-            }>
+            disabled={ !this.state.sendTo || !this.state.amount }>
             { translate('INDEX.SEND') } { this.state.amount } { this.props.ActiveCoin.coin }
           </button>
         </div>
@@ -250,22 +247,20 @@ export const SendRender = function() {
               { this.state.spvPreflightRes &&
                 <div className="row padding-top-20">
                   <div className="col-xs-12">
-                    <strong>{ translate('SEND.FEE') }</strong>
+                    <strong>Fee</strong>
                   </div>
-                  <div className="col-lg-12 col-sm-12 col-xs-12">
-                    { formatValue(this.state.spvPreflightRes.fee * 0.00000001) } ({ this.state.spvPreflightRes.fee } { translate('SEND.SATS') })
-                  </div>
+                  <div className="col-lg-12 col-sm-12 col-xs-12">{ formatValue(this.state.spvPreflightRes.fee * 0.00000001) } ({ this.state.spvPreflightRes.fee } sats)</div>
                 </div>
               }
               { this.state.spvPreflightRes &&
                 <div className="row padding-top-20">
                   { this.state.spvPreflightRes.change === 0 &&
                     <div className="col-lg-12 col-sm-12 col-xs-12">
-                      <strong>{ translate('SEND.ADJUSTED_AMOUNT') }</strong>
+                      <strong>Adjusted amount</strong>
                       <span>
                         <i
                           className="icon fa-question-circle settings-help send-btc"
-                          data-tip={ translate('SEND.MAX_AVAIL_AMOUNT_TO_SPEND') }></i>
+                          data-tip="Max. available amount to spend - transaction fee"></i>
                         <ReactTooltip
                           effect="solid"
                           className="text-left" />
@@ -275,13 +270,13 @@ export const SendRender = function() {
                   }
                   { this.state.spvPreflightRes.estimatedFee < 0 &&
                     <div className="col-lg-12 col-sm-12 col-xs-12 padding-bottom-20">
-                      <strong>{ translate('SEND.SAFE_INTEREST') }</strong>&nbsp;
-                      { Math.abs(formatValue(this.state.spvPreflightRes.estimatedFee * 0.00000001)) } { translate('SEND.TO') } { this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub }
+                      <strong>SAFE interest</strong>&nbsp;
+                      { Math.abs(formatValue(this.state.spvPreflightRes.estimatedFee * 0.00000001)) } to { this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub }
                     </div>
                   }
                   { this.state.spvPreflightRes.change > 0 &&
                     <div className="col-lg-12 col-sm-12 col-xs-12">
-                      <strong>{ translate('SEND.TOTAL_AMOUNT_DESC') }</strong>&nbsp;
+                      <strong>Total (amount + transaction fee)</strong>&nbsp;
                       { formatValue((this.state.spvPreflightRes.value * 0.00000001) + (this.state.spvPreflightRes.fee * 0.00000001)) }
                     </div>
                   }
@@ -306,7 +301,7 @@ export const SendRender = function() {
                     type="button"
                     className="btn btn-primary"
                     onClick={ () => this.changeSendCoinStep(2) }>
-                    { translate('INDEX.CONFIRM') }
+                      { translate('INDEX.CONFIRM') }
                   </button>
                 </div>
               </div>
@@ -339,8 +334,7 @@ export const SendRender = function() {
                           <span className="label label-success">{ translate('SEND.SUCCESS_SM') }</span>
                         </td>
                       </tr>
-                      { ((this.state.sendFrom && this.props.ActiveCoin.mode === 'native') ||
-                        this.props.ActiveCoin.mode === 'spv') &&
+                      { ((this.state.sendFrom && this.props.ActiveCoin.mode === 'native') || this.props.ActiveCoin.mode === 'spv') &&
                         <tr>
                           <td className="padding-left-30">
                           { translate('INDEX.SEND_FROM') }
@@ -378,7 +372,7 @@ export const SendRender = function() {
                               className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
                               title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                               onClick={ () => this.copyTXID(this.props.ActiveCoin.mode === 'spv' ? (this.state.lastSendToResponse && this.state.lastSendToResponse.txid ? this.state.lastSendToResponse.txid : '') : this.state.lastSendToResponse) }>
-                              <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                                <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                             </button>
                           }
                           { ((this.props.ActiveCoin.mode === 'spv' &&
@@ -412,8 +406,8 @@ export const SendRender = function() {
                     </div>
                     { (this.state.lastSendToResponse.result.toLowerCase().indexOf('decode error') > -1) &&
                       <div>
-                        { translate('SEND.YOUR_TXHISTORY_CONTAINS_ZTX_P1') }<br />
-                        { translate('SEND.YOUR_TXHISTORY_CONTAINS_ZTX_P2') }
+                        Your history contains shielded transactions(z).<br />
+                        Please move funds to another transparent address in order to use Lite mode.
                       </div>
                     }
                     { this.state.lastSendToResponse.result.toLowerCase().indexOf('decode error') === -1 &&
@@ -445,7 +439,7 @@ export const SendRender = function() {
                     type="button"
                     className="btn btn-primary"
                     onClick={ () => this.changeSendCoinStep(0) }>
-                    { translate('INDEX.MAKE_ANOTHER_TX') }
+                      { translate('INDEX.MAKE_ANOTHER_TX') }
                   </button>
                 </div>
               </div>

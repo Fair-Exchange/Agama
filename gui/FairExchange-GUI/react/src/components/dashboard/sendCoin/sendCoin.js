@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Config from '../../../config';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import { secondsToString } from '../../../util/time';
 import {
   triggerToaster,
@@ -11,7 +11,6 @@ import {
   shepherdElectrumSend,
   shepherdElectrumSendPreflight,
   shepherdGetRemoteBTCFees,
-  shepherdGetLocalBTCFees,
   copyString,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
@@ -27,9 +26,9 @@ import explorerList from '../../../util/explorerList';
 import Slider, { Range } from 'rc-slider';
 import ReactTooltip from 'react-tooltip';
 
-const shell = window.require('electron').shell;
-
-// TODO: - render z address trim
+// TODO: - add links to explorers
+//       - render z address trim
+//       - handle click outside
 
 const _feeLookup = [
   'fastestFee',
@@ -106,7 +105,25 @@ class SendCoin extends React.Component {
 
   openExplorerWindow(txid) {
     const url = explorerList[this.props.ActiveCoin.coin].split('/').length - 1 > 2 ? `${explorerList[this.props.ActiveCoin.coin]}${txid}` : `${explorerList[this.props.ActiveCoin.coin]}/tx/${txid}`;
-    return shell.openExternal(url);
+    const remote = window.require('electron').remote;
+    const BrowserWindow = remote.BrowserWindow;
+
+    const externalWindow = new BrowserWindow({
+      width: 1280,
+      height: 800,
+      title: `${translate('INDEX.LOADING')}...`,
+      icon: remote.getCurrentWindow().iguanaIcon,
+      webPreferences: {
+        nodeIntegration: false,
+      },
+    });
+
+    externalWindow.loadURL(url);
+    externalWindow.webContents.on('did-finish-load', () => {
+      setTimeout(() => {
+        externalWindow.show();
+      }, 40);
+    });
   }
 
   SendFormRender() {
@@ -216,7 +233,8 @@ class SendCoin extends React.Component {
     let updatedState;
 
     if (_addresses &&
-        (!_addresses.private || _addresses.private.length === 0)) {
+        (!_addresses.private ||
+        _addresses.private.length === 0)) {
       updatedState = {
         renderAddressDropdown: false,
         lastSendToResponse: props.ActiveCoin.lastSendToResponse,
@@ -421,24 +439,7 @@ class SendCoin extends React.Component {
             btcFeesSize: this.state.btcFeesType === 'advanced' ? res.result.electrum[this.state.btcFeesAdvancedStep] : res.result.recommended[_feeLookup[this.state.btcFeesTimeBasedStep]],
           });
         } else {
-          shepherdGetLocalBTCFees()
-          .then((res) => {
-            if (res.msg === 'success') {
-              // TODO: check, approx fiat value
-              this.setState({
-                btcFees: res.result,
-                btcFeesSize: this.state.btcFeesType === 'advanced' ? res.result.electrum[this.state.btcFeesAdvancedStep] : res.result.recommended[_feeLookup[this.state.btcFeesTimeBasedStep]],
-              });
-            } else {
-              Store.dispatch(
-                triggerToaster(
-                  translate('SEND.CANT_GET_BTC_FEES'),
-                  translate('TOASTR.WALLET_NOTIFICATION'),
-                  'error'
-                )
-              );
-            }
-          });
+          // TODO: fallback to local electrum
         }
       });
     }
@@ -589,7 +590,7 @@ class SendCoin extends React.Component {
       if (_validateAddress === 'Invalid pub address') {
         _msg = _validateAddress;
       } else if (!_validateAddress) {
-        _msg = `${this.state.sendTo} ${translate('SEND.VALIDATION_IS_NOT_VALID_ADDR_P1')} ${this.props.ActiveCoin.coin} ${translate('SEND.VALIDATION_IS_NOT_VALID_ADDR_P2')}`;
+        _msg = `${this.state.sendTo} is not a valid ${this.props.ActiveCoin.coin} pub address`;
       }
 
       if (_msg) {
@@ -698,18 +699,14 @@ class SendCoin extends React.Component {
     if (this.props.ActiveCoin.mode === 'spv' &&
         this.props.ActiveCoin.coin === 'BTC' &&
         !this.state.btcFees.lastUpdated) {
-      return (<div className="col-lg-6 form-group form-material">{ translate('SEND.FETCHING_BTC_FEES') }...</div>);
-    } else if (
-      this.props.ActiveCoin.mode === 'spv' &&
-      this.props.ActiveCoin.coin === 'BTC' &&
-      this.state.btcFees.lastUpdated
-    ) {
+      return (<div className="col-lg-6 form-group form-material">Fetching BTC fees...</div>);
+    } else if (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin === 'BTC' && this.state.btcFees.lastUpdated) {
       const _min = 0;
       const _max = this.state.btcFees.electrum.length - 1;
       const _confTime = [
-        translate('SEND.CONF_TIME_LESS_THAN_30_MIN'),
-        translate('SEND.CONF_TIME_WITHIN_3O_MIN'),
-        translate('SEND.CONF_TIME_WITHIN_60_MIN'),
+        'within less than 30 min',
+        'within 30 min',
+        'within 60 min',
       ];
       const _minTimeBased = 0;
       const _maxTimeBased = 3;
@@ -724,12 +721,12 @@ class SendCoin extends React.Component {
         <div className="col-lg-12 form-group form-material">
           <div>
             <div>
-              { translate('SEND.FEE') }
+              Fee
               <span>
                 <i
                   className="icon fa-question-circle settings-help"
                   data-html={ true }
-                  data-tip={ this.state.btcFeesType === 'advanced' ? translate('SEND.BTC_FEES_DESC_P1') + '.<br />' + translate('SEND.BTC_FEES_DESC_P2') : translate('SEND.BTC_FEES_DESC_P3') + '<br />' + translate('SEND.BTC_FEES_DESC_P4') }></i>
+                  data-tip={ this.state.btcFeesType === 'advanced' ? 'Electrum based fee estimates may not be as accurate as bitcoinfees.earn.com.<br />It is advised to use fast/average/slow options if you want your transaction to be confirmed within 60 min time frame.' : 'Estimates are based on bitcoinfees.earn.com data.<br />Around 90% probability for a transaction to be confirmed within desired time frame.' }></i>
                 <ReactTooltip
                   effect="solid"
                   className="text-left" />
@@ -737,10 +734,10 @@ class SendCoin extends React.Component {
             </div>
             <div className="send-target-block">
               { this.state.btcFeesType !== 'advanced' &&
-                <span>{ translate('SEND.CONF_TIME') } <strong>{ _confTime[this.state.btcFeesTimeBasedStep] }</strong></span>
+                <span>Confirmation time <strong>{ _confTime[this.state.btcFeesTimeBasedStep] }</strong></span>
               }
               { this.state.btcFeesType === 'advanced' &&
-                <span>{ translate('SEND.ADVANCED_SELECTION') }</span>
+                <span>Advanced selection</span>
               }
             </div>
             <Slider
@@ -758,9 +755,7 @@ class SendCoin extends React.Component {
               }} />
             { this.state.btcFeesType === 'advanced' &&
               <div className="margin-bottom-20">
-                <div className="send-target-block">
-                  { translate('SEND.ESTIMATED_TO_BE_INCLUDED_P1') } <strong>{this.state.btcFeesAdvancedStep + 1} {(this.state.btcFeesAdvancedStep + 1) > 1 ? translate('SEND.ESTIMATED_TO_BE_INCLUDED_P2') : translate('SEND.ESTIMATED_TO_BE_INCLUDED_P3') }</strong>
-                </div>
+                <div className="send-target-block">Estimated to be included within the next <strong>{this.state.btcFeesAdvancedStep + 1} {(this.state.btcFeesAdvancedStep + 1) > 1 ? 'blocks' : 'block'}</strong></div>
                 <Slider
                   onChange={ this.onSliderChange }
                   defaultValue={ this.state.btcFeesAdvancedStep }
@@ -769,9 +764,7 @@ class SendCoin extends React.Component {
               </div>
             }
             { this.state.btcFeesSize > 0 &&
-              <div className="margin-top-10">
-                { translate('SEND.FEE_PER_BYTE') } {this.state.btcFeesSize}, { translate('SEND.PER_KB') } { this.state.btcFeesSize * 1024 }
-              </div>
+              <div className="margin-top-10">Fee per byte {this.state.btcFeesSize}, per KB {this.state.btcFeesSize * 1024}</div>
             }
           </div>
         </div>

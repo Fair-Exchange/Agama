@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 
 import ToolsGetBalance from './toolsGetBalance';
 import ToolsGetUtxos from './toolsGetUtxos';
@@ -36,49 +36,49 @@ class Tools extends React.Component {
         <div className="page-content tools background--white">
           <div className="row">
             <div className="col-sm-12 no-padding-left">
-              <h2>{ translate('TOOLS.TOOLS') }</h2>
+              <h2>Tools</h2>
               <div className="margin-top-20 tools-btn-block">
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('offlinesig-create') }>
-                  { translate('TOOLS.OFFLINE_SIG_CREATE') }
+                  Offline signing create
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('offlinesig-scan') }>
-                  { translate('TOOLS.OFFLINE_SIG_SCAN') }
+                  Offline signing scan
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('string2qr') }>
-                  { translate('TOOLS.STR_TO_QR') }
+                  String to QR
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('seed2kp') }>
-                  { translate('TOOLS.SEED_TO_KP') }
+                  Seed to key pair
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('wif2wif') }>
-                  { translate('TOOLS.WIF_TO_WIF') }
+                  WIF to WIF
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('pubcheck') }>
-                  { translate('TOOLS.ADDR_VER_CHECK') }
+                  Address version check
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('balance') }>
-                  { translate('TOOLS.BALANCE') } *
+                  Balance *
                 </button>
                 <button
                   type="button"
@@ -90,15 +90,15 @@ class Tools extends React.Component {
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('utxo-split') }>
-                  { translate('TOOLS.SPLIT') } UTXO **
+                  Split UTXO **
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={ () => this.setActiveSection('utxo-merge') }>
-                  { translate('TOOLS.MERGE') } UTXO **
+                  Merge UTXO **
                 </button>
-                <div className="margin-top-10 margin-left-20">{ translate('TOOLS.SPV_NATIVE') }</div>
+                <div className="margin-top-10 margin-left-20">* Electrum, ** Native</div>
               </div>
               <hr />
               { this.state.activeSection === 'offlinesig-create' &&

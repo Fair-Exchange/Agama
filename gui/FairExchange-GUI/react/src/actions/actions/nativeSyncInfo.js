@@ -7,19 +7,17 @@ import {
   getDebugLog,
 } from '../actionCreators';
 import Config from '../../config';
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
 import mainWindow from '../../util/mainWindow';
-import fetchType from '../../util/fetchType';
 
-export const nativeGetinfoFailureState = () => {
+export function nativeGetinfoFailureState() {
   return {
     type: DASHBOARD_ACTIVE_COIN_GETINFO_FAILURE,
   }
 }
 
-// TODO: - use blockchaininfo rpc
-//       - use electrum as a remote node
-export const getSyncInfoNativeSAFE = (skipDebug, json, skipRemote) => {
+// TODO: use blockchaininfo rpc
+export function getSyncInfoNativeSAFE(skipDebug, json, skipRemote) {
   let _json = json;
 
   if (skipRemote) {
@@ -35,11 +33,11 @@ export const getSyncInfoNativeSAFE = (skipDebug, json, skipRemote) => {
     // https://www.safe.host/
     return dispatch => {
       return fetch(
-        'https://safe.explorer.ipv6admin.com/api/status?q=getInfo',
-        fetchType.get
-      )
+        'https://explorer.safecoin.org/api/status?q=getInfo', {
+        method: 'GET',
+      })
       .catch((error) => {
-        console.warn(error);
+        console.log(error);
         console.warn('remote safe node fetch failed', true);
         _json = _json.error;
         _json['remoteSAFENode'] = null;
@@ -60,7 +58,7 @@ export const getSyncInfoNativeSAFE = (skipDebug, json, skipRemote) => {
   }
 }
 
-const getSyncInfoNativeState = (json, coin, skipDebug, skipRemote) => {
+function getSyncInfoNativeState(json, coin, skipDebug, skipRemote) {
   /*if (!json.remoteSAFENode) {
     json = { error: { code: -28, message: 'Activating best chain...' } };
   }*/
@@ -93,7 +91,7 @@ const getSyncInfoNativeState = (json, coin, skipDebug, skipRemote) => {
   }
 }
 
-export const getSyncInfoNative = (coin, skipDebug, skipRemote, suppressErrors) => {
+export function getSyncInfoNative(coin, skipDebug, skipRemote, suppressErrors) {
   return dispatch => {
     const payload = {
       mode: null,
@@ -102,10 +100,17 @@ export const getSyncInfoNative = (coin, skipDebug, skipRemote, suppressErrors) =
       rpc2cli: Config.rpc2cli,
       token: Config.token,
     };
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
 
     return fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -198,7 +203,7 @@ export const getSyncInfoNative = (coin, skipDebug, skipRemote, suppressErrors) =
   }
 }
 
-export const getBlockTemplate = (_json, coin) => {
+export function getBlockTemplate(_json, coin) {
   const payload = {
     mode: null,
     chain: coin,
@@ -208,9 +213,17 @@ export const getBlockTemplate = (_json, coin) => {
   };
 
   return dispatch => {
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     return fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -247,7 +260,7 @@ export const getBlockTemplate = (_json, coin) => {
       } else {
         if (json.error &&
             json.error.code === -10) {
-          console.warn('debuglog');
+          console.log('debuglog');
           dispatch(
             getDebugLogProgress(_json, coin)
           );
@@ -257,7 +270,7 @@ export const getBlockTemplate = (_json, coin) => {
   }
 }
 
-export const getDebugLogProgress = (_json, coin) => {
+export function getDebugLogProgress(_json, coin) {
   const payload = {
     mode: null,
     chain: coin,
@@ -266,9 +279,17 @@ export const getDebugLogProgress = (_json, coin) => {
   };
 
   return dispatch => {
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload }),
+    };
+
     return fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -294,7 +315,8 @@ export const getDebugLogProgress = (_json, coin) => {
           json.result.headers) {
         _json.result.longestchain = json.result.headers;
         _json.result.progress = json.result.blocks * 100 / json.result.headers;
-      } else if (json.result && json.result.indexOf('UpdateTip:') > -1) {
+      } else if (json.result &&
+          json.result.indexOf('UpdateTip:') > -1) {
         const _debugProgress = json.result.split(' ');
         let _height = '';
         let _progress = '';

@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import ReactTable from 'react-table';
 import TablePaginationRenderer from './pagination';
-import formatValue from '../../../util/formatValue';
+import { formatValue } from '../../../util/formatValue';
 import Config from '../../../config';
 import Spinner from '../spinner/spinner';
 
@@ -52,6 +52,7 @@ export const AddressRender = function(tx) {
   if (!tx.address) {
     return (
       <span>
+        <i className="icon fa-bullseye"></i>&nbsp;
         <span className="label label-dark">
           { translate('DASHBOARD.ZADDR_NOT_LISTED') }
         </span>
@@ -65,7 +66,7 @@ export const AddressRender = function(tx) {
 export const AddressItemRender = function(address, type, amount, coin) {
   return (
     <li
-      key={ address }
+      key={address}
       className={ address === this.state.currentAddress ? 'selected' : '' }>
       <a onClick={ () => this.updateAddressSelection(address) }>
         <i className={ 'icon fa-eye' + (type === 'public' ? '' : '-slash') }></i>&nbsp;&nbsp;
@@ -126,10 +127,8 @@ export const TxTypeRender = function(category) {
         <i className="icon fa-arrow-circle-left"></i> <span>{ translate('DASHBOARD.OUT') }</span>
       </span>
     );
-  } else if (
-    category === 'receive' ||
-    category === 'received'
-  ) {
+  } else if (category === 'receive' ||
+      category === 'received') {
     return (
       <span className="label label-success">
         <i className="icon fa-arrow-circle-right"></i> <span>{ translate('DASHBOARD.IN') } &nbsp; &nbsp;</span>
@@ -173,7 +172,7 @@ export const TxAmountRender = function(tx) {
   } else {
     _amountNegative = 1;
   }
-  
+
   if (Config.roundValues) {
     return (
       <span>
@@ -193,17 +192,6 @@ export const TxAmountRender = function(tx) {
         <ReactTooltip
           effect="solid"
           className="text-left" />
-        { tx.vinLen > tx.vinMaxLen &&
-          <span>
-            <i
-              className="icon fa-question tx-history-vin-len-err"
-              data-tip={ translate('INDEX.SPV_TX_VIN_COUNT_WARN') }
-              data-html={ true }></i>
-            <ReactTooltip
-              effect="solid"
-              className="text-left" />
-          </span>
-        }
       </span>
     );
   }
@@ -220,17 +208,6 @@ export const TxAmountRender = function(tx) {
         <ReactTooltip
           effect="solid"
           className="text-left" />
-      }
-      { tx.vinLen > tx.vinMaxLen &&
-        <span>
-          <i
-            className="icon fa-question tx-history-vin-len-err"
-            data-tip={ translate('INDEX.SPV_TX_VIN_COUNT_WARN') }
-            data-html={ true }></i>
-          <ReactTooltip
-            effect="solid"
-            className="text-left" />
-        </span>
       }
     </span>
   );
@@ -262,8 +239,7 @@ export const WalletsDataRender = function() {
   return (
     <span>
       <div id="edexcoin_dashboardinfo">
-        { (this.displayClaimInterestUI() === 777 ||
-          this.displayClaimInterestUI() === -777) &&
+        { (this.displayClaimInterestUI() === 777 || this.displayClaimInterestUI() === -777) &&
           <div className="col-xs-12 margin-top-20 backround-gray">
             <div className="panel no-margin">
               <div>

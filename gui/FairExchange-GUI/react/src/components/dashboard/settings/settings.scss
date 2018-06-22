@@ -66,13 +66,6 @@
 }
 
 #SettingsAccordion {
-  label {
-    color: #757575;
-  }
-  .form-material .form-control.focus~.floating-label,
-  .form-material .form-control:focus~.floating-label {
-    color: #FF6600;
-  }
   .toggle {
     position: relative;
     top: 4px;
@@ -95,21 +88,9 @@
       }
     }
   }
+}
 
-  .pins-list-table {
-    i {
-      font-size: 16px;
-      cursor: pointer;
-
-      &:hover {
-        color: #FF6600;
-      }
-    }
-    td:first-child {
-      width: inherit;
-    }
-  }
-
+#SettingsAccordion {
   .panel {
     .panel-collapse {
       &.collapse {
@@ -123,12 +104,6 @@
         animation-iteration-count: 1;
         max-height: none;
       }
-    }
-  }
-
-  .pin-modify-block {
-    input {
-      width: 450px;
     }
   }
 }

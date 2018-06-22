@@ -1,9 +1,8 @@
 import { triggerToaster } from '../actionCreators';
 import Config from '../../config';
 import { DASHBOARD_UPDATE } from '../storeType';
-import fetchType from '../../util/fetchType';
 
-export const getDashboardUpdate = (coin, activeCoinProps) => {
+export function getDashboardUpdate(coin, activeCoinProps) {
   return dispatch => {
     const _fetchConfig = {
       method: 'POST',
@@ -19,13 +18,7 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
 
     return fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/native/dashboard/update`,
-      fetchType(
-        JSON.stringify({
-          coin: coin,
-          rpc2cli: Config.rpc2cli,
-          token: Config.token,
-        })
-      ).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -42,8 +35,9 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
       dispatch(getDashboardUpdateState(json, coin));
 
       // dirty hack to trigger dashboard render
-      if (!activeCoinProps ||
-          (activeCoinProps && !activeCoinProps.balance && !activeCoinProps.addresses)) {
+      if (!activeCoinProps || (activeCoinProps &&
+          !activeCoinProps.balance &&
+          !activeCoinProps.addresses)) {
         setTimeout(() => {
           dispatch(getDashboardUpdateState(json, coin));
         }, 100);
@@ -52,7 +46,7 @@ export const getDashboardUpdate = (coin, activeCoinProps) => {
   }
 }
 
-export const getDashboardUpdateState = (json, coin, fakeResponse) => {
+export function getDashboardUpdateState(json, coin, fakeResponse) {
   // rescan or similar resource heavy process
   if (fakeResponse ||
       ((json.result.getinfo.error && json.result.getinfo.error === 'daemon is busy') &&
@@ -76,16 +70,9 @@ export const getDashboardUpdateState = (json, coin, fakeResponse) => {
     if (_listtransactions &&
         _listtransactions.error) {
       _listtransactions = null;
-    } else if (
-      _listtransactions &&
-      _listtransactions.result &&
-      _listtransactions.result.length
-    ) {
+    } else if (_listtransactions && _listtransactions.result && _listtransactions.result.length) {
       _listtransactions = _listtransactions.result;
-    } else if (
-      !_listtransactions ||
-      (!_listtransactions.result || !_listtransactions.result.length)
-    ) {
+    } else if (!_listtransactions || (!_listtransactions.result || !_listtransactions.result.length)) {
       _listtransactions = 'no data';
     }
 

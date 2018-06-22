@@ -1,26 +1,21 @@
 import { PRICES } from '../storeType';
 import { triggerToaster } from '../actionCreators';
 import Config from '../../config';
-import translate from '../../translate/translate';
-import fetchType from '../../util/fetchType';
 
-// TODO: dev display errors
-
-const fiatRates = (pricesJson) => {
+function fiatRates(pricesJson) {
   return dispatch => {
-    return fetch(
-      `https://www.atomicexplorer.com/api/rates/safe`,
-      fetchType.get
-    )
+    return fetch(`https://atomicexplorer.com/api/rates/safe`, {
+      method: 'GET',
+    })
     .catch((error) => {
       console.log(error);
-      /*dispatch(
+      dispatch(
         triggerToaster(
           'fiatRates',
           'Error',
           'error'
         )
-      );*/
+      );
     })
     .then(response => response.json())
     .then(json => {
@@ -32,21 +27,20 @@ const fiatRates = (pricesJson) => {
   }
 }
 
-export const prices = () => {
+export function prices() {
   return dispatch => {
-    return fetch(
-      `https://www.atomicexplorer.com/api/mm/prices`,
-      fetchType.get
-    )
+    return fetch(`https://atomicexplorer.com/api/mm/prices`, {
+      method: 'GET',
+    })
     .catch((error) => {
       console.log(error);
-      /*dispatch(
+      dispatch(
         triggerToaster(
           'prices',
           'Error',
           'error'
         )
-      );*/
+      );
     })
     .then(response => response.json())
     .then(json => {
@@ -55,7 +49,7 @@ export const prices = () => {
   }
 }
 
-const pricesState = (json) => {
+function pricesState(json) {
   return {
     type: PRICES,
     prices: json,

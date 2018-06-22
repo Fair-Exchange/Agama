@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import { connect } from 'react-redux';
 import { coindGetStdout } from '../../../actions/actionCreators';
 import Store from '../../../store';
@@ -8,7 +8,7 @@ class DaemonStdoutPanel extends React.Component {
   constructor() {
     super();
     this.state = {
-      coindStdOut: translate('INDEX.LOADING') + '...',
+      coindStdOut: 'Loading...',
       coin: null,
       textareaHeight: '100px',
     };
@@ -26,7 +26,7 @@ class DaemonStdoutPanel extends React.Component {
     coindGetStdout(_coin)
     .then((res) => {
       this.setState({
-        coindStdOut: res.msg === 'success' ? res.result : `${translate('INDEX.ERROR_READING')} ${_coin} stdout`,
+        coindStdOut: res.msg === 'success' ? res.result : `Error reading ${_coin} stdout`,
       });
 
       setTimeout(() => {
@@ -69,11 +69,7 @@ class DaemonStdoutPanel extends React.Component {
                 <select
                   className="form-control form-material"
                   name="coin"
-                  value={
-                    this.state.coin ||
-                    this.props.ActiveCoin.coin ||
-                    ''
-                  }
+                  value={ this.state.coin || this.props.ActiveCoin.coin || '' }
                   onChange={ (event) => this.updateInput(event) }
                   autoFocus>
                   { this.renderCoinListSelectorOptions() }
@@ -89,8 +85,8 @@ class DaemonStdoutPanel extends React.Component {
           <div className="col-sm-12">
             <div className="form-group form-material floating col-sm-8 no-padding-left">
               <textarea
-                readOnly
                 id="settingsCoindStdoutTextarea"
+                readOnly
                 className="form-control settings-coind-stdout-textarea"
                 value={ this.state.coindStdOut }
                 style={{ height: this.state.textareaHeight }}></textarea>

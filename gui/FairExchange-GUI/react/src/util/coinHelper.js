@@ -1,4 +1,4 @@
-export const getCoinTitle = (coin) => {
+export function getCoinTitle(coin) {
   let coinlogo;
   let coinname;
   let transparentBG = false;
@@ -6,174 +6,6 @@ export const getCoinTitle = (coin) => {
   let hideTitle = false;
 
   switch (coin) {
-    case 'BCBC':
-      coinlogo = 'BCBC';
-      coinname = 'Bitcoin CBC';
-      break;
-    case 'BNTN':
-      coinlogo = 'bntn';
-      coinname = 'Blocnation';
-      break;
-    case 'ACC':
-      coinlogo = 'acc';
-      coinname = 'AdCoin';
-      break;
-    case 'AUR':
-      coinlogo = 'aur';
-      coinname = 'Auroracoin';
-      break;
-    case 'BCA':
-      coinlogo = 'bca';
-      coinname = 'Bitcoin Atom';
-      break;
-    case 'CLAM':
-      coinlogo = 'clam';
-      coinname = 'Clams';
-      break;
-    case 'CLUB':
-      coinlogo = 'club';
-      coinname = 'ClubCoin';
-      break;
-    case 'CRAVE':
-      coinlogo = 'crave';
-      coinname = 'Crave';
-      break;
-    case 'DMD':
-      coinlogo = 'dmd';
-      coinname = 'Diamond';
-      break;
-    case 'EXCL':
-      coinlogo = 'excl';
-      coinname = 'ExclusiveCoin';
-      break;
-    case 'FTC':
-      coinlogo = 'ftc';
-      coinname = 'FeatherCoin';
-      break;
-    case 'FLASH':
-      coinlogo = 'flash';
-      coinname = 'Flash';
-      break;
-    case 'FJC':
-      coinlogo = 'FJC';
-      coinname = 'Fujicoin';
-      break;
-    case 'NLG':
-      coinlogo = 'NLG';
-      coinname = 'Gulden';
-      break;
-    case 'LCC':
-      coinlogo = 'lcc';
-      coinname = 'Litecoin Cash';
-      break;
-    case 'MNX':
-      coinlogo = 'mnx';
-      coinname = 'MinexCoin';
-      break;
-    case 'NAV':
-      coinlogo = 'nav';
-      coinname = 'NavCoin';
-      break;
-    case 'NEOS':
-      coinlogo = 'neos';
-      coinname = 'NeosCoin';
-      break;
-    case 'OK':
-      coinlogo = 'ok';
-      coinname = 'OKCash';
-      break;
-    case 'OMNI':
-      coinlogo = 'omni';
-      coinname = 'OmniLayer';
-      break;
-    case 'PIVX':
-      coinlogo = 'pivx';
-      coinname = 'Pivx';
-      break;
-    case 'RDD':
-      coinlogo = 'rdd';
-      coinname = 'Reddcoin';
-      break;
-    case 'SMART':
-      coinlogo = 'smart';
-      coinname = 'Smartcash';
-      break;
-    case 'XVC':
-      coinlogo = 'xvc';
-      coinname = 'Vcash';
-      break;
-    case 'XVG':
-      coinlogo = 'xvg';
-      coinname = 'Verge';
-      break;
-    case 'VIVO':
-      coinlogo = 'vivo';
-      coinname = 'VIVO';
-      break;
-    case 'XWC':
-      coinlogo = 'xwc';
-      coinname = 'Whitecoin';
-      break;
-    case 'EFL':
-      coinlogo = 'efl';
-      coinname = 'E-Gulden';
-      break;
-    case 'GBX':
-      coinlogo = 'gbx';
-      coinname = 'GoByte';
-      break;
-    case 'BSD':
-      coinlogo = 'bsd';
-      coinname = 'Bitsend';
-      break;
-    case 'LBC':
-      coinlogo = 'lbc';
-      coinname = 'LBRY Credits';
-      break;
-    case 'ERC':
-      coinlogo = 'erc';
-      coinname = 'Europecoin';
-      break;
-    case 'BTA':
-      coinlogo = 'bta';
-      coinname = 'Bata';
-      break;
-    case 'EMC2':
-      coinlogo = 'emc2';
-      coinname = 'Einsteinium';
-      break;
-    case 'XZC':
-      coinlogo = 'xzc';
-      coinname = 'Zcoin';
-      break;
-    case 'ZEN':
-      coinlogo = 'zen';
-      coinname = 'ZenCash';
-      break;
-    case 'BTCP':
-      coinlogo = 'btcp';
-      coinname = 'BitcoinPrivate';
-      break;
-    case 'BDL':
-      coinlogo = 'bdl';
-      coinname = 'Bitdeal';
-      break;
-    case 'IOP':
-      coinlogo = 'iop';
-      coinname = 'Internet of People';
-      break;
-    case 'VOT':
-      coinlogo = 'vot';
-      coinname = 'VoteCoin';
-      break;
-    case 'MAC':
-      coinlogo = 'mac';
-      coinname = 'Machinecoin';
-      break;
-    case 'ABY':
-      coinlogo = 'aby';
-      coinname = 'ArtByte';
-      break;
     case 'NINJA':
       coinlogo = 'ninja';
       coinname = 'NINJA';
@@ -214,10 +46,6 @@ export const getCoinTitle = (coin) => {
       coinlogo = 'pizza';
       coinname = 'PIZZA (Test coin)';
       break;
-    case 'OOT':
-      coinlogo = 'oot';
-      coinname = 'Utrum';
-      break;
     case 'XMY':
       coinlogo = 'xmy';
       coinname = 'Myriad';
@@ -229,10 +57,6 @@ export const getCoinTitle = (coin) => {
     case 'HUSH':
       coinlogo = 'hush';
       coinname = 'Hush';
-      break;
-    case 'SNG':
-      coinlogo = 'sng';
-      coinname = 'SnowGem';
       break;
     case 'BCH':
       coinlogo = 'bch';
@@ -295,11 +119,11 @@ export const getCoinTitle = (coin) => {
       coinname = 'Litecoin';
       break;
     case 'VPN':
-      coinlogo = 'vpn';
+      coinlogo = 'vpncoin';
       coinname = 'VPNcoin';
       break;
     case 'SYS':
-      coinlogo = 'sys';
+      coinlogo = 'syscoin';
       coinname = 'Syscoin';
       break;
     case 'ZEC':
@@ -327,7 +151,7 @@ export const getCoinTitle = (coin) => {
       coinname = 'Mazacoin';
       break;
     case 'UNO':
-      coinlogo = 'uno';
+      coinlogo = 'unobtanium';
       coinname = 'Unobtanium';
       break;
     case 'ZET':
@@ -362,7 +186,7 @@ export const getCoinTitle = (coin) => {
       coinname = 'Franko';
       break;
     case 'GAME':
-      coinlogo = 'game';
+      coinlogo = 'GAME';
       coinname = 'GameCredits';
       break;
     case 'SUPERNET':
@@ -436,14 +260,6 @@ export const getCoinTitle = (coin) => {
     case 'COQUI':
       coinlogo = 'COQUI';
       coinname = 'COQUI';
-      break;
-    case 'GLXT':
-      coinlogo = 'GLXT';
-      coinname = 'GLXToken';
-      break;
-    case 'EQL':
-      coinlogo = 'EQL';
-      coinname = 'Equaliser';
       break;
     case 'MESH':
       hideTitle = true;
@@ -652,7 +468,7 @@ export const getCoinTitle = (coin) => {
   };
 }
 
-export const getModeInfo = (mode) => {
+export function getModeInfo(mode) {
   let modecode;
   let modetip;
   let modecolor;
@@ -664,8 +480,8 @@ export const getModeInfo = (mode) => {
       modecolor = 'primary';
       break;
     case 'spv':
-      modecode = 'Lite';
-      modetip = 'Lite';
+      modecode = 'SPV';
+      modetip = 'SPV';
       modecolor = 'info';
       break;
     case 'full':
@@ -692,7 +508,7 @@ export const getModeInfo = (mode) => {
   };
 }
 
-export const coindList = () => {
+export function coindList() {
   const _coins = [
     'SAFE',
     'CHIPS',
@@ -700,8 +516,6 @@ export const coindList = () => {
     'BOTS',
     'CEAL',
     'COQUI',
-    'GLXT',
-    'EQL',
     'CRYPTO',
     'HODL',
     'DEX',
@@ -733,8 +547,6 @@ export const isSafecoinCoin = (coin) => {
       coin === 'BET' ||
       coin === 'CRYPTO' ||
       coin === 'COQUI' ||
-      coin === 'GLXT' ||
-      coin === 'EQL' ||
       coin === 'HODL' ||
       coin === 'MSHARK' ||
       coin === 'BOTS' ||

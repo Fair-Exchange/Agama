@@ -49,7 +49,6 @@ class Navbar extends React.Component {
   spvLock() {
     shepherdElectrumLock()
     .then((res) => {
-      mainWindow.pinAccess = false;
       Store.dispatch(getDexCoins());
       Store.dispatch(activeHandle());
     });
@@ -59,8 +58,6 @@ class Navbar extends React.Component {
     shepherdElectrumLogout()
     .then((res) => {
       const _spvCoins = this.props.Main.coins.spv;
-
-      mainWindow.pinAccess = false;
 
       if (!this.props.Main.coins.native.length) {
         Store.dispatch(dashboardChangeActiveCoin(null, null, true));

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Store from '../../../store';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import QrReader from 'react-qr-reader';
 import {
   QRModalRender,
@@ -50,9 +50,7 @@ class QRModal extends React.Component {
           delay={ 50 }
           className="qr-reader-comp"
           onError={ this.handleError }
-          onScan={ this.handleScan } />,
-        document.getElementById('webcam')
-      );
+          onScan={ this.handleScan } />, document.getElementById('webcam'));
     }
   }
 

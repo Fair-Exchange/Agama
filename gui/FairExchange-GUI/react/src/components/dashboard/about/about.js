@@ -1,7 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
-
-const shell = window.require('electron').shell;
+import { translate } from '../../../translate/translate';
 
 class About extends React.Component {
   constructor() {
@@ -10,7 +8,21 @@ class About extends React.Component {
 
   openExternalWindow(url) {
     const remote = window.require('electron').remote;
-    return shell.openExternal(url);    
+    const BrowserWindow = remote.BrowserWindow;
+
+    const externalWindow = new BrowserWindow({
+      width: 1280,
+      height: 800,
+      title: `${translate('INDEX.LOADING')}...`,
+      icon: remote.getCurrentWindow().iguanaIcon,
+    });
+
+    externalWindow.loadURL(url);
+    externalWindow.webContents.on('did-finish-load', () => {
+      setTimeout(() => {
+        externalWindow.show();
+      }, 40);
+    });
   }
 
   render() {

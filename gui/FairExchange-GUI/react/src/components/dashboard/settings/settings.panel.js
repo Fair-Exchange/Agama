@@ -36,7 +36,9 @@ class Panel extends React.Component {
   }
 
   getChildrenWithProps() {
-    const { children } = this.props;
+    const {
+      children,
+    } = this.props;
 
     const _children = React.Children.map(children, (child, i) => {
       if (child) {
@@ -76,7 +78,7 @@ class Panel extends React.Component {
   render() {
     const {
       className: propClasses,
-      uniqId: propId,
+      uniqId: propId
     } = this.props;
 
     const childrenWithProps = this.getChildrenWithProps();

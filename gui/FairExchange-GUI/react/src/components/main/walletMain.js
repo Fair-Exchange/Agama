@@ -22,9 +22,9 @@ class WalletMain extends React.Component {
   componentDidMount() {
     // handle esc key globally
     document.onkeydown = (evt) => {
-      let isEscape = false;
-
       evt = evt || window.event;
+
+      let isEscape = false;
 
       if ('key' in evt) {
         isEscape = (evt.key === 'Escape' || evt.key === 'Esc');

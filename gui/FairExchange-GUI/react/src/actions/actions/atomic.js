@@ -4,7 +4,7 @@ import { ATOMIC } from '../storeType';
 import { triggerToaster } from '../actionCreators';
 import Config from '../../config';
 
-export const atomic = (payload) => {
+export function atomic(payload) {
   return dispatch => {
     return fetch(`http://127.0.0.1:${Config.iguanaCorePort}`, {
       method: 'POST',
@@ -12,7 +12,7 @@ export const atomic = (payload) => {
       token: Config.token,
     })
     .catch((error) => {
-      console.warn(error);
+      console.log(error);
       dispatch(
         triggerToaster(
           payload.method,
@@ -28,7 +28,7 @@ export const atomic = (payload) => {
   }
 }
 
-const atomicState = (json) => {
+function atomicState(json) {
   return {
     type: ATOMIC,
     response: json,

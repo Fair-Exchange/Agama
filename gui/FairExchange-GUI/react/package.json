@@ -1,6 +1,6 @@
 {
   "name": "SafewalletGUI",
-  "version": "0.2.31",
+  "version": "0.0.26",
   "description": "Safewallet Wallet GUI",
   "main": "src/index.js",
   "scripts": {
@@ -18,16 +18,15 @@
     "e2e-live": "protractor --elementExplorer"
   },
   "repository": "https://github.com/OleksandrBlack/FairExchange-GUI",
-  "homepage": "",
+  "homepage": "http://ipv6admin.com",
   "keywords": [
     "safewallet",
-    "FairExchange",
     "safecoin",
     "multicoin",
     "wallet",
     "spv"
   ],
-  "author": "FairExchange Team",
+  "author": "SuperNET Team",
   "license": "MIT",
   "dependencies": {
     "babel-core": "^6.14.0",
@@ -99,7 +98,7 @@
     "socket.io-client": "^1.7.3",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
-    "webpack": "^2.2.1",
+    "webpack": "^2.7.0",
     "webpack-dashboard": "^0.2.1",
     "webpack-dev-server": "^2.2.1"
   }

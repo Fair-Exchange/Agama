@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
 import Select from 'react-select';
@@ -42,7 +42,7 @@ class ToolsGetBalance extends React.Component {
         Store.dispatch(
           triggerToaster(
             res.result,
-            translate('TOOLS.ERR_GET_BALANCE'),
+            'Get balance error',
             'error'
           )
         );
@@ -83,12 +83,12 @@ class ToolsGetBalance extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>{ translate('TOOLS.GET_BALANCE') }</h4>
+          <h4>Get balance</h4>
         </div>
         <div className="col-xlg-12 form-group form-material no-padding-left padding-top-20 padding-bottom-70">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">{ translate('TOOLS.COIN') }</label>
+            htmlFor="safeWalletSendTo">Coin</label>
           <Select
             name="balanceCoin"
             className="col-sm-3"
@@ -101,7 +101,7 @@ class ToolsGetBalance extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">{ translate('TOOLS.ADDRESS') }</label>
+            htmlFor="safeWalletSendTo">Address</label>
           <input
             type="text"
             className="form-control col-sm-3"
@@ -117,16 +117,16 @@ class ToolsGetBalance extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.getBalanceAlt }>
-            { translate('TOOLS.BALANCE') }
+              Get balance
           </button>
         </div>
         { this.state.balanceResult &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
             <div>
-              <strong>{ translate('TOOLS.BALANCE_CONF') }:</strong> { this.state.balanceResult.balance }
+              <strong>Balance (confirmed):</strong> { this.state.balanceResult.balance }
             </div>
             <div className="margin-top-10">
-              <strong>{ translate('TOOLS.BALANCE_UNCONF') }:</strong> { this.state.balanceResult.unconfirmed }
+              <strong>Balance (unconfirmed):</strong> { this.state.balanceResult.unconfirmed }
             </div>
           </div>
         }

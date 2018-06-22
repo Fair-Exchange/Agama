@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import { connect } from 'react-redux';
 import {
   shepherdElectrumCheckServerConnection,
@@ -43,7 +43,7 @@ class SPVServersPanel extends React.Component {
         .then((serverSetRes) => {
           Store.dispatch(
             triggerToaster(
-              `${coin} ${translate('SETTINGS.SPV_SERVER_SET_TO')} ${_server[0]}:${_server[1]}`,
+              `${coin} SPV server set to ${_server[0]}:${_server[1]}`,
               translate('TOASTR.WALLET_NOTIFICATION'),
               'success'
             )
@@ -54,7 +54,7 @@ class SPVServersPanel extends React.Component {
       } else {
         Store.dispatch(
           triggerToaster(
-            `${coin} ${translate('SETTINGS.SPV_SERVER')} ${_server[0]}:${_server[1]} ${translate('SETTINGS.IS_UNREACHABLE')}!`,
+            `${coin} SPV server ${_server[0]}:${_server[1]} is unreachable!`,
             translate('TOASTR.WALLET_NOTIFICATION'),
             'error'
           )

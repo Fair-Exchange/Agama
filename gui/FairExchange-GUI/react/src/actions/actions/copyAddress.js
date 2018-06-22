@@ -1,8 +1,8 @@
-import copyToClipboard from '../../util/copyToClipboard';
-import translate from '../../translate/translate';
+import { copyToClipboard } from '../../util/copyToClipboard';
+import { translate } from '../../translate/translate';
 import { triggerToaster } from '../actionCreators';
 
-export const copyCoinAddress = (address) => {
+export function copyCoinAddress(address) {
   const _result = copyToClipboard(address);
 
   return dispatch => {
@@ -16,7 +16,7 @@ export const copyCoinAddress = (address) => {
   }
 }
 
-export const copyString = (string, message) => {
+export function copyString(string, message) {
   const _result = copyToClipboard(string);
 
   return dispatch => {

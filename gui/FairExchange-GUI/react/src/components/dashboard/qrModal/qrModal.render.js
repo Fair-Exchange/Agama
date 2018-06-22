@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import QRCode from 'qrcode.react';
 
 export const QRModalRender = function() {
@@ -9,7 +9,7 @@ export const QRModalRender = function() {
         className="qrcode-modal"
         title={ translate('INDEX.QRCODE') }
         onClick={ this.openModal }>
-        <i className="icon fa-qrcode margin-right-5"></i> { translate('DASHBOARD.GENERATE_SM') } { translate('INDEX.QR_CODE') }
+        <i className="icon fa-qrcode margin-right-5"></i> { translate('DASHBOARD.GENERATE_SM') } QR-code
       </span>
       <div
         className={ 'modal modal-3d-sign ' + (this.state.modalIsOpen ? 'show in' : 'fade hide') }
@@ -34,13 +34,12 @@ export const QRModalRender = function() {
                     value={ this.props.content }
                     size={ Number(this.props.qrSize) || 198 } />
                   <p className="margin-top-10">
-                    <a
-                      href=""
+                    <a href=""
                       id={ 'saveModalImage' + this.props.content }
                       className="btn btn-success waves-effect waves-light save-image-btn margin-right-10"
                       onClick={ this.saveAsImage }>
-                      <i className="icon fa-picture-o"></i>&nbsp;
-                      { translate('INDEX.SAVE_AS_IMAGE') }
+                        <i className="icon fa-picture-o"></i>&nbsp;
+                        { translate('INDEX.SAVE_AS_IMAGE') }
                     </a>
                   </p>
                 </div>

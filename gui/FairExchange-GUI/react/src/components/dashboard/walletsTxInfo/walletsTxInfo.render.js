@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import { secondsToString } from '../../../util/time';
 import Config from '../../../config';
 import explorerList from '../../../util/explorerList';
@@ -131,30 +131,31 @@ const WalletsTxInfoRender = function(txInfo) {
                         <div className="tab-pane active">
                           <table className="table table-striped">
                             <tbody>
-                              <tr>
-                                <td>{ this.capitalizeFirstLetter('txid') }</td>
-                                <td>
-                                  { txInfo.txid }
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>{ this.capitalizeFirstLetter('walletconflicts') }</td>
-                                <td>
-                                  { txInfo.walletconflicts ? txInfo.walletconflicts.length : '' }
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>{ this.capitalizeFirstLetter('vjoinsplit') }</td>
-                                <td>
-                                  { txInfo.vjoinsplit }
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>{ this.capitalizeFirstLetter('details') }</td>
-                                <td>
-                                  { txInfo.details }
-                                </td>
-                              </tr>
+                            }
+                            <tr>
+                              <td>{ this.capitalizeFirstLetter('txid') }</td>
+                              <td>
+                                { txInfo.txid }
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{ this.capitalizeFirstLetter('walletconflicts') }</td>
+                              <td>
+                                { txInfo.walletconflicts ? txInfo.walletconflicts.length : '' }
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{ this.capitalizeFirstLetter('vjoinsplit') }</td>
+                              <td>
+                                { txInfo.vjoinsplit }
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>{ this.capitalizeFirstLetter('details') }</td>
+                              <td>
+                                { txInfo.details }
+                              </td>
+                            </tr>
                             </tbody>
                           </table>
                         </div>
@@ -200,9 +201,7 @@ const WalletsTxInfoRender = function(txInfo) {
               <button
                 type="button"
                 className="btn btn-default"
-                onClick={ this.toggleTxInfoModal }>
-                { translate('INDEX.CLOSE') }
-              </button>
+                onClick={ this.toggleTxInfoModal }>{ translate('INDEX.CLOSE') }</button>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-const copyToClipboard = (value) => {
+export function copyToClipboard(value) {
   let result;
   let copyTextarea = document.querySelector('#js-copytextarea');
 
@@ -14,5 +14,3 @@ const copyToClipboard = (value) => {
 
   return result;
 };
-
-export default copyToClipboard;

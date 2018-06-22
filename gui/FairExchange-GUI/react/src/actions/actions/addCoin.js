@@ -1,9 +1,6 @@
 import { ACTIVE_HANDLE } from '../storeType';
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
 import Config from '../../config';
-import urlParams from '../../util/url';
-import fetchType from '../../util/fetchType';
-
 import {
   triggerToaster,
   toggleAddcoinModal,
@@ -17,7 +14,7 @@ import {
   checkAC,
 } from '../../components/addcoin/payload';
 
-export const iguanaActiveHandleState = (json) => {
+function iguanaActiveHandleState(json) {
   return {
     type: ACTIVE_HANDLE,
     isLoggedIn: json.status === 'unlocked' ? true : false,
@@ -25,15 +22,14 @@ export const iguanaActiveHandleState = (json) => {
   }
 }
 
-export const activeHandle = () => {
+export function activeHandle() {
   return dispatch => {
-    const _urlParams = {
-      token: Config.token,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/auth/status${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/auth/status?token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -53,18 +49,19 @@ export const activeHandle = () => {
   }
 }
 
-export const shepherdElectrumAuth = (seed) => {
+export function shepherdElectrumAuth(seed) {
   return dispatch => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/login`,
-      fetchType(
-        JSON.stringify({
-          seed,
-          iguana: true,
-          token: Config.token,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        seed,
+        iguana: true,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -93,16 +90,14 @@ export const shepherdElectrumAuth = (seed) => {
   }
 }
 
-export const shepherdElectrumAddCoin = (coin) => {
+export function shepherdElectrumAddCoin(coin) {
   return dispatch => {
-    const _urlParams = {
-      coin,
-      token: Config.token,
-    };
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/coins/add${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/electrum/coins/add?coin=${coin}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -122,7 +117,7 @@ export const shepherdElectrumAddCoin = (coin) => {
   }
 }
 
-export const addCoin = (coin, mode, startupParams) => {
+export function addCoin(coin, mode, startupParams) {
   if (mode === 0 ||
       mode === '0') {
     return dispatch => {
@@ -135,7 +130,7 @@ export const addCoin = (coin, mode, startupParams) => {
   }
 }
 
-const handleErrors = (response) => {
+function handleErrors(response) {
   let _parsedResponse;
 
   if (!response.ok) {
@@ -146,7 +141,7 @@ const handleErrors = (response) => {
   }
 }
 
-export const shepherdHerd = (coin, mode, path, startupParams) => {
+export function shepherdHerd(coin, mode, path, startupParams) {
   let acData;
   let herdData = {
     'ac_name': coin,
@@ -165,21 +160,7 @@ export const shepherdHerd = (coin, mode, path, startupParams) => {
   } else if (coin === 'NINJA') {
     herdData['ac_options'].pop();
     herdData['ac_options'].push('-addnode=192.241.134.19');
-  } else if (coin === 'OOT') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=174.138.107.226');
-  } else if (coin === 'BNTN') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=94.130.169.205');
-  } else if (coin === 'EQL') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=46.101.124.153');  
-  } else if (coin === 'GLXT') {
-    herdData['ac_options'].pop();
-    herdData['ac_options'].push('-addnode=34.201.62.8');  
-
-}
-
+  }
 
   if (coin === 'ZEC') {
     herdData = {
@@ -241,16 +222,17 @@ export const shepherdHerd = (coin, mode, path, startupParams) => {
       _herd = coin !== 'ZEC' ? 'safecoind' : 'zcashd';
     }
 
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/herd`,
-      fetchType(
-        JSON.stringify({
-          herd: _herd,
-          options: herdData,
-          token: Config.token,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/herd`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        herd: _herd,
+        options: herdData,
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -270,7 +252,7 @@ export const shepherdHerd = (coin, mode, path, startupParams) => {
       } else {
         dispatch(
           triggerToaster(
-            `${translate('TOASTR.ERROR_STARTING_DAEMON', coin)} ${translate('TOASTR.PORT_IS_TAKEN', acData)}`,
+            translate('TOASTR.ERROR_STARTING_DAEMON', coin) + ' ' + translate('TOASTR.PORT_IS_TAKEN', acData),
             translate('TOASTR.SERVICE_NOTIFICATION'),
             'error',
             false
@@ -281,7 +263,7 @@ export const shepherdHerd = (coin, mode, path, startupParams) => {
   }
 }
 
-export const addCoinResult = (coin, mode) => {
+export function addCoinResult(coin, mode) {
   const modeToValue = {
     '0': 'spv',
     '-1': 'native',
@@ -337,17 +319,18 @@ export const addCoinResult = (coin, mode) => {
   }
 }
 
-export const _shepherdGetConfig = (coin, mode, startupParams) => {
+export function _shepherdGetConfig(coin, mode, startupParams) {
   return dispatch => {
-    return fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/getconf`,
-      fetchType(
-        JSON.stringify({
-          chain: 'safecoind',
-          token: Config.token,
-        })
-      ).post
-    )
+    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/getconf`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chain: 'safecoind',
+        token: Config.token,
+      }),
+    })
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -372,19 +355,20 @@ export const _shepherdGetConfig = (coin, mode, startupParams) => {
   }
 }
 
-export const shepherdGetConfig = (coin, mode, startupParams) => {
+export function shepherdGetConfig(coin, mode, startupParams) {
   if (coin === 'SAFE' &&
       mode === '-1') {
     return dispatch => {
-      return fetch(
-        `http://127.0.0.1:${Config.safewalletPort}/shepherd/getconf`,
-        fetchType(
-          JSON.stringify({
-            chain: 'safecoind',
-            token: Config.token,
-          })
-        ).post
-      )
+      return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/getconf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chain: 'safecoind',
+          token: Config.token,
+        }),
+      })
       .catch((error) => {
         console.log(error);
         dispatch(
@@ -409,15 +393,16 @@ export const shepherdGetConfig = (coin, mode, startupParams) => {
     }
   } else {
     return dispatch => {
-      return fetch(
-        `http://127.0.0.1:${Config.safewalletPort}/shepherd/getconf`,
-        fetchType(
-          JSON.stringify({
-            chain: coin,
-            token: Config.token,
-          })
-        ).post
-      )
+      return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/getconf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chain: coin,
+          token: Config.token,
+        }),
+      })
       .catch((error) => {
         console.log(error);
         dispatch(

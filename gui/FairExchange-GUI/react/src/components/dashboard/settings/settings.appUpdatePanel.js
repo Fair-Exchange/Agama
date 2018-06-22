@@ -1,5 +1,5 @@
 import React from 'react';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import { connect } from 'react-redux';
 import Config from '../../../config';
 import {
@@ -94,7 +94,6 @@ class AppUpdatePanel extends React.Component {
 
   _updateUIPromise() {
     let _updateLog = [];
-    
     updateProgressBar.patch = 0;
     _updateLog.push(`${translate('INDEX.DOWNLOADING_UI_UPDATE')}...`);
     this.setState(Object.assign({}, this.state, {
@@ -197,7 +196,6 @@ class AppUpdatePanel extends React.Component {
     );
   };
 }
-
 const mapStateToProps = (state) => {
   return {
     Settings: state.Settings,

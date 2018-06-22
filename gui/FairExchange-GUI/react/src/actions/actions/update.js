@@ -1,18 +1,15 @@
 import { triggerToaster } from '../actionCreators';
 import Config from '../../config';
 import Store from '../../store';
-import urlParams from '../../util/url';
-import fetchType from '../../util/fetchType';
 
-export const checkForUpdateUIPromise = () => {
+export function checkForUpdateUIPromise() {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/update/patch/check${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/update/patch/check?token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -28,15 +25,14 @@ export const checkForUpdateUIPromise = () => {
   });
 }
 
-export const updateUIPromise = () => {
+export function updateUIPromise() {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/update/patch${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/update/patch?token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(
@@ -52,16 +48,14 @@ export const updateUIPromise = () => {
   });
 }
 
-export const downloadZCashParamsPromise = (dloption) => {
+export function downloadZCashParamsPromise(dloption) {
   return new Promise((resolve, reject) => {
-    const _urlParams = {
-      token: Config.token,
-      dloption,
-    };
-    fetch(
-      `http://127.0.0.1:${Config.safewalletPort}/shepherd/zcparamsdl${urlParams(_urlParams)}`,
-      fetchType.get
-    )
+    fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/zcparamsdl?dloption=${dloption}&token=${Config.token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
     .catch((error) => {
       console.log(error);
       Store.dispatch(

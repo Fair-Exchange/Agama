@@ -1,7 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import translate from '../../../translate/translate';
-import { triggerToaster } from '../../../actions/actionCreators';
+import { translate } from '../../../translate/translate';
+import {
+  triggerToaster,
+} from '../../../actions/actionCreators';
 import Store from '../../../store';
 import {
   SyncErrorBlocksRender,
@@ -317,7 +319,7 @@ class WalletsProgress extends React.Component {
           this.props.Settings.debugLog.indexOf('Still rescanning') > -1 &&
           !this.props.ActiveCoin.progress ||
           !this.props.ActiveCoin.progress.blocks
-      ) {
+        ) {
         const temp = this.props.Settings.debugLog.split(' ');
         let currentProgress;
 
@@ -358,7 +360,7 @@ class WalletsProgress extends React.Component {
       } else if (
           this.props.Settings.debugLog.indexOf('LoadExternalBlockFile:') > -1 ||
           this.props.Settings.debugLog.indexOf('Reindexing block file') > -1
-      ) {
+        ) {
         return (
           `: (${ translate('INDEX.REINDEX') })`
         );

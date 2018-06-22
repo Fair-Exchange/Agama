@@ -1,12 +1,11 @@
-import translate from '../../translate/translate';
+import { translate } from '../../translate/translate';
 import {
   triggerToaster,
   getDashboardUpdate,
 } from '../actionCreators';
 import Config from '../../config';
-import fetchType from '../../util/fetchType';
 
-export const getNewSAFEAddresses = (coin, pubpriv, mode) => {
+export function getNewSAFEAddresses(coin, pubpriv, mode) {
   return dispatch => {
     const payload = {
       mode: null,
@@ -16,9 +15,17 @@ export const getNewSAFEAddresses = (coin, pubpriv, mode) => {
       token: Config.token,
     };
 
+    const _fetchConfig = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payload: payload }),
+    };
+
     return fetch(
       `http://127.0.0.1:${Config.safewalletPort}/shepherd/cli`,
-      fetchType(JSON.stringify({ payload: payload })).post
+      _fetchConfig
     )
     .catch((error) => {
       console.log(error);
@@ -43,8 +50,7 @@ export const getNewSAFEAddresses = (coin, pubpriv, mode) => {
       );
       dispatch(getDashboardUpdate(coin, mode));
     })
-    .catch((error) => {
-      console.log(error);
+    .catch((ex) => {
       dispatch(
         triggerToaster(
           json.result ? json.result : json,

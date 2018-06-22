@@ -6,7 +6,7 @@ import {
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import Config from '../../../config';
-import translate from '../../../translate/translate';
+import { translate } from '../../../translate/translate';
 import mainWindow from '../../../util/mainWindow';
 
 import ZcparamsFetchModalRender from './zcparamsFetchModal.render';
@@ -30,7 +30,7 @@ class ZcparamsFetchModal extends React.Component {
       display: true,
       updateLog: [],
       zcparamsSources: {},
-      dlOption: 'safewallet.safecoin.com', //TODO
+      dlOption: 'safewallet.safecoin.org',
       done: false,
     };
     this.dismiss = this.dismiss.bind(this);
