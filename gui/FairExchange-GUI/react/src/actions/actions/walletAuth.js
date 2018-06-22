@@ -4,7 +4,7 @@ import {
   LOGIN,
   ACTIVE_HANDLE,
 } from '../storeType';
-import { translate } from '../../translate/translate';
+import translate from '../../translate/translate';
 import Config from '../../config';
 import {
   triggerToaster,
@@ -112,7 +112,7 @@ export function iguanaWalletPassphrase(_passphrase) {
 export function iguanaActiveHandle(getMainAddress) {
   const _payload = {
     userpass: `tmpIgRPCUser@${sessionStorage.getItem('IguanaRPCAuth')}`,
-    agent: 'SuperNET',
+    agent: 'FairExchange',
     method: 'activehandle',
   };
 
@@ -132,7 +132,7 @@ export function iguanaActiveHandle(getMainAddress) {
     }
 
     return fetch(
-      Config.iguanaLessMode ? `http://127.0.0.1:${Config.safewalletPort}/shepherd/SuperNET/activehandle` : `http://127.0.0.1:${Config.iguanaCorePort}`,
+      Config.iguanaLessMode ? `http://127.0.0.1:${Config.safewalletPort}/shepherd/FairExchange/activehandle` : `http://127.0.0.1:${Config.iguanaCorePort}`,
       _fetchConfig
     )
     .catch((error) => {

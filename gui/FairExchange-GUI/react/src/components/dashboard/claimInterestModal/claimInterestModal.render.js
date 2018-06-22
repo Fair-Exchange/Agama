@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import Spinner from '../spinner/spinner';
 import ReactTooltip from 'react-tooltip';
 
@@ -17,7 +17,7 @@ export const _ClaimInterestTableRender = function() {
               className="btn btn-default btn-xs clipboard-edexaddr copy-string-btn"
               title={ translate('INDEX.COPY_TO_CLIPBOARD') }
               onClick={ () => this.copyTxId(_transactionsList[i].txid) }>
-                <i className="icon wb-copy"></i> { translate('INDEX.COPY') + ' TXID' }
+              <i className="icon wb-copy"></i> { translate('INDEX.COPY') + ' TXID' }
             </button>
           </td>
           <td>{ _transactionsList[i].address }</td>
@@ -26,12 +26,12 @@ export const _ClaimInterestTableRender = function() {
           <td className="locktime center">
             { _transactionsList[i].locktime &&
               <i
-                data-tip={ `Locktime is set to ${_transactionsList[i].locktime}` }
+                data-tip={ `${translate('CLAIM_INTEREST.LOCKTIME_IS_SET_TO')} ${_transactionsList[i].locktime}` }
                 className="fa-check-circle green"></i>
             }
             { !_transactionsList[i].locktime &&
               <i
-                data-tip={ `Locktime is unset! Your UTXO is not accruing interest.` }
+                data-tip={ translate('CLAIM_INTEREST.LOCKTIME_IS_UNSET') }
                 className="fa-exclamation-circle red"></i>
             }
             <ReactTooltip
@@ -59,7 +59,7 @@ export const _ClaimInterestTableRender = function() {
           </p>
         }
         <p>
-          <strong>Claim interest fee:</strong> 0.0001 SAFE (10000 sats).
+          <strong>{ translate('CLAIM_INTEREST.CLAIM_INTEREST_FEE') }:</strong> 0.0001 SAFE (10000 sats).
         </p>
       </div>
       { this.state.totalInterest > 0 &&
@@ -106,13 +106,13 @@ export const _ClaimInterestTableRender = function() {
                   type="button"
                   className="btn btn-primary"
                   onClick={ this.confirmClaimInterest }>
-                    { translate('INDEX.CONFIRM') }
+                  { translate('INDEX.CONFIRM') }
                 </button>
                 <button
                   type="button"
                   className="btn btn-primary margin-left-15"
                   onClick={ this.cancelClaimInterest }>
-                    Cancel
+                  { translate('LOGIN.CANCEL') }
                 </button>
               </div>
             </div>
@@ -121,7 +121,7 @@ export const _ClaimInterestTableRender = function() {
             this.state.addressses &&
             Object.keys(this.state.addressses).length > 0 &&
             <div className="margin-top-40 margin-bottom-20">
-              <div className="margin-bottom-5">Send my balance to</div>
+              <div className="margin-bottom-5">{ translate('CLAIM_INTEREST.SEND_MY_BALANCE_TO') }</div>
               { this.addressDropdownRender() }
             </div>
           }

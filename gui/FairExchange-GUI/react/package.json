@@ -1,6 +1,6 @@
 {
   "name": "SafewalletGUI",
-  "version": "0.0.26",
+  "version": "0.2.31",
   "description": "Safewallet Wallet GUI",
   "main": "src/index.js",
   "scripts": {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import Config from '../../../config';
 import {
   getAppConfig,
@@ -186,7 +186,8 @@ class AppSettingsPanel extends React.Component {
                       value={ _appConfig[key][_key] }
                       onChange={ (event) => this.updateInputSettings(event, key, _key) } />
                   }
-                  { (this.state.appConfigSchema[key][_key].type === 'string' || this.state.appConfigSchema[key][_key].type === 'folder') &&
+                  { (this.state.appConfigSchema[key][_key].type === 'string' ||
+                    this.state.appConfigSchema[key][_key].type === 'folder') &&
                     <input
                       type="text"
                       name={ `${key}__${_key}` }
@@ -240,7 +241,8 @@ class AppSettingsPanel extends React.Component {
                     value={ _appConfig[key] }
                     onChange={ (event) => this.updateInputSettings(event, key) } />
                 }
-                { (this.state.appConfigSchema[key].type === 'string' || this.state.appConfigSchema[key].type === 'folder') &&
+                { (this.state.appConfigSchema[key].type === 'string' ||
+                  this.state.appConfigSchema[key].type === 'folder') &&
                   <input
                     type="text"
                     name={ `${key}` }
@@ -323,9 +325,15 @@ class AppSettingsPanel extends React.Component {
     if (!childKey &&
         this.state.appConfigSchema[parentKey].type === 'boolean') {
       _appSettings[parentKey] = typeof _appSettings[parentKey] !== undefined ? !_appSettings[parentKey] : !this.state.appSettings[parentKey];
-    } else if (childKey && this.state.appConfigSchema[parentKey][childKey].type === 'boolean') {
+    } else if (
+      childKey &&
+      this.state.appConfigSchema[parentKey][childKey].type === 'boolean'
+    ) {
       _appSettings[parentKey][childKey] = typeof _appSettings[parentKey][childKey] !== undefined ? !_appSettings[parentKey][childKey] : !this.state.appSettings[parentKey][childKey];
-    } else if ((!childKey && this.state.appConfigSchema[parentKey].type === 'number') || (childKey && this.state.appConfigSchema[parentKey][childKey].type === 'number')) {
+    } else if (
+      (!childKey && this.state.appConfigSchema[parentKey].type === 'number') ||
+      (childKey && this.state.appConfigSchema[parentKey][childKey].type === 'number')
+    ) {
       if (e.target.value === '') {
         _appSettings[e.target.name] = _appSettingsPrev[e.target.name];
       } else {
@@ -360,11 +368,15 @@ class AppSettingsPanel extends React.Component {
             <button
               type="button"
               className="btn btn-primary waves-effect waves-light"
-              onClick={ this._saveAppConfig }>{ translate('SETTINGS.SAVE_APP_CONFIG') }</button>
+              onClick={ this._saveAppConfig }>
+              { translate('SETTINGS.SAVE_APP_CONFIG') }
+            </button>
             <button
               type="button"
               className="btn btn-primary waves-effect waves-light margin-left-30"
-              onClick={ this._resetAppConfig }>{ translate('SETTINGS.RESET_TO_DEFAULT') }</button>
+              onClick={ this._resetAppConfig }>
+              { translate('SETTINGS.RESET_TO_DEFAULT') }
+            </button>
           </div>
         </div>
       </div>

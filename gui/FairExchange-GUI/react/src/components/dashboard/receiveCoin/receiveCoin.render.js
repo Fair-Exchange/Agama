@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import QRModal from '../qrModal/qrModal';
 import InvoiceModal from '../invoiceModal/invoiceModal';
 import ReactTooltip from 'react-tooltip';
@@ -13,7 +13,7 @@ export const AddressActionsNonBasiliskModeRender = function(address, type) {
       </span>
       <button
         onClick={ () => this.toggleAddressMenu(address) }
-        data-tip="Toggle address context menu"
+        data-tip={ translate('RECEIVE.TOOGLE_ADDRESS') }
         className="btn btn-default btn-xs clipboard-edexaddr margin-left-10 receive-address-context-menu-trigger">
         <i className="fa fa-ellipsis-v receive-address-context-menu-trigger"></i>
       </button>
@@ -25,17 +25,17 @@ export const AddressActionsNonBasiliskModeRender = function(address, type) {
         <div className="receive-address-context-menu">
           <ul>
             <li onClick={ () => this._copyCoinAddress(address) }>
-              <i className="icon wb-copy margin-right-5"></i> { translate('INDEX.COPY') + ' pub key' }
+              <i className="icon wb-copy margin-right-5"></i> { translate('INDEX.COPY') + ' ' + translate('RECEIVE.PUB_KEY') }
             </li>
             { !address.canspend &&
               this.props.mode !== 'spv' &&
               <li onClick={ () => this.dumpPrivKey(address, type !== 'public' ? true : null) }>
-                <i className="icon fa-key margin-right-5"></i> { translate('INDEX.COPY') + ' priv key (WIF)' }
+                <i className="icon fa-key margin-right-5"></i> { translate('INDEX.COPY') + ' ' + translate('RECEIVE.PRIV_KEY') }
               </li>
             }
             { this.props.mode !== 'spv' &&
               <li onClick={ () => this.validateCoinAddress(address, type !== 'public' ? true : null) }>
-                <i className="icon fa-check margin-right-5"></i> validate address
+                <i className="icon fa-check margin-right-5"></i> { translate('RECEIVE.VALIDATE_ADDRESS') }
               </li>
             }
             <li className="receive-address-context-menu-get-qr">
@@ -62,7 +62,7 @@ export const AddressItemRender = function(address, type) {
           this.props.mode !== 'spv' &&
           <span>
             <i
-              data-tip="You don't own priv keys for this address"
+              data-tip={ translate('RECEIVE.YOU_DONT_OWN_PRIV_KEYS') }
               className="fa fa-ban margin-left-10"></i>
             <ReactTooltip
               effect="solid"
@@ -76,7 +76,7 @@ export const AddressItemRender = function(address, type) {
           type === 'public' &&
           this.props.mode !== 'spv' &&
           <span>
-            <span data-tip="Available amount to spend: 0"> (0)</span>
+            <span data-tip={ translate('RECEIVE.AVAIL_AMOUNT_TO_SPEND_0') }> (0)</span>
             <ReactTooltip
               effect="solid"
               className="text-left" />
@@ -115,7 +115,7 @@ export const _ReceiveCoinTableRender = function() {
       { this.checkTotalBalance() !== 0 &&
         <div className="text-left padding-top-20 padding-bottom-15 push-right">
           { this.props.mode !== 'spv' &&
-            <div data-tip="Display all addresses including not mine (ismine:false)">
+            <div data-tip={ translate('RECEIVE.DISPLAY_ALL_ADDR') }>
               <label className="switch">
                 <input
                   type="checkbox"

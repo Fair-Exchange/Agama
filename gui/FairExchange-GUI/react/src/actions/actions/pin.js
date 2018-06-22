@@ -2,89 +2,150 @@ import Config from '../../config';
 import {
   getDecryptedPassphrase,
   getPinList,
-  triggerToaster
+  triggerToaster,
+  shepherdElectrumAuth,
 } from '../actionCreators';
-import { iguanaWalletPassphrase } from './walletAuth';
+import translate from '../../translate/translate';
+import urlParams from '../../util/url';
+import fetchType from '../../util/fetchType';
+import Store from '../../store';
 
-export function encryptPassphrase(passphrase, key, pubKey) {
+export const encryptPassphrase = (string, key, suppressToastr, customPinName) => {
   const payload = {
-    string: passphrase,
-    key: key,
-    pubkey: pubKey,
+    string,
+    key,
     token: Config.token,
+    pubkey: customPinName,
   };
 
-  return dispatch => {
-    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/encryptkey`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
+  return new Promise((resolve, reject) => {
+    fetch(
+      `http://127.0.0.1:${Config.safewalletPort}/shepherd/encryptkey`,
+      fetchType(JSON.stringify(payload)).post
+    )
     .catch((error) => {
       console.log(error);
-      dispatch(
+      Store.dispatch(
         triggerToaster(
           'encryptKey',
           'Error',
           'error'
         )
       );
+      resolve({ msg: 'error' });
     })
     .then(response => response.json())
     .then(json => {
-      dispatch(
-        triggerToaster(
-          'Passphrase successfully encrypted',
-          'Success',
-          'success'
-        )
-      );
+      if (!suppressToastr) {
+        Store.dispatch(
+          triggerToaster(
+            translate('INDEX.PASSPHRASE_SUCCESSFULLY_ENCRYPTED'),
+            translate('SAFE_NATIVE.SUCCESS'),
+            'success'
+          )
+        );
+      }
+      resolve(json);
     });
-  }
+  });
 }
 
-export function loginWithPin(key, pubKey) {
+export const loginWithPin = (key, pubkey) => {
   const payload = {
-    key: key,
-    pubkey: pubKey,
+    key,
+    pubkey,
     token: Config.token,
   };
 
-  return dispatch => {
-    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/decryptkey`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
+  return new Promise((resolve, reject) => {
+    fetch(
+      `http://127.0.0.1:${Config.safewalletPort}/shepherd/decryptkey`,
+      fetchType(JSON.stringify(payload)).post
+    )
     .catch((error) => {
       console.log(error);
-      dispatch(
+      Store.dispatch(
         triggerToaster(
           'decryptKey',
           'Error',
           'error'
         )
       );
+      resolve({ msg: 'error' });
     })
     .then(response => response.json())
     .then(json => {
-      dispatch(iguanaWalletPassphrase(json.result));
+      if (json.msg === 'success') {
+        // Store.dispatch(shepherdElectrumAuth(json.result));
+        resolve(json);
+      } else {
+        Store.dispatch(
+          triggerToaster(
+            json.result,
+            translate('API.PIN_DECRYPT_ERR'),
+            'error'
+          )
+        );
+        resolve(json);
+      }
     });
-  }
+  });
 }
 
-export function loadPinList() {
-  return dispatch => {
-    return fetch(`http://127.0.0.1:${Config.safewalletPort}/shepherd/getpinlist?token=${Config.token}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+export const modifyPin = (pubkey, remove, pubkeynew) => {
+  const payload = remove ? {
+    pubkey,
+    delete: true,
+    token: Config.token,
+  } : {
+    pubkey,
+    pubkeynew,
+    token: Config.token,
+  };
+
+  return new Promise((resolve, reject) => {
+    fetch(
+      `http://127.0.0.1:${Config.safewalletPort}/shepherd/modifypin`,
+      fetchType(JSON.stringify(payload)).post
+    )
+    .catch((error) => {
+      console.log(error);
+      Store.dispatch(
+        triggerToaster(
+          'modifyPin',
+          'Error',
+          'error'
+        )
+      );
+      resolve({ msg: 'error' });
     })
+    .then(response => response.json())
+    .then(json => {
+      if (json.msg === 'success') {
+        resolve(json);
+      } else {
+        Store.dispatch(
+          triggerToaster(
+            json.result,
+            translate('API.PIN_MODIFY_ERR'),
+            'error'
+          )
+        );
+        resolve(json);
+      }
+    });
+  });
+}
+
+export const loadPinList = () => {
+  return dispatch => {
+    const _urlParams = {
+      token: Config.token,
+    };
+    return fetch(
+      `http://127.0.0.1:${Config.safewalletPort}/shepherd/getpinlist${urlParams(_urlParams)}`,
+      fetchType.get
+    )
     .catch((error) => {
       console.log(error);
       dispatch(
@@ -97,13 +158,13 @@ export function loadPinList() {
     })
     .then(response => response.json())
     .then(json => {
-      dispatch(
+      /*dispatch(
         triggerToaster(
           'getPinList',
           'Success',
           'success'
         )
-      );
+      );*/
       dispatch(
         getPinList(json.result)
       );

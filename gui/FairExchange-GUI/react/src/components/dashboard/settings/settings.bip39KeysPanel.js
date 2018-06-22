@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import { connect } from 'react-redux';
 import {
   shepherdElectrumBip39Keys,
@@ -74,17 +74,12 @@ class Bip39KeysPanel extends React.Component {
 
     if (e.target.name === 'passphrase') {
       this.resizeLoginTextarea();
-
-      this.setState({
-        trimPassphraseTimer: _trimPassphraseTimer,
-        [e.target.name === 'passphraseTextarea' ? 'passphrase' : e.target.name]: newValue,
-      });
-    } else {
-      this.setState({
-        trimPassphraseTimer: _trimPassphraseTimer,
-        [e.target.name === 'passphraseTextarea' ? 'passphrase' : e.target.name]: newValue,
-      });
     }
+
+    this.setState({
+      trimPassphraseTimer: _trimPassphraseTimer,
+      [e.target.name === 'passphraseTextarea' ? 'passphrase' : e.target.name]: newValue,
+    });
   }
 
   resizeLoginTextarea() {
@@ -107,7 +102,8 @@ class Bip39KeysPanel extends React.Component {
       this.state.match,
       this.state.addressdepth,
       this.state.accounts
-    ).then((res) => {
+    )
+    .then((res) => {
       this.setState({
         keys: res.result.priv ? res.result : 'empty',
       });
@@ -153,7 +149,7 @@ class Bip39KeysPanel extends React.Component {
                   { this.state.seedExtraSpaces &&
                     <span>
                       <i className="icon fa-warning seed-extra-spaces-warning"
-                        data-tip="Your seed contains leading/trailing space characters"
+                        data-tip={ translate('LOGIN.SEED_TRAILING_CHARS') }
                         data-html={ true }></i>
                       <ReactTooltip
                         effect="solid"
@@ -174,8 +170,14 @@ class Bip39KeysPanel extends React.Component {
                 <button
                   type="button"
                   className="btn btn-primary waves-effect waves-light margin-top-20"
-                  disabled={ !this.state.match || !this.state.passphrase || this.state.passphrase.length < 2 }
-                  onClick={ this._getBip39Keys }>{ translate('SETTINGS.GET_KEY') }</button>
+                  disabled={
+                    !this.state.match ||
+                    !this.state.passphrase ||
+                    this.state.passphrase.length < 2
+                  }
+                  onClick={ this._getBip39Keys }>
+                  { translate('SETTINGS.GET_KEY') }
+                </button>
               </div>
               <div className="col-sm-2 no-padding-left text-center margin-top-10 margin-left-50">
                 <select
@@ -225,7 +227,7 @@ class Bip39KeysPanel extends React.Component {
                     className="btn btn-default btn-xs clipboard-edexaddr margin-left-10"
                     title={ translate('INDEX.COPY_TO_CLIPBOARD') }
                     onClick={ () => this._copyCoinAddress(this.state.keys.priv) }>
-                      <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
+                    <i className="icon wb-copy"></i> { translate('INDEX.COPY') }
                   </button>
                 </div>
               }

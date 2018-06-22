@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import PanelSection from './settings.panelBody';
 import Panel from './settings.panel';
 
@@ -16,6 +16,7 @@ import DaemonStdoutPanel from './settings.daemonStdoutPanel';
 import NativeWalletDatKeysPanel from './settings.nativeWalletDatKeysPanel';
 import CoindClearDataDirPanel from './settings.coindClearDataDirPanel';
 import Bip39KeysPanel from './settings.bip39KeysPanel';
+import SeedEncryptPanel from './settings.seedEncryptPanel';
 import mainWindow from '../../../util/mainWindow';
 
 // import WalletBackupPanel from './settings.walletBackupPanel';
@@ -95,12 +96,18 @@ export const SettingsRender = function() {
                 this.props.Main.coins.spv &&
                 Object.keys(this.props.Main.coins.spv).length &&
                 this.props.Main.isLoggedIn &&
+                !mainWindow.isWatchOnly() &&
                 <PanelSection
                   title={ translate('INDEX.EXPORT_KEYS') }
                   icon="icon md-key">
                   <ExportKeysPanel />
                 </PanelSection>
               }
+              <PanelSection
+                title={ translate('SETTINGS.ENCRYPT_SEED') }
+                icon="icon fa-shield">
+                <SeedEncryptPanel />
+              </PanelSection>
               { mainWindow.arch === 'x64' &&
                 <PanelSection
                   title={ `Wallet.dat ${translate('SETTINGS.KEYS_SM')}` }

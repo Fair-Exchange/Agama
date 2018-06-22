@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
 import Select from 'react-select';
@@ -50,7 +50,7 @@ class ToolsSeedToWif extends React.Component {
         Store.dispatch(
           triggerToaster(
             res.result,
-            'Seed to wif error',
+            translate('TOOLS.ERR_SEED_TO_WIF'),
             'error'
           )
         );
@@ -97,12 +97,12 @@ class ToolsSeedToWif extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>Seed to key pair (wif, pub)</h4>
+          <h4>{ translate('TOOLS.SEED_TO_KP_ALT') }</h4>
         </div>
         <div className="col-xlg-12 form-group form-material no-padding-left padding-top-20 padding-bottom-70">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">Coin</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.COIN') }</label>
           <Select
             name="s2wCoin"
             className="col-sm-3"
@@ -115,14 +115,14 @@ class ToolsSeedToWif extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">Passphrase</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.SEED') }</label>
           <input
             type="text"
             className="form-control col-sm-3"
             name="s2wSeed"
             onChange={ this.updateInput }
             value={ this.state.s2wSeed }
-            placeholder="Enter a passphrase"
+            placeholder={ translate('TOOLS.ENTER_A_SEED') }
             autoComplete="off"
             required />
         </div>
@@ -138,7 +138,7 @@ class ToolsSeedToWif extends React.Component {
           <div
             className="toggle-label pointer iguana-core-toggle"
             onClick={ this.toggleS2wIsIguana }>
-            Iguana Core compatible
+            { translate('TOOLS.IGUANA_COMPAT') }
           </div>
         </div>
         <div className="col-sm-12 form-group form-material no-padding-left margin-top-10 padding-bottom-10">
@@ -146,7 +146,7 @@ class ToolsSeedToWif extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.seed2Wif }>
-              Get WIF
+            { translate('TOOLS.GET_WIF') }
           </button>
         </div>
         { this.state.s2wResult &&

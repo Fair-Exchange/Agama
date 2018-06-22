@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
 import Select from 'react-select';
@@ -86,7 +86,7 @@ class ToolsOfflineSigScan extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>Push QR transaction</h4>
+          <h4>{ translate('TOOLS.PUSH_QR_TX') }</h4>
         </div>
         <div className="col-sm-12 form-group form-material no-padding-left">
           <QRModal
@@ -107,13 +107,13 @@ class ToolsOfflineSigScan extends React.Component {
             { this.state.txPushResult.length === 64 &&
               <div>
                 <div className="margin-bottom-15">
-                  { this.state.rawTx2Push.split(':')[0].toUpperCase() } transaction pushed!
+                  { this.state.rawTx2Push.split(':')[0].toUpperCase() } { translate('TOOLS.TX_PUSHED') }!
                 </div>
                 <div>TxID { this.state.txPushResult }</div>
               </div>
             }
             { this.state.txPushResult.length !== 64 &&
-              <div>Error: { this.state.txPushResult }</div>
+              <div>{ translate('TOOLS.ERROR') }: { this.state.txPushResult }</div>
             }
           </div>
         }

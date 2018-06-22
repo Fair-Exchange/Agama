@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
 import Select from 'react-select';
@@ -17,6 +17,8 @@ import {
 import Store from '../../../store';
 import { isSafecoinCoin } from '../../../util/coinHelper';
 import devlog from '../../../util/devlog';
+
+const shell = window.require('electron').shell;
 
 class ToolsMergeUTXO extends React.Component {
   constructor() {
@@ -102,7 +104,7 @@ class ToolsMergeUTXO extends React.Component {
             });
             Store.dispatch(
               triggerToaster(
-                'Merge success',
+                translate('TOOLS.MERGE_SUCCESS'),
                 'UTXO',
                 'success'
               )
@@ -111,7 +113,7 @@ class ToolsMergeUTXO extends React.Component {
             Store.dispatch(
               triggerToaster(
                 res.result,
-                'Merge UTXO error',
+                translate('TOOLS.ERR_MERGE_UTXO'),
                 'error'
               )
             );
@@ -121,7 +123,7 @@ class ToolsMergeUTXO extends React.Component {
         Store.dispatch(
           triggerToaster(
             res.result,
-            'Merge UTXO error',
+            translate('TOOLS.ERR_MERGE_UTXO'),
             'error'
           )
         );
@@ -167,8 +169,8 @@ class ToolsMergeUTXO extends React.Component {
             } else {
               Store.dispatch(
                 triggerToaster(
-                  'UTXO merge Error',
-                  'No valid UTXO',
+                  translate('TOOLS.ERR_MERGE_UTXO'),
+                  translate('TOOLS.NO_VALID_UTXO'),
                   'error'
                 )
               );
@@ -177,7 +179,7 @@ class ToolsMergeUTXO extends React.Component {
             Store.dispatch(
               triggerToaster(
                 res.result,
-                'Get UTXO error',
+                translate('TOOLS.ERR_MERGE_UTXO'),
                 'error'
               )
             );
@@ -187,7 +189,7 @@ class ToolsMergeUTXO extends React.Component {
         Store.dispatch(
           triggerToaster(
             seed2kpRes.result,
-            'Seed to wif error',
+            translate('TOOLS.ERR_SEED_TO_WIF'),
             'error'
           )
         );
@@ -226,25 +228,7 @@ class ToolsMergeUTXO extends React.Component {
 
   openExplorerWindow(txid, coin) {
     const url = `http://${coin}.explorer.ipv6admin.com/tx/${txid}`;
-    const remote = window.require('electron').remote;
-    const BrowserWindow = remote.BrowserWindow;
-
-    const externalWindow = new BrowserWindow({
-      width: 1280,
-      height: 800,
-      title: `${translate('INDEX.LOADING')}...`,
-      icon: remote.getCurrentWindow().iguanaIcon,
-      webPreferences: {
-        nodeIntegration: false,
-      },
-    });
-
-    externalWindow.loadURL(url);
-    externalWindow.webContents.on('did-finish-load', () => {
-      setTimeout(() => {
-        externalWindow.show();
-      }, 40);
-    });
+    return shell.openExternal(url);    
   }
 
   renderUTXOSplitMergeResponse(type) {
@@ -270,10 +254,10 @@ class ToolsMergeUTXO extends React.Component {
       <table className="table table-hover dataTable table-striped">
         <thead>
           <tr>
-            <th>Amount</th>
-            <th>Address</th>
-            <th>Confirmations</th>
-            <th>Vout</th>
+            <th>{ translate('TOOLS.AMOUNT') }</th>
+            <th>{ translate('TOOLS.ADDRESS') }</th>
+            <th>{ translate('TOOLS.CONFS') }</th>
+            <th>{ translate('TOOLS.VOUT') }</th>
             <th>TxID</th>
           </tr>
         </thead>
@@ -282,10 +266,10 @@ class ToolsMergeUTXO extends React.Component {
         </tbody>
         <tfoot>
           <tr>
-            <th>Amount</th>
-            <th>Address</th>
-            <th>Confirmations</th>
-            <th>Vout</th>
+            <th>{ translate('TOOLS.AMOUNT') }</th>
+            <th>{ translate('TOOLS.ADDRESS') }</th>
+            <th>{ translate('TOOLS.CONFS') }</th>
+            <th>{ translate('TOOLS.VOUT') }</th>
             <th>TxID</th>
           </tr>
         </tfoot>
@@ -297,12 +281,12 @@ class ToolsMergeUTXO extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>Merge UTXO</h4>
+          <h4>{ translate('TOOLS.MERGE') } UTXO</h4>
         </div>
         <div className="col-xlg-12 form-group form-material no-padding-left padding-top-20 padding-bottom-50">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">Coin</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.COIN') }</label>
           <Select
             name="utxoMergeCoin"
             className="col-sm-3"
@@ -320,14 +304,14 @@ class ToolsMergeUTXO extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">Seed</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.SEED') }</label>
           <input
             type="text"
             className="form-control col-sm-3"
             name="utxoMergeSeed"
             onChange={ this.updateInput }
             value={ this.state.utxoMergeSeed }
-            placeholder="Enter a seed"
+            placeholder={ translate('TOOLS.ENTER_A_SEED') }
             autoComplete="off"
             required />
         </div>
@@ -346,12 +330,12 @@ class ToolsMergeUTXO extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.getUtxoMerge }>
-              Get UTXO(s)
+            { translate('TOOLS.GET_UTXO') }
           </button>
         </div>
         { this.state.utxoMergeList &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
-            <div>Total UTXO: { this.state.utxoMergeList.length }</div>
+            <div>{ translate('TOOLS.TOTAL') } UTXO: { this.state.utxoMergeList.length }</div>
           </div>
         }
         <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
@@ -366,7 +350,7 @@ class ToolsMergeUTXO extends React.Component {
           <div
             className="toggle-label margin-right-15 pointer iguana-core-toggle"
             onClick={ this.toggleMergeUtxoList }>
-            Show UTXO list
+            { translate('TOOLS.SHOW_UTXO_LIST') }
           </div>
         </div>
         { this.state.utxoMergeShowUtxoList &&
@@ -377,14 +361,14 @@ class ToolsMergeUTXO extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left padding-top-20 padding-bottom-20">
           <label
             className="control-label col-sm-2 no-padding-left"
-            htmlFor="safeWalletSendTo">UTXO count to merge in 1 tx</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.UTXO_COUNT_TO_MERGE') }</label>
           <input
             type="text"
             className="form-control col-sm-3"
             name="utxoMergeUtxoNum"
             onChange={ this.updateInput }
             value={ this.state.utxoMergeUtxoNum }
-            placeholder="UTXO count"
+            placeholder={ translate('TOOLS.UTXO_COUNT') }
             autoComplete="off"
             required />
         </div>
@@ -393,7 +377,7 @@ class ToolsMergeUTXO extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.mergeUtxo }>
-              Merge UTXO(s)
+            { translate('TOOLS.MERGE_UTXO') }
           </button>
         </div>
         { /*this.state.utxoMergeRawtx &&

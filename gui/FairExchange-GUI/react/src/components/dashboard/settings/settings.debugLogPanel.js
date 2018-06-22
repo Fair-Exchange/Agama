@@ -1,12 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import Config from '../../../config';
 import { secondsToString } from '../../../util/time';
 import { coindList } from '../../../util/coinHelper';
-import {
-  getDebugLog,
-} from '../../../actions/actionCreators';
+import { getDebugLog } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import mainWindow from '../../../util/mainWindow';
 
@@ -68,7 +66,7 @@ class DebugLogPanel extends React.Component {
       _items.push(
         <p key={ `app-runtime-log-entry-${i}` }>
           <span>{ secondsToString(_appRuntimeLog[i].time, true) }</span>
-          <span className="padding-left-30">{ _appRuntimeLog[i].msg.indexOf('{') === -1 ? _appRuntimeLog[i].msg : JSON.stringify(_appRuntimeLog[i].msg, null, '') }</span>
+          <span className="padding-left-30">{ typeof _appRuntimeLog[i].msg === 'string' ? _appRuntimeLog[i].msg : JSON.stringify(_appRuntimeLog[i].msg, null, '') }</span>
         </p>
       );
     }
@@ -133,6 +131,7 @@ class DebugLogPanel extends React.Component {
         key={ `coind-walletdat-coins-none` }
         value="none">{ translate('SETTINGS.PICK_A_COIN') }</option>
     );
+
     for (let i = 0; i < _nativeCoins.length; i++) {
       if (_nativeCoins[i] === 'SAFE') {
         _nativeCoins[i] = 'Safecoin';
@@ -217,11 +216,15 @@ class DebugLogPanel extends React.Component {
                   type="button"
                   className="btn btn-primary waves-effect waves-light"
                   disabled={ this.checkInputVals() }
-                  onClick={ this.readDebugLog }>{ translate('INDEX.LOAD_DEBUG_LOG') }</button>
+                  onClick={ this.readDebugLog }>
+                  { translate('INDEX.LOAD_DEBUG_LOG') }
+                </button>
               </div>
               <div className="row">
                 <div className="col-sm-12 col-xs-12 text-align-left">
-                  <div className="padding-top-40 padding-bottom-20 horizontal-padding-0">{ this.renderDebugLogData() }</div>
+                  <div className="padding-top-40 padding-bottom-20 horizontal-padding-0">
+                  { this.renderDebugLogData() }
+                  </div>
                 </div>
               </div>
             </div>
