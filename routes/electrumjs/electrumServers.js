@@ -9,6 +9,7 @@ let electrumServers = {
       'local.support:10001',
       'local.support:10001'
     ],
-  };
+  },
+};
   
 module.exports = electrumServers;
