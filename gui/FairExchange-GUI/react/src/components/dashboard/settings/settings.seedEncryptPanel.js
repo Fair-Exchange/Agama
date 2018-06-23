@@ -377,7 +377,7 @@ class SeedEncryptPanel extends React.Component {
                     onChange={ this.updateInput }
                     value={ this.state.wifkeysPassphrase } />
                   <textarea
-                    className={ this.state.seedInputVisibility ? 'form-control' : 'hide' }
+                    className={ this.state.seedInputVisibility ? 'form-control blur' : 'hide' }
                     autoComplete="off"
                     id="wifkeysPassphraseTextarea"
                     ref="wifkeysPassphraseTextarea"
@@ -395,7 +395,7 @@ class SeedEncryptPanel extends React.Component {
                       type="password"
                       name="encryptKey"
                       ref="encryptKey"
-                      className="form-control"
+                      className="form-control blur"
                       onChange={ this.updateInput }
                       autoComplete="off"
                       value={ this.state.encryptKey || '' } />
@@ -408,7 +408,7 @@ class SeedEncryptPanel extends React.Component {
                       type="password"
                       name="encryptKeyConfirm"
                       ref="encryptKeyConfirm"
-                      className="form-control"
+                      className="form-control blur"
                       onChange={ this.updateInput }
                       autoComplete="off"
                       value={ this.state.encryptKeyConfirm || '' } />

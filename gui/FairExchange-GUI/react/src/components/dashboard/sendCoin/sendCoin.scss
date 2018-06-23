@@ -49,3 +49,21 @@
     }
   }
 }
+
+.kv-select-block {
+  position: absolute;
+  top: 18px;
+  left: 200px;
+
+  button {
+    padding: 0 11px;
+    background-color: #fff;
+
+    &.active {
+      background-color: #e0e0e0;
+      border-color: #e0e0e0;
+      cursor: default;
+      pointer-events: none;
+    }
+  }
+}

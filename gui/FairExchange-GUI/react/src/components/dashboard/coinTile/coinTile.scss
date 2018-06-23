@@ -57,3 +57,16 @@
     }
   }
 }
+
+.icon {
+  &.staking {
+    font-weight: bold;
+    font-size: 16px;
+  }
+}
+
+.custom-ac-icon {
+  position: absolute;
+  margin-top: -26px;
+  margin-left: 14px;
+}

@@ -20,6 +20,7 @@ import {
   DASHBOARD_REMOVE_COIN,
   DASHBOARD_ACTIVE_COIN_NET_PEERS,
   DASHBOARD_ACTIVE_COIN_NET_TOTALS,
+  KV_HISTORY,
 } from '../actions/storeType';
 
 // TODO: refactor current coin props copy on change

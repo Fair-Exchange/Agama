@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Config from '../../../config';
-import { translate } from '../../../translate/translate';
-import { secondsToString } from '../../../util/time';
+import translate from '../../../translate/translate';
 import {
   triggerToaster,
   sendNativeTx,
@@ -11,7 +10,10 @@ import {
   shepherdElectrumSend,
   shepherdElectrumSendPreflight,
   shepherdGetRemoteBTCFees,
+  shepherdGetLocalBTCFees,
+  shepherdGetRemoteTimestamp,
   copyString,
+  loginWithPin,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import {
@@ -20,15 +22,20 @@ import {
   SendFormRender,
   _SendFormRender,
 } from './sendCoin.render';
-import { isPositiveNumber } from '../../../util/number';
 import mainWindow from '../../../util/mainWindow';
-import explorerList from '../../../util/explorerList';
 import Slider, { Range } from 'rc-slider';
 import ReactTooltip from 'react-tooltip';
+import {
+  secondsToString,
+  checkTimestamp,
+} from 'safewallet-wallet-lib/src/time';
+import { explorerList } from 'safewallet-wallet-lib/src/coin-helpers';
+import { isPositiveNumber } from 'safewallet-wallet-lib/src/utils';
 
-// TODO: - add links to explorers
-//       - render z address trim
-//       - handle click outside
+const { shell } = window.require('electron');
+const SPV_MAX_LOCAL_TIMESTAMP_DEVIATION = 60; // seconds
+
+// TODO: - render z address trim
 
 const _feeLookup = [
   'fastestFee',
@@ -61,6 +68,13 @@ class SendCoin extends React.Component {
       btcFeesSize: 0,
       btcFeesTimeBasedStep: 1,
       spvPreflightRes: null,
+      kvSend: false,
+      kvSendTag: '',
+      kvSendTitle: '',
+      kvSendContent: '',
+      kvHex: '',
+      pin: '',
+      noUtxo: false,
     };
     this.defaultState = JSON.parse(JSON.stringify(this.state));
     this.updateInput = this.updateInput.bind(this);
@@ -79,6 +93,48 @@ class SendCoin extends React.Component {
     this.fetchBTCFees = this.fetchBTCFees.bind(this);
     this.onSliderChange = this.onSliderChange.bind(this);
     this.onSliderChangeTime = this.onSliderChangeTime.bind(this);
+    this.toggleKvSend = this.toggleKvSend.bind(this);
+    this.verifyPin = this.verifyPin.bind(this);
+    //this.loadTestData = this.loadTestData.bind(this);
+  }
+
+  verifyPin() {
+    loginWithPin(this.state.pin, mainWindow.pinAccess)
+    .then((res) => {
+      if (res.msg === 'success') {
+        this.refs.pin.value = '';
+
+        this.setState({
+          pin: '',
+        });
+
+        this.changeSendCoinStep(2);
+      }
+    });
+  }
+
+  /*loadTestData() {
+    this.setState({
+      kvSendTag: 'test',
+      kvSendTitle: 'This is a test kv',
+      kvSendContent: 'test test test test',
+    });
+  }*/
+
+  toggleKvSend() {
+    if (this.state.kvSend) {
+      this.setState({
+        kvSend: !this.state.kvSend,
+        amount: '',
+        sendTo: '',
+      });
+    } else {
+      this.setState({
+        kvSend: !this.state.kvSend,
+        amount: 0.0001,
+        sendTo: this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub,
+      });
+    }
   }
 
   setSendAmountAll() {
@@ -88,9 +144,16 @@ class SendCoin extends React.Component {
     let _fees = mainWindow.spvFees;
     _fees.BTC = 0;
 
-    this.setState({
-      amount: Number((0.00000001 * (_balanceSats - _fees[this.props.ActiveCoin.coin])).toFixed(8)),
-    });
+    if (this.props.ActiveCoin.mode === 'native' &&
+        this.state.sendFrom) {
+      this.setState({
+        amount: Number(this.state.sendFromAmount) - 0.0001,
+      });
+    } else {
+      this.setState({
+        amount: Number((0.00000001 * (_balanceSats - _fees[this.props.ActiveCoin.coin])).toFixed(8)),
+      });
+    }
   }
 
   setSendToSelf() {
@@ -105,25 +168,7 @@ class SendCoin extends React.Component {
 
   openExplorerWindow(txid) {
     const url = explorerList[this.props.ActiveCoin.coin].split('/').length - 1 > 2 ? `${explorerList[this.props.ActiveCoin.coin]}${txid}` : `${explorerList[this.props.ActiveCoin.coin]}/tx/${txid}`;
-    const remote = window.require('electron').remote;
-    const BrowserWindow = remote.BrowserWindow;
-
-    const externalWindow = new BrowserWindow({
-      width: 1280,
-      height: 800,
-      title: `${translate('INDEX.LOADING')}...`,
-      icon: remote.getCurrentWindow().iguanaIcon,
-      webPreferences: {
-        nodeIntegration: false,
-      },
-    });
-
-    externalWindow.loadURL(url);
-    externalWindow.webContents.on('did-finish-load', () => {
-      setTimeout(() => {
-        externalWindow.show();
-      }, 40);
-    });
+    return shell.openExternal(url);
   }
 
   SendFormRender() {
@@ -162,6 +207,24 @@ class SendCoin extends React.Component {
     if (this.props.ActiveCoin.activeSection !== props.ActiveCoin.activeSection &&
         this.props.ActiveCoin.activeSection !== 'send') {
       this.fetchBTCFees();
+
+      if (this.props.ActiveCoin.mode === 'spv') {
+        shepherdGetRemoteTimestamp()
+        .then((res) => {
+          if (res.msg === 'success') {
+            if (Math.abs(checkTimestamp(res.result)) > SPV_MAX_LOCAL_TIMESTAMP_DEVIATION) {
+              Store.dispatch(
+                triggerToaster(
+                  translate('SEND.CLOCK_OUT_OF_SYNC'),
+                  translate('TOASTR.WALLET_NOTIFICATION'),
+                  'warning',
+                  false
+                )
+              );
+            }
+          }
+        });
+      }
     }
   }
 
@@ -233,8 +296,7 @@ class SendCoin extends React.Component {
     let updatedState;
 
     if (_addresses &&
-        (!_addresses.private ||
-        _addresses.private.length === 0)) {
+        (!_addresses.private || _addresses.private.length === 0)) {
       updatedState = {
         renderAddressDropdown: false,
         lastSendToResponse: props.ActiveCoin.lastSendToResponse,
@@ -439,13 +501,48 @@ class SendCoin extends React.Component {
             btcFeesSize: this.state.btcFeesType === 'advanced' ? res.result.electrum[this.state.btcFeesAdvancedStep] : res.result.recommended[_feeLookup[this.state.btcFeesTimeBasedStep]],
           });
         } else {
-          // TODO: fallback to local electrum
+          shepherdGetLocalBTCFees()
+          .then((res) => {
+            if (res.msg === 'success') {
+              // TODO: check, approx fiat value
+              this.setState({
+                btcFees: res.result,
+                btcFeesSize: this.state.btcFeesType === 'advanced' ? res.result.electrum[this.state.btcFeesAdvancedStep] : res.result.recommended[_feeLookup[this.state.btcFeesTimeBasedStep]],
+              });
+            } else {
+              Store.dispatch(
+                triggerToaster(
+                  translate('SEND.CANT_GET_BTC_FEES'),
+                  translate('TOASTR.WALLET_NOTIFICATION'),
+                  'error'
+                )
+              );
+            }
+          });
         }
       });
     }
   }
 
   changeSendCoinStep(step, back) {
+    if (this.props.ActiveCoin.mode === 'spv') {
+      shepherdGetRemoteTimestamp()
+      .then((res) => {
+        if (res.msg === 'success') {
+          if (Math.abs(checkTimestamp(res.result)) > SPV_MAX_LOCAL_TIMESTAMP_DEVIATION) {
+            Store.dispatch(
+              triggerToaster(
+                translate('SEND.CLOCK_OUT_OF_SYNC'),
+                translate('TOASTR.WALLET_NOTIFICATION'),
+                'warning',
+                false
+              )
+            );
+          }
+        }
+      });
+    }
+
     if (step === 0) {
       this.fetchBTCFees();
 
@@ -454,6 +551,8 @@ class SendCoin extends React.Component {
           currentStep: 0,
           spvVerificationWarning: false,
           spvPreflightSendInProgress: false,
+          pin: '',
+          noUtxo: false,
         });
       } else {
         Store.dispatch(clearLastSendToResponseState());
@@ -466,9 +565,26 @@ class SendCoin extends React.Component {
       if (!this.validateSendFormData()) {
         return;
       } else {
+        let kvHex;
+
+        if (this.state.kvSend) {
+          const kvEncode = mainWindow.kvEncode({
+            tag: this.state.kvSendTag,
+            content: {
+              title: this.state.kvSendTitle,
+              version: '01',
+              body: this.state.kvSendContent,
+            },
+          });
+
+          // console.warn(kvEncode);
+          kvHex = kvEncode;
+        }
+
         this.setState(Object.assign({}, this.state, {
           spvPreflightSendInProgress: this.props.ActiveCoin.mode === 'spv' ? true : false,
           currentStep: step,
+          kvHex,
         }));
 
         // spv pre tx push request
@@ -478,7 +594,9 @@ class SendCoin extends React.Component {
             this.state.amount * 100000000,
             this.state.sendTo,
             this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub,
-            this.props.ActiveCoin.coin === 'BTC' ? this.state.btcFeesSize : null
+            this.props.ActiveCoin.coin === 'BTC' ? this.state.btcFeesSize : null,
+            this.state.kvSend,
+            kvHex,
           )
           .then((sendPreflight) => {
             if (sendPreflight &&
@@ -496,6 +614,7 @@ class SendCoin extends React.Component {
             } else {
               this.setState(Object.assign({}, this.state, {
                 spvPreflightSendInProgress: false,
+                noUtxo: sendPreflight.result === 'no valid utxo' ? true : false,
               }));
             }
           });
@@ -543,7 +662,9 @@ class SendCoin extends React.Component {
             this.state.amount * 100000000,
             this.state.sendTo,
             this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub,
-            this.props.ActiveCoin.coin === 'BTC' ? this.state.btcFeesSize : null
+            this.props.ActiveCoin.coin === 'BTC' ? this.state.btcFeesSize : null,
+            this.state.kvSend,
+            this.state.kvHex,
           )
         );
       }
@@ -570,7 +691,7 @@ class SendCoin extends React.Component {
           )
         );
         valid = false;
-      } else if (Number(_amountSats) < _fees[this.props.ActiveCoin.coin]) {
+      } else if (Number(_amountSats) < _fees[this.props.ActiveCoin.coin] && !this.state.kvSend) {
         Store.dispatch(
           triggerToaster(
             `${translate('SEND.AMOUNT_IS_TOO_SMALL', this.state.amount)}, ${translate('SEND.MIN_AMOUNT_IS', this.props.ActiveCoin.coin)} ${Number(_fees[this.props.ActiveCoin.coin] * 0.00000001)}`,
@@ -590,7 +711,7 @@ class SendCoin extends React.Component {
       if (_validateAddress === 'Invalid pub address') {
         _msg = _validateAddress;
       } else if (!_validateAddress) {
-        _msg = `${this.state.sendTo} is not a valid ${this.props.ActiveCoin.coin} pub address`;
+        _msg = `${this.state.sendTo} ${translate('SEND.VALIDATION_IS_NOT_VALID_ADDR_P1')} ${this.props.ActiveCoin.coin} ${translate('SEND.VALIDATION_IS_NOT_VALID_ADDR_P2')}`;
       }
 
       if (_msg) {
@@ -699,14 +820,18 @@ class SendCoin extends React.Component {
     if (this.props.ActiveCoin.mode === 'spv' &&
         this.props.ActiveCoin.coin === 'BTC' &&
         !this.state.btcFees.lastUpdated) {
-      return (<div className="col-lg-6 form-group form-material">Fetching BTC fees...</div>);
-    } else if (this.props.ActiveCoin.mode === 'spv' && this.props.ActiveCoin.coin === 'BTC' && this.state.btcFees.lastUpdated) {
+      return (<div className="col-lg-6 form-group form-material">{ translate('SEND.FETCHING_BTC_FEES') }...</div>);
+    } else if (
+      this.props.ActiveCoin.mode === 'spv' &&
+      this.props.ActiveCoin.coin === 'BTC' &&
+      this.state.btcFees.lastUpdated
+    ) {
       const _min = 0;
       const _max = this.state.btcFees.electrum.length - 1;
       const _confTime = [
-        'within less than 30 min',
-        'within 30 min',
-        'within 60 min',
+        translate('SEND.CONF_TIME_LESS_THAN_30_MIN'),
+        translate('SEND.CONF_TIME_WITHIN_3O_MIN'),
+        translate('SEND.CONF_TIME_WITHIN_60_MIN'),
       ];
       const _minTimeBased = 0;
       const _maxTimeBased = 3;
@@ -721,12 +846,12 @@ class SendCoin extends React.Component {
         <div className="col-lg-12 form-group form-material">
           <div>
             <div>
-              Fee
+              { translate('SEND.FEE') }
               <span>
                 <i
                   className="icon fa-question-circle settings-help"
                   data-html={ true }
-                  data-tip={ this.state.btcFeesType === 'advanced' ? 'Electrum based fee estimates may not be as accurate as bitcoinfees.earn.com.<br />It is advised to use fast/average/slow options if you want your transaction to be confirmed within 60 min time frame.' : 'Estimates are based on bitcoinfees.earn.com data.<br />Around 90% probability for a transaction to be confirmed within desired time frame.' }></i>
+                  data-tip={ this.state.btcFeesType === 'advanced' ? translate('SEND.BTC_FEES_DESC_P1') + '.<br />' + translate('SEND.BTC_FEES_DESC_P2') : translate('SEND.BTC_FEES_DESC_P3') + '<br />' + translate('SEND.BTC_FEES_DESC_P4') }></i>
                 <ReactTooltip
                   effect="solid"
                   className="text-left" />
@@ -734,10 +859,10 @@ class SendCoin extends React.Component {
             </div>
             <div className="send-target-block">
               { this.state.btcFeesType !== 'advanced' &&
-                <span>Confirmation time <strong>{ _confTime[this.state.btcFeesTimeBasedStep] }</strong></span>
+                <span>{ translate('SEND.CONF_TIME') } <strong>{ _confTime[this.state.btcFeesTimeBasedStep] }</strong></span>
               }
               { this.state.btcFeesType === 'advanced' &&
-                <span>Advanced selection</span>
+                <span>{ translate('SEND.ADVANCED_SELECTION') }</span>
               }
             </div>
             <Slider
@@ -755,7 +880,9 @@ class SendCoin extends React.Component {
               }} />
             { this.state.btcFeesType === 'advanced' &&
               <div className="margin-bottom-20">
-                <div className="send-target-block">Estimated to be included within the next <strong>{this.state.btcFeesAdvancedStep + 1} {(this.state.btcFeesAdvancedStep + 1) > 1 ? 'blocks' : 'block'}</strong></div>
+                <div className="send-target-block">
+                  { translate('SEND.ESTIMATED_TO_BE_INCLUDED_P1') } <strong>{this.state.btcFeesAdvancedStep + 1} {(this.state.btcFeesAdvancedStep + 1) > 1 ? translate('SEND.ESTIMATED_TO_BE_INCLUDED_P2') : translate('SEND.ESTIMATED_TO_BE_INCLUDED_P3') }</strong>
+                </div>
                 <Slider
                   onChange={ this.onSliderChange }
                   defaultValue={ this.state.btcFeesAdvancedStep }
@@ -764,7 +891,9 @@ class SendCoin extends React.Component {
               </div>
             }
             { this.state.btcFeesSize > 0 &&
-              <div className="margin-top-10">Fee per byte {this.state.btcFeesSize}, per KB {this.state.btcFeesSize * 1024}</div>
+              <div className="margin-top-10">
+                { translate('SEND.FEE_PER_BYTE') } {this.state.btcFeesSize}, { translate('SEND.PER_KB') } { this.state.btcFeesSize * 1024 }
+              </div>
             }
           </div>
         </div>

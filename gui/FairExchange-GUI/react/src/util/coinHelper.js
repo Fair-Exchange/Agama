@@ -1,4 +1,6 @@
-export function getCoinTitle(coin) {
+ import { safeAssetChains } from 'safewallet-wallet-lib/src/coin-helpers'
+
+export const getCoinTitle = (coin) => {
   let coinlogo;
   let coinname;
   let transparentBG = false;
@@ -6,197 +8,12 @@ export function getCoinTitle(coin) {
   let hideTitle = false;
 
   switch (coin) {
-    case 'NINJA':
-      coinlogo = 'ninja';
-      coinname = 'NINJA';
-      break;
-    case 'VOTE2018':
-      coinlogo = 'vote2018';
-      coinname = 'VOTE2018';
-      break;
-    case 'GRS':
-      coinlogo = 'grs';
-      coinname = 'Groestlcoin';
-      break;
-    case 'DNR':
-      coinlogo = 'dnr';
-      coinname = 'Denarius';
-      break;
-    case 'BTCZ':
-      coinlogo = 'btcz';
-      coinname = 'BitcoinZ';
-      break;
-    case 'QTUM':
-      coinlogo = 'qtum';
-      coinname = 'Qtum';
-      break;
-    case 'BTX':
-      coinlogo = 'btx';
-      coinname = 'Bitcore';
-      break;
-    case 'HODLC':
-      coinlogo = 'hodlc';
-      coinname = 'Hodl coin';
-      break;
-    case 'BEER':
-      coinlogo = 'beer';
-      coinname = 'BEER (Test coin)';
-      break;
-    case 'PIZZA':
-      coinlogo = 'pizza';
-      coinname = 'PIZZA (Test coin)';
-      break;
-    case 'XMY':
-      coinlogo = 'xmy';
-      coinname = 'Myriad';
-      break;
-    case 'ZCL':
-      coinlogo = 'zcl';
-      coinname = 'Zclassic';
-      break;
-    case 'HUSH':
-      coinlogo = 'hush';
-      coinname = 'Hush';
-      break;
-    case 'BCH':
-      coinlogo = 'bch';
-      coinname = 'BitcoinCash';
-      break;
-    case 'BLK':
-      coinlogo = 'blk';
-      coinname = 'Blackcoin';
-      break;
-    case 'SIB':
-      coinlogo = 'sib';
-      coinname = 'Sibcoin';
-      break;
-    case 'VIA':
-      coinlogo = 'via';
-      coinname = 'Viacoin';
-      break;
-    case 'VTC':
-      coinlogo = 'vtc';
-      coinname = 'Vertcoin';
-      break;
-    case 'MONA':
-      coinlogo = 'mona';
-      coinname = 'Monacoin';
-      break;
-    case 'ARG':
-      coinlogo = 'arg';
-      coinname = 'Argentum';
-      break;
-    case 'FAIR':
-      coinlogo = 'fair';
-      coinname = 'Faircoin';
-      break;
-    case 'DASH':
-      coinlogo = 'dash';
-      coinname = 'Dash';
-      break;
-    case 'CRW':
-      coinlogo = 'crw';
-      coinname = 'Crown';
-      break;
-    case 'BTG':
-      coinlogo = 'btg';
-      coinname = 'BitcoinGold';
-      break;
-    case 'CHIPS':
-      coinlogo = 'chips';
-      coinname = 'Chips';
-      break;
-    case 'BTC':
-      coinlogo = 'btc';
-      coinname = 'Bitcoin';
-      break;
-    case 'BTCD':
-      coinlogo = 'bitcoindark';
-      coinname = 'BitcoinDark';
-      break;
-    case 'LTC':
-      coinlogo = 'ltc';
-      coinname = 'Litecoin';
-      break;
-    case 'VPN':
-      coinlogo = 'vpncoin';
-      coinname = 'VPNcoin';
-      break;
-    case 'SYS':
-      coinlogo = 'syscoin';
-      coinname = 'Syscoin';
-      break;
-    case 'ZEC':
-      coinlogo = 'zec';
-      coinname = 'Zcash';
-      break;
-    case 'NMC':
-      coinlogo = 'nmc';
-      coinname = 'Namecoin';
-      break;
-    case 'DEX':
-      coinlogo = 'dex';
-      coinname = 'DEX';
-      break;
-    case 'DOGE':
-      coinlogo = 'doge';
-      coinname = 'Dogecoin';
-      break;
-    case 'DGB':
-      coinlogo = 'dgb';
-      coinname = 'Digibyte';
-      break;
-    case 'MZC':
-      coinlogo = 'mazacoin';
-      coinname = 'Mazacoin';
-      break;
-    case 'UNO':
-      coinlogo = 'unobtanium';
-      coinname = 'Unobtanium';
-      break;
-    case 'ZET':
-      coinlogo = 'zetacoin';
-      coinname = 'Zetacoin';
-      break;
-    case 'MNZ':
-      coinlogo = 'mnz';
-      coinname = 'Monaize';
-      break;
     case 'SAFE':
       hideTitle = true;
       titleBG = true;
       transparentBG = true;
       coinlogo = 'safe';
       coinname = 'Safecoin';
-      break;
-    case 'BTM':
-      coinlogo = 'bitmark';
-      coinname = 'Bitmark';
-      break;
-    case 'CARB':
-      coinlogo = 'carboncoin';
-      coinname = 'Carboncoin';
-      break;
-    case 'ANC':
-      coinlogo = 'anoncoin';
-      coinname = 'AnonCoin';
-      break;
-    case 'FRK':
-      coinlogo = 'franko';
-      coinname = 'Franko';
-      break;
-    case 'GAME':
-      coinlogo = 'GAME';
-      coinname = 'GameCredits';
-      break;
-    case 'SUPERNET':
-      titleBG = true;
-      coinlogo = 'SUPERNET';
-      coinname = 'SUPERNET';
-      break;
-    case 'REVS':
-      coinlogo = 'REVS';
-      coinname = 'REVS';
       break;
     case 'WLC':
       titleBG = true;
@@ -216,30 +33,6 @@ export function getCoinTitle(coin) {
       coinlogo = 'JUMBLR';
       coinname = 'JUMBLR';
       break;
-    case 'BET':
-      coinlogo = 'BET';
-      coinname = 'BET';
-      break;
-    case 'CRYPTO':
-      coinlogo = 'CRYPTO';
-      coinname = 'CRYPTO';
-      break;
-    case 'HODL':
-      coinlogo = 'HODL';
-      coinname = 'HODL';
-      break;
-    case 'MSHARK':
-      coinlogo = 'SHARK';
-      coinname = 'MSHARK';
-      break;
-    case 'BOTS':
-      coinlogo = 'BOTS';
-      coinname = 'BOTS';
-      break;
-    case 'MGW':
-      coinlogo = 'MGW';
-      coinname = 'MultiGateway';
-      break;
     case 'MVP':
       hideTitle = true;
       titleBG = true;
@@ -247,19 +40,11 @@ export function getCoinTitle(coin) {
       coinlogo = 'MVP';
       coinname = 'MVP Lineup';
       break;
-    case 'KV':
-      coinlogo = 'KV';
-      coinname = 'KV';
-      break;
     case 'CEAL':
       titleBG = true;
       transparentBG = true;
       coinlogo = 'CEAL';
       coinname = 'CEAL NET';
-      break;
-    case 'COQUI':
-      coinlogo = 'COQUI';
-      coinname = 'COQUI';
       break;
     case 'MESH':
       hideTitle = true;
@@ -267,18 +52,6 @@ export function getCoinTitle(coin) {
       transparentBG = true;
       coinlogo = 'MESH';
       coinname = 'SpaceMesh';
-      break;
-    case 'AXO':
-      coinlogo = 'AXO';
-      coinname = 'AXO';
-      break;
-    case 'ETOMIC':
-      coinlogo = 'ETOMIC';
-      coinname = 'ETOMIC';
-      break;
-    case 'BTCH':
-      coinlogo = 'BTCH';
-      coinname = 'BTCH';
       break;
     case 'USD':
       titleBG = true;
@@ -468,7 +241,7 @@ export function getCoinTitle(coin) {
   };
 }
 
-export function getModeInfo(mode) {
+export const getModeInfo = (mode) => {
   let modecode;
   let modetip;
   let modecolor;
@@ -480,8 +253,8 @@ export function getModeInfo(mode) {
       modecolor = 'primary';
       break;
     case 'spv':
-      modecode = 'SPV';
-      modetip = 'SPV';
+      modecode = 'Lite';
+      modetip = 'Lite';
       modecolor = 'info';
       break;
     case 'full':
@@ -508,60 +281,142 @@ export function getModeInfo(mode) {
   };
 }
 
-export function coindList() {
+export const coindList = () => {
   const _coins = [
     'SAFE',
     'CHIPS',
-    'BET',
-    'BOTS',
-    'CEAL',
-    'COQUI',
-    'CRYPTO',
-    'HODL',
-    'DEX',
-    'JUMBLR',
-    'KV',
-    'MGW',
-    'MVP',
-    'MNZ',
-    'PANGEA',
-    'REVS',
-    'MSHARK',
-    'MESH',
-    'SUPERNET',
-    'WLC',
-    'AXO',
-    'ETOMIC',
-    'BTCH'
-  ];
+  ].concat(safeAssetChains);
 
   return _coins;
 }
 
 export const isSafecoinCoin = (coin) => {
-  if (coin === 'SUPERNET' ||
-      coin === 'REVS' ||
-      coin === 'PANGEA' ||
-      coin === 'DEX' ||
-      coin === 'JUMBLR' ||
-      coin === 'BET' ||
-      coin === 'CRYPTO' ||
-      coin === 'COQUI' ||
-      coin === 'HODL' ||
-      coin === 'MSHARK' ||
-      coin === 'BOTS' ||
-      coin === 'MGW' ||
-      coin === 'MVP' ||
-      coin === 'KV' ||
-      coin === 'CEAL' ||
-      coin === 'MESH' ||
-      coin === 'WLC' ||
-      coin === 'MNZ' ||
-      coin === 'CHIPS' ||
-      coin === 'SAFE' ||
-      coin === 'AXO' ||
-      coin === 'ETOMIC' ||
-      coin === 'BTCH') {
-    return true;
-  }
+  return (safeAssetChains.find((element) => {
+    return element === coin.toUpperCase();
+  }));
 }
+
+export const cryptoCoins = [
+  'SAFE',
+  'CHIPS',
+  'STRAT',
+  'TOA',
+  'USC',
+  'VPN',
+  'WC',
+  'NRG',
+  'ABY',
+  'VOT',
+  'BDL',
+  'BTCP',
+  'MAC',
+  'XWC',
+  'XVC',
+  'SMART',
+  'CRAVE',
+  'ACC',
+  'AC',
+  'AUR',
+  'BCA',
+  'CLAM',
+  'CLUB',
+  'DMD',
+  'EXCL',
+  'FTC',
+  'FLASH',
+  'NLG',
+  'LCC',
+  'MNX',
+  'NAV',
+  'NEOS',
+  'OK',
+  'OMNI',
+  'PIVX',
+  'RDD',
+  'UNO',
+  'XVG',
+  'VIVO',
+  'EFL',
+  'GBX',
+  'BSD',
+  'LBC',
+  'ERC',
+  'BATA',
+  'EMC2',
+  'SYS',
+  'IOP',
+  'ZEN',
+  'XZC',
+  'FJC',
+  'GAME',
+  'BCBC',
+  'BTG',
+  'BCH',
+  'BTC',
+  'DASH',
+  'DNR',
+  'DGB',
+  'FAIR',
+  'ARG',
+  'LTC',
+  'MONA',
+  'NMC',
+  'VTC',
+  'VIA',
+  'SIB',
+  'BLK',
+  'DOGE',
+  'ZEC',
+  'HUSH',
+  'SNG',
+  'ZCL',
+  'XMY',
+  'GRS',
+  'HODLC',
+  'BTX',
+  'QTUM',
+  'BTCZ',
+  'MZC',
+  'ZET',
+  'SLR',
+  'SMLY',
+  'RBY',
+  'VOX',
+  'PUT',
+  'POT',
+  'POSW',
+  'PINK',
+  'PSB',
+  'NSR',
+  'NVC',
+  'NYC',
+  'NRO',
+  'LYNX',
+  'LINX',
+  'LDCN',
+  'KOBO',
+  'IXC',
+  'INSN',
+  'THC',
+  'HNC',
+  'GRC',
+  'GCR',
+  'FRST',
+  'EDRC',
+  'ECN',
+  'DGC',
+  'DEFC',
+  'CMP',
+  'CCN',
+  'CDN',
+  'BRIT',
+  'XBC',
+  'BELA',
+  'USNBT',
+  'ONX',
+  'JBS',
+  'SLM',
+  'AXE',
+  'PPC',
+  'SDC'
+];

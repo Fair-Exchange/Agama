@@ -1,6 +1,8 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import ReactTooltip from 'react-tooltip';
+import { acConfig } from '../../addcoin/payload';
+import mainWindow from '../../../util/mainWindow';
 
 const CoinTileItemRender = function() {
   const { item } = this.props;
@@ -21,7 +23,7 @@ const CoinTileItemRender = function() {
               alt={ item.coinname }/>
           </a>
           <div className="coin-name">
-            { item.coinname } ({ item.coinlogo.toUpperCase() })
+            { item.coinname } { item.coinlogo !== 'BEER' && item.coinlogo !== 'PIZZA' && item.coinlogo !== 'VOTE2018' && <span>({ item.coinlogo.toUpperCase() })</span> }
           </div>
         </div>
       </div>
@@ -35,6 +37,42 @@ const CoinTileItemRender = function() {
           effect="solid"
           className="text-left" />
       </button>
+      { acConfig[item.coin.toUpperCase()] &&
+        acConfig[item.coin.toUpperCase()]['ac_reward'] &&
+        !acConfig[item.coin.toUpperCase()]['ac_stake'] &&
+        <span>
+          <i
+            data-tip={ translate('INDEX.MINING_IS_ENABLED') }
+            className="icon fa-gavel custom-ac-icon"></i>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </span>
+      }
+      { acConfig[item.coin.toUpperCase()] &&
+        acConfig[item.coin.toUpperCase()]['ac_stake'] &&
+        (!mainWindow.getPubkeys()[item.coin.toLowerCase()] || !mainWindow.getPubkeys()[item.coin.toLowerCase()].pub) &&
+        <span>
+          <i
+            data-tip={ translate('INDEX.STAKING_IS_DISABLED') }
+            className="icon fa-strikethrough custom-ac-icon"></i>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </span>
+      }
+      { acConfig[item.coin.toUpperCase()] &&
+        acConfig[item.coin.toUpperCase()]['ac_stake'] &&
+        (mainWindow.getPubkeys()[item.coin.toLowerCase()] && mainWindow.getPubkeys()[item.coin.toLowerCase()].pub) &&
+        <span>
+          <span
+            data-tip={ translate('INDEX.STAKING_IS_ENABLED') }
+            className="icon staking custom-ac-icon">S</span>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </span>
+      }
       { this.state.toggledCoinMenu &&
         this.state.toggledCoinMenu === item.coin &&
         <div className="coin-tile-context-menu">

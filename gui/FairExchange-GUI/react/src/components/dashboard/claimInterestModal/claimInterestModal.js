@@ -14,10 +14,10 @@ import {
   shepherdElectrumSendPromise,
   validateAddressPromise,
 } from '../../../actions/actionCreators';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import {
   ClaimInterestModalRender,
-  _ClaimInterestTableRender
+  _ClaimInterestTableRender,
 } from './claimInterestModal.render';
 
 // TODO: promises
@@ -109,7 +109,8 @@ class ClaimInterestModal extends React.Component {
       shepherdElectrumListunspent(
         this.props.ActiveCoin.coin,
         this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub
-      ).then((json) => {
+      )
+      .then((json) => {
         if (json !== 'error' &&
             json.result &&
             typeof json.result !== 'string') {
@@ -199,7 +200,8 @@ class ClaimInterestModal extends React.Component {
       this.props.ActiveCoin.balance.balanceSats,
       this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub,
       this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub
-    ).then((res) => {
+    )
+    .then((res) => {
       if (res.msg === 'error') {
         Store.dispatch(
           triggerToaster(
@@ -235,7 +237,8 @@ class ClaimInterestModal extends React.Component {
           this.props.ActiveCoin.balance.balanceSats,
           this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub,
           this.props.Dashboard.electrumCoins[this.props.ActiveCoin.coin].pub
-        ).then((sendPreflight) => {
+        )
+        .then((sendPreflight) => {
           if (sendPreflight &&
               sendPreflight.msg === 'success') {
             this.setState(Object.assign({}, this.state, {
@@ -274,12 +277,19 @@ class ClaimInterestModal extends React.Component {
                 'error'
               )
             );
-          } else if (json.result && !json.result.iswatchonly && json.result.ismine && json.result.isvalid && !json.result.isscript) {
+          } else if (
+            json.result &&
+            !json.result.iswatchonly &&
+            json.result.ismine &&
+            json.result.isvalid &&
+            !json.result.isscript
+          ) {
             sendToAddressPromise(
               this.props.ActiveCoin.coin,
               this.state.selectedAddress,
               this.props.ActiveCoin.balance.transparent
-            ).then((json) => {
+            )
+            .then((json) => {
               if (json.error &&
                   json.error.code) {
                 Store.dispatch(
@@ -289,7 +299,11 @@ class ClaimInterestModal extends React.Component {
                     'error'
                   )
                 );
-              } else if (json.result && json.result.length && json.result.length === 64) {
+              } else if (
+                json.result &&
+                json.result.length &&
+                json.result.length === 64
+              ) {
                 Store.dispatch(
                   triggerToaster(
                     `${translate('TOASTR.CLAIM_INTEREST_BALANCE_SENT_P1')} ${this.state.selectedAddress}. ${translate('TOASTR.CLAIM_INTEREST_BALANCE_SENT_P2')}`,
@@ -319,7 +333,10 @@ class ClaimInterestModal extends React.Component {
     if (this.state.transactionsList &&
         this.state.transactionsList.length) {
       return true;
-    } else if (!this.state.transactionsList || !this.state.transactionsList.length) {
+    } else if (
+      !this.state.transactionsList ||
+      !this.state.transactionsList.length
+    ) {
       return false;
     }
   }

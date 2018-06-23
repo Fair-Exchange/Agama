@@ -7,9 +7,10 @@ export function Login(state = {
 
   switch (action.type) {
     case GET_PIN_LIST:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         pinList: action.pinList,
-      });
+      };
     default:
       return state;
   }

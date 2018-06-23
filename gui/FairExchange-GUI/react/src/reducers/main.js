@@ -4,12 +4,14 @@ import {
   ACTIVE_HANDLE,
   DISPLAY_LOGIN_SETTINGS_MODAL,
   DISPLAY_NOTARY_ELECTIONS_MODAL,
+  BLUR_SENSITIVE_DATA,
 } from '../actions/storeType';
 
 export function Main(state = {
   isLoggedIn: false,
   displayLoginSettingsModal: false,
   displayNotaryElectionsModal: false,
+  blurSensitiveData: false,
   total: 0,
 }, action) {
   switch (action.type) {
@@ -39,6 +41,11 @@ export function Main(state = {
       return {
         ...state,
         displayNotaryElectionsModal: action.displayNotaryElectionsModal,
+      };
+    case BLUR_SENSITIVE_DATA:
+      return {
+        ...state,
+        blurSensitiveData: action.blurSensitiveData,
       };
     default:
       return state;

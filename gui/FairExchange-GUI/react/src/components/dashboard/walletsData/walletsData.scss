@@ -110,3 +110,18 @@
   display: block;
   margin: 0 auto;
 }
+
+.tx-history-vin-len-err {
+  background: #FF6600;
+  color: #fff;
+  border-radius: 50%;
+  padding: 1px 4px;
+  margin-left: 10px;
+}
+
+.btn-switch-kv {
+  position: absolute;
+  left: 32px;
+  top: 62px;
+  padding: 0 11px;
+}

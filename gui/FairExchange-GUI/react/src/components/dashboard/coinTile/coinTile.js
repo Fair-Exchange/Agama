@@ -2,16 +2,28 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   getCoinTitle,
-  getModeInfo
+  getModeInfo,
+  isSafecoinCoin,
 } from '../../../util/coinHelper';
 import CoinTileItem from './coinTileItem';
+import translate from '../../../translate/translate';
 
 import CoinTileRender from './coinTile.render';
 
 class CoinTile extends React.Component {
   constructor() {
     super();
+    this.state = {
+      toggledSidebar: false,
+    };
     this.renderTiles = this.renderTiles.bind(this);
+    this.toggleSidebar = this.toggleSidebar.bind(this);
+  }
+
+  toggleSidebar() {
+    this.setState({
+      toggledSidebar: !this.state.toggledSidebar,
+    });
   }
 
   renderTiles() {
@@ -23,16 +35,16 @@ class CoinTile extends React.Component {
     let items = [];
 
     if (allCoins) {
-      modes.map(function(mode) {
-        allCoins[mode].map(function(coin) {
+      modes.map((mode) => {
+        allCoins[mode].map((coin) => {
           const _coinMode = getModeInfo(mode);
           const modecode = _coinMode.code;
           const modetip = _coinMode.tip;
           const modecolor = _coinMode.color;
 
-          const _coinTitle = getCoinTitle(coin);
-          const coinlogo = _coinTitle.logo;
-          const coinname = _coinTitle.name;
+          const _coinTitle = getCoinTitle(coin.toUpperCase());
+          const coinlogo = coin.toUpperCase();
+          const coinname = translate((isSafecoinCoin(coin) ? 'ASSETCHAINS.' : 'CRYPTO.') + coin.toUpperCase());
 
           items.push({
             coinlogo,
@@ -52,7 +64,8 @@ class CoinTile extends React.Component {
         <CoinTileItem
           key={ i }
           i={ i }
-          item={ item } />)
+          item={ item } />
+      )
     );
   }
 
@@ -67,4 +80,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(CoinTile);
-

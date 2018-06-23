@@ -23,7 +23,7 @@ import ClaimInterestModal from '../claimInterestModal/claimInterestModal';
 
 const DashboardRender = function() {
   return (
-    <div className="full-height">
+    <div className={ 'full-height' + (this.props.Main.blurSensitiveData ? ' blur-sensitive-data' : '') }>
       <div
         className={ this.isSectionActive('wallets') ? 'page-main' : '' }
         id="section-dashboard">

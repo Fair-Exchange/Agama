@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import { connect } from 'react-redux';
 import {
   shepherdElectrumCheckServerConnection,
@@ -28,7 +28,8 @@ class SPVServersPanel extends React.Component {
   setElectrumServer(coin) {
     let _server = [
       this.props.Dashboard.electrumCoins[coin].server.ip,
-      this.props.Dashboard.electrumCoins[coin].server.port
+      this.props.Dashboard.electrumCoins[coin].server.port,
+      this.props.Dashboard.electrumCoins[coin].server.proto
     ];
 
     if (this.state &&
@@ -36,14 +37,14 @@ class SPVServersPanel extends React.Component {
       _server = this.state[coin].split(':');
     }
 
-    shepherdElectrumCheckServerConnection(_server[0], _server[1])
+    shepherdElectrumCheckServerConnection(_server[0], _server[1], _server[2])
     .then((res) => {
       if (res.result) {
-        shepherdElectrumSetServer(coin, _server[0], _server[1])
+        shepherdElectrumSetServer(coin, _server[0], _server[1], _server[2])
         .then((serverSetRes) => {
           Store.dispatch(
             triggerToaster(
-              `${coin} SPV server set to ${_server[0]}:${_server[1]}`,
+              `${coin} ${translate('SETTINGS.SPV_SERVER_SET_TO')} ${_server[0]}:${_server[1]}:${_server[2]}`,
               translate('TOASTR.WALLET_NOTIFICATION'),
               'success'
             )
@@ -54,7 +55,7 @@ class SPVServersPanel extends React.Component {
       } else {
         Store.dispatch(
           triggerToaster(
-            `${coin} SPV server ${_server[0]}:${_server[1]} is unreachable!`,
+            `${coin} ${translate('SETTINGS.SPV_SERVER')} ${_server[0]}:${_server[1]}:${_server[2]} ${translate('SETTINGS.IS_UNREACHABLE')}!`,
             translate('TOASTR.WALLET_NOTIFICATION'),
             'error'
           )
@@ -102,7 +103,7 @@ class SPVServersPanel extends React.Component {
                 <select
                   className="form-control form-material"
                   name={ _spvCoins[i] }
-                  value={ (this.state && this.state[_spvCoins[i]]) || this.props.Dashboard.electrumCoins[_spvCoins[i]].server.ip + ':' + this.props.Dashboard.electrumCoins[_spvCoins[i]].server.port }
+                  value={ (this.state && this.state[_spvCoins[i]]) || this.props.Dashboard.electrumCoins[_spvCoins[i]].server.ip + ':' + this.props.Dashboard.electrumCoins[_spvCoins[i]].server.port + ':' + this.props.Dashboard.electrumCoins[_spvCoins[i]].server.proto }
                   onChange={ (event) => this.updateInput(event) }
                   autoFocus>
                   { this.renderServerListSelectorOptions(_spvCoins[i]) }

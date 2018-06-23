@@ -40,7 +40,10 @@ class WalletsNav extends React.Component {
         this.props.ActiveCoin.balance.total &&
         _mode === 'native') {
       _balance = this.props.ActiveCoin.balance.total;
-    } else if (_mode === 'spv' && this.props.ActiveCoin.balance.balance) {
+    } else if (
+      _mode === 'spv' &&
+      this.props.ActiveCoin.balance.balance
+    ) {
       _balance = this.props.ActiveCoin.balance.balance;
     }
 

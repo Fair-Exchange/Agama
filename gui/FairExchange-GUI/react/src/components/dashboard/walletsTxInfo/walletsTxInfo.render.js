@@ -1,8 +1,19 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
-import { secondsToString } from '../../../util/time';
+import translate from '../../../translate/translate';
 import Config from '../../../config';
-import explorerList from '../../../util/explorerList';
+import { secondsToString } from 'safewallet-wallet-lib/src/time';
+import { explorerList } from 'safewallet-wallet-lib/src/coin-helpers';
+
+const renderKvContent = (content) => {
+  return content
+       .replace(/&/g, '&amp;')
+       .replace(/</g, '&lt;')
+       .replace(/>/g, '&gt;')
+       .replace(/"/g, '&quot;')
+       .replace(/'/g, '&#039;')
+       .replace('\n\n', '<br/><br/>')
+       .replace('\n', '<br/>');
+ }
 
 const WalletsTxInfoRender = function(txInfo) {
   return (
@@ -21,6 +32,16 @@ const WalletsTxInfoRender = function(txInfo) {
             <div className="modal-body modal-body-container">
               <div className="panel nav-tabs-horizontal">
                 <ul className="nav nav-tabs nav-tabs-line">
+                  { this.state.txDetails &&
+                    this.state.txDetails.opreturn &&
+                    this.state.txDetails.opreturn.kvDecoded &&
+                    Config.experimentalFeatures &&
+                    <li className={ this.state.activeTab === 4 ? 'active' : '' }>
+                      <a onClick={ () => this.openTab(4) }>
+                        <i className="icon fa-file-text-o"></i>KV info
+                      </a>
+                    </li>
+                  }
                   <li className={ this.state.activeTab === 0 ? 'active' : '' }>
                     <a onClick={ () => this.openTab(0) }>
                       <i className="icon md-balance-wallet"></i>TxID Info
@@ -51,7 +72,7 @@ const WalletsTxInfoRender = function(txInfo) {
                             <tbody>
                               <tr>
                                 <td>{ this.capitalizeFirstLetter(translate('TX_INFO.ADDRESS')) }</td>
-                                <td>
+                                <td className="blur">
                                   { this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.address : this.state.txDetails.details[0].address }
                                 </td>
                               </tr>
@@ -99,7 +120,7 @@ const WalletsTxInfoRender = function(txInfo) {
                               }
                               <tr>
                                 <td>{ this.capitalizeFirstLetter('txid') }</td>
-                                <td>
+                                <td className="blur">
                                   { this.state.txDetails.txid }
                                 </td>
                               </tr>
@@ -131,31 +152,30 @@ const WalletsTxInfoRender = function(txInfo) {
                         <div className="tab-pane active">
                           <table className="table table-striped">
                             <tbody>
-                            }
-                            <tr>
-                              <td>{ this.capitalizeFirstLetter('txid') }</td>
-                              <td>
-                                { txInfo.txid }
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>{ this.capitalizeFirstLetter('walletconflicts') }</td>
-                              <td>
-                                { txInfo.walletconflicts ? txInfo.walletconflicts.length : '' }
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>{ this.capitalizeFirstLetter('vjoinsplit') }</td>
-                              <td>
-                                { txInfo.vjoinsplit }
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>{ this.capitalizeFirstLetter('details') }</td>
-                              <td>
-                                { txInfo.details }
-                              </td>
-                            </tr>
+                              <tr>
+                                <td>{ this.capitalizeFirstLetter('txid') }</td>
+                                <td>
+                                  { txInfo.txid }
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{ this.capitalizeFirstLetter('walletconflicts') }</td>
+                                <td>
+                                  { txInfo.walletconflicts ? txInfo.walletconflicts.length : '' }
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{ this.capitalizeFirstLetter('vjoinsplit') }</td>
+                                <td>
+                                  { txInfo.vjoinsplit }
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{ this.capitalizeFirstLetter('details') }</td>
+                                <td>
+                                  { txInfo.details }
+                                </td>
+                              </tr>
                             </tbody>
                           </table>
                         </div>
@@ -180,6 +200,37 @@ const WalletsTxInfoRender = function(txInfo) {
                             disabled></textarea>
                         </div>
                       }
+                      { this.state.activeTab === 4 &&
+                        Config.experimentalFeatures &&
+                        <div className="tab-pane active">
+                          <table className="table table-striped">
+                            <tbody>
+                              <tr>
+                                <td>{ translate('KV.TAG') }</td>
+                                <td>
+                                  { this.state.txDetails.opreturn.kvDecoded.tag }
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{ translate('KV.TITLE') }</td>
+                                <td>
+                                  { this.state.txDetails.opreturn.kvDecoded.content.title }
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>{ this.capitalizeFirstLetter('time') }</td>
+                                <td>
+                                  { secondsToString(this.props.ActiveCoin.mode === 'spv' ? this.state.txDetails.blocktime : this.state.txDetails.time) }
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <div
+                            className="kv-content padding-top-20"
+                            dangerouslySetInnerHTML={{ __html: renderKvContent(this.state.txDetails.opreturn.kvDecoded.content.body) }}>
+                          </div>
+                        </div>
+                      }
                     </div>
                   }
                   { !this.state.txDetails &&
@@ -201,7 +252,9 @@ const WalletsTxInfoRender = function(txInfo) {
               <button
                 type="button"
                 className="btn btn-default"
-                onClick={ this.toggleTxInfoModal }>{ translate('INDEX.CLOSE') }</button>
+                onClick={ this.toggleTxInfoModal }>
+                { translate('INDEX.CLOSE') }
+              </button>
             </div>
           </div>
         </div>

@@ -4,6 +4,11 @@
   .modal-body {
     max-height: 590px;
     overflow-y: auto;
+    min-height: 320px;
+  }
+
+  .padding-left-none {
+    padding-left: 0;
   }
 
   .multi {
@@ -37,6 +42,19 @@
         }
       }
     }
+  }
+
+  .form-material label.floating-label {
+    color: #757575;
+    left: 16px;
+  }
+  .form-material .form-control.focus~.floating-label,
+  .form-material .form-control:focus~.floating-label {
+    color: #FF6600;
+  }
+  .seed-extra-spaces-warning {
+    right: -3px !important;
+    margin-top: 54px !important;
   }
 }
 

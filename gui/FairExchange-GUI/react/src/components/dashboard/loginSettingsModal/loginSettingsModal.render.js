@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import About from '../about/about';
 import Settings from '../settings/settings';
 
@@ -27,7 +27,9 @@ export const LoginSettingsModalRender = function() {
               <button
                 type="button"
                 className="btn btn-default"
-                onClick={ this.closeLoginSettingsModal }>{ translate('INDEX.CLOSE') }</button>
+                onClick={ this.closeLoginSettingsModal }>
+                { translate('INDEX.CLOSE') }
+              </button>
             </div>
           </div>
         </div>

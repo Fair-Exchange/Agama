@@ -377,3 +377,49 @@ select{
   position: fixed;
   z-index: 99;
 }
+
+.full-width {
+  width: 100%;
+}
+
+.navbar-toolbar .dropdown-menu:not(.dropdown-menu-media) {
+  overflow-y: auto;
+}
+
+.safe-mobile-icon {
+  display: none;
+}
+
+.site-navbar .navbar-brand-logo.hidden-lg {
+  display: none;
+}
+
+.blur-sensitive-data {
+  .blur {
+    filter: blur(4px);
+  }
+}
+
+label,
+button,
+.toggle-label,
+.placeholder-label,
+.addcoin-shortcut,
+.floating-label,
+.icon {
+  user-select: none;
+}
+
+.kv-content {
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.overflow-x {
+  overflow-x: auto;
+}
+
+.form-material .control-label.bold,
+.bold {
+  font-weight: 700;
+}

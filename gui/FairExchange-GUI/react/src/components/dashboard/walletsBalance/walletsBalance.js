@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import {
   getDashboardUpdate,
   shepherdElectrumBalance,
 } from '../../../actions/actionCreators';
 import mainWindow from '../../../util/mainWindow';
 import Config from '../../../config';
-import { formatValue } from '../../../util/formatValue';
 import ReactTooltip from 'react-tooltip';
-
+import { secondsToString } from 'safewallet-wallet-lib/src/time';
+import { formatValue } from 'safewallet-wallet-lib/src/utils';
 import Store from '../../../store';
 
 import WalletsBalanceRender from './walletsBalance.render';
@@ -82,12 +82,15 @@ class WalletsBalance extends React.Component {
           this.props.ActiveCoin.balance[type]) {
         _balance = this.props.ActiveCoin.balance[type];
       }
-    } else if (_mode === 'spv' && this.props.ActiveCoin.balance.balance) {
+    } else if (
+      _mode === 'spv' &&
+      this.props.ActiveCoin.balance.balance
+    ) {
       if (this.props.ActiveCoin.coin === 'SAFE') {
         if (type === 'total' &&
             this.props.ActiveCoin.balance &&
             this.props.ActiveCoin.balance.total) {
-          _balance = this.props.ActiveCoin.balance.total;
+          _balance = Number(this.props.ActiveCoin.balance.total) - Number(Math.abs(this.props.ActiveCoin.balance.unconfirmed));
         }
 
         if (type === 'interest' &&
@@ -99,10 +102,10 @@ class WalletsBalance extends React.Component {
         if (type === 'transparent' &&
             this.props.ActiveCoin.balance &&
             this.props.ActiveCoin.balance.balance) {
-          _balance = this.props.ActiveCoin.balance.balance;
+          _balance = Number(this.props.ActiveCoin.balance.balance) - Number(Math.abs(this.props.ActiveCoin.balance.unconfirmed));
         }
       } else {
-        _balance = this.props.ActiveCoin.balance.balance;
+        _balance = Number(this.props.ActiveCoin.balance.balance) - Number(Math.abs(this.props.ActiveCoin.balance.unconfirmed));
       }
     }
 
@@ -134,9 +137,14 @@ class WalletsBalance extends React.Component {
           <div className="text-right">{ _balance }</div>
           { _fiatPriceTotal > 0 &&
             _fiatPricePerCoin > 0 &&
-            <div
-              data-tip={ `Price per 1 ${this.props.ActiveCoin.coin} ~ $${formatValue(_fiatPricePerCoin)}` }
-              className="text-right">${ formatValue(_fiatPriceTotal) }</div>
+            <span>
+              <div
+                data-tip={ `${translate('INDEX.PRICE_PER_1')} ${this.props.ActiveCoin.coin} ~ $${formatValue(_fiatPricePerCoin)}` }
+                className="text-right">${ formatValue(_fiatPriceTotal) }</div>
+              <ReactTooltip
+                effect="solid"
+                className="text-left" />
+            </span>
           }
         </div>
       );

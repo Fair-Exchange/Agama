@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import mainWindow from '../../../util/mainWindow';
 
 class ToolsPubCheck extends React.Component {
@@ -29,19 +29,19 @@ class ToolsPubCheck extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>Pub address version check</h4>
+          <h4>{ translate('TOOLS.PUB_ADDR_VER_CHECK') }</h4>
         </div>
         <div className="col-sm-12 form-group form-material no-padding-left padding-top-10 padding-bottom-20">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">Pub address</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.PUB_ADDR') }</label>
           <input
             type="text"
-            className="form-control col-sm-3"
+            className="form-control col-sm-3 blur"
             name="pub"
             onChange={ this.updateInput }
             value={ this.state.pub }
-            placeholder="Enter a pub address"
+            placeholder={ translate('TOOLS.ENTER_A_PUB_ADDR') }
             autoComplete="off"
             required />
         </div>
@@ -50,19 +50,19 @@ class ToolsPubCheck extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.pubCheck }>
-              Check version
+            { translate('TOOLS.CHECK_VERSION') }
           </button>
         </div>
         { this.state.pubResult &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
           { this.state.pubResult.coin &&
             <div>
-              <div>Coin(s): {
+              <div>{ translate('TOOLS.COINS') }: {
                 this.state.pubResult.coin.map((item) => {
                   return(<div key={ `tools-pub-check-${item}` }>{ item }</div>);
                 })
               }</div>
-              <div className="margin-top-10">Version: { this.state.pubResult.version }</div>
+              <div className="margin-top-10">{ translate('TOOLS.VERSION') }: { this.state.pubResult.version }</div>
             </div>
           }
           { !this.state.pubResult.coin &&

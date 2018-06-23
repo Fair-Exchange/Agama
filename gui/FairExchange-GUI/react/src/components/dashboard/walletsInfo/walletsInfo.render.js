@@ -1,7 +1,7 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
-import { secondsToString } from '../../../util/time';
-import formatBytes from '../../../util/formatBytes';
+import translate from '../../../translate/translate';
+import { secondsToString } from 'safewallet-wallet-lib/src/time';
+import { formatBytes } from 'safewallet-wallet-lib/src/utils';
 
 const WalletsInfoRender = function() {
   if (this.props.ActiveCoin.mode === 'native') {
@@ -390,7 +390,7 @@ const WalletsInfoRender = function() {
                   <tr>
                     <td>{ translate('INDEX.UNCONFIRMED_BALANCE') }</td>
                     <td>
-                      { _balance.uncomfirmed }
+                      { _balance.unconfirmed }
                     </td>
                   </tr>
                 </tbody>

@@ -19,3 +19,269 @@
     }
   }
 }
+
+@media only screen and (max-width : 767px) {
+  .navbar-container.container-fluid {
+    padding-left: 80px;
+  }
+  .navbar-brand.navbar-brand-center.site-gridmenu-toggle {
+    left: 30px;
+  }
+  .site-navbar .navbar-brand-logo.hidden-lg {
+    display: inline-block;
+    width: inherit;
+    height: 45px;
+    margin-top: -10px;
+  }
+
+  .page-content {
+    padding: 10px;
+  }
+
+  .page-main {
+    .navbar-collapse {
+      padding-left: 0;
+    }
+    .header-fairexchange {
+      padding: 20px 10px;
+      text-align: center;
+    }
+    .page-header-actions {
+      .placeholder {
+        display: none;
+      }
+    }
+    .page-content {
+      padding: 10px 0px;
+
+      .row {
+        margin: 0;
+      }
+      #edexcoin_dashboardinfo {
+        .col-xs-12.backround-gray {
+          padding: 0;
+        }
+        .panel-body {
+          padding-right: 10px;
+          padding-left: 10px;
+        }
+      }
+      #wallet-widgets {
+        .col-xs-12 {
+          padding: 0 8px;
+        }
+      }
+      .ReactTable {
+        width: 700px;
+
+        .rt-table {
+          overflow: inherit;
+        }
+        .-pagination {
+          .-previous {
+            order: 1;
+          }
+          .-center {
+            order: 3;
+          }
+          .-next {
+            margin-left: 20px;
+            order: 2;
+          }
+        }
+      }
+      .react-double-scrollbar {
+        > div:first-child {
+          margin-bottom: 10px;
+        }
+      }
+      .receive-coin-block {
+        > .col-xs-12 {
+          padding: 0;
+
+          > .panel > div > .col-xlg-12 {
+            padding: 8px;
+
+            .panel-heading {
+              .panel-actions {
+                right: 0;
+              }
+              .panel-title {
+                padding: 20px 12px;
+              }
+            }
+            .panel-body {
+              padding: 0 0 30px 12px;
+              overflow: hidden;
+
+              .table {
+                tr {
+                  td:nth-child(2) {
+                    max-width: calc(100vw - 160px);
+                    overflow-x: scroll;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .col-sm-12.coin-send-form {
+        padding: 0;
+
+        .col-xlg-12 {
+          padding: 8px;
+
+          .panel {
+            overflow: hidden;
+          }
+          .table {
+            tr {
+              td {
+                padding-left: 10px !important;
+              }
+              td:nth-child(2) {
+                max-width: calc(100vw - 140px);
+                overflow-x: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .page-aside {
+    z-index: 100;
+    padding-top: 0 !important;
+    border-top: solid 1px #e0e0e0;
+    top: 66px;
+  }
+  .page-aside-switch {
+    display: inline-block;
+
+    .md-chevron-left {
+      display: inline-block;
+    }
+  }
+  .modal-body {
+    padding: 10px;
+  }
+  #safe_txid_info_mdl {
+    .panel-body {
+      padding: 0;
+      overflow: hidden;
+    }
+    .table {
+      tr {
+        td {
+          padding-left: 10px;
+        }
+        td:nth-child(2) {
+          max-width: calc(100vw - 140px);
+          overflow-x: auto;
+        }
+      }
+    }
+  }
+  .header-fairexchange-section {
+    .fairexchange-section-image {
+      display: none;
+    }
+    .coin-icon.safe {
+      display: none;
+    }
+    .safe-mobile-icon {
+      display: inline-block;
+    }
+    img {
+      max-height: 45px !important;
+      top: 0 !important;
+    }
+  }
+  .modal.modal-claim-interest .modal-dialog {
+    width: 100%;
+  }
+  #section-iguana-wallet-settings {
+    padding: 10px !important;
+
+    .panel-body {
+      padding: 15px 4px;
+    }
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .page-main {
+    margin-left: 0 !important;
+  }
+  .page-aside {
+    width: 260px !important;
+    left: -260px;
+    overflow-y: visible;
+    z-index: 100;
+    padding-top: 0 !important;
+    border-top: solid 1px #e0e0e0;
+    top: 66px;
+
+    &.open {
+      left: 0;
+    }
+  }
+  .page-aside-switch {
+    display: inline-block;
+
+    .md-chevron-left {
+      display: inline-block;
+    }
+  }
+}
+
+@media only screen and (max-width: 960px) {
+  .page-login {
+    .page-content {
+      margin-left: 0;
+      max-width: 700px;
+      width: 100%;
+      margin: 0 auto;
+      float: none;
+    }
+
+    .line {
+      &:after,
+      &:before {
+        width: 13%;
+      }
+    }
+    .login-form,
+    .register-form,
+    .width-540 {
+      width: 95%;
+    }
+    .row {
+      text-align: left;
+      margin: 0;
+    }
+  }
+  .modal-dialog {
+    width: 98%;
+  }
+  .modal.add-coin-modal {
+    .single {
+      display: block;
+      height: 90px;
+
+      .col-sm-8.padding-left-none {
+        width: 40%;
+        float: left;
+      }
+      .col-sm-4 {
+        width: 20%;
+        float: left;
+      }
+      .col-sm-11.text-center.add-coin-modes {
+        float: left;
+        width: 100%;
+      }
+    }
+  }
+}

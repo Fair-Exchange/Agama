@@ -1,15 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import Config from '../../../config';
 import {
   getAppConfig,
   getAppInfo,
   resetAppConfig,
+  resetSPVCache,
   saveAppConfig,
   skipFullDashboardUpdate,
   triggerToaster,
+  shepherdElectrumKvServersList,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import mainWindow from '../../../util/mainWindow';
@@ -24,7 +26,36 @@ class AppSettingsPanel extends React.Component {
     this._saveAppConfig = this._saveAppConfig.bind(this);
     this._resetAppConfig = this._resetAppConfig.bind(this);
     this._skipFullDashboardUpdate = this._skipFullDashboardUpdate.bind(this);
+    this._resetSPVCache = this._resetSPVCache.bind(this);
+    this._shepherdElectrumKvServersList = this._shepherdElectrumKvServersList.bind(this);
     this.updateInput = this.updateInput.bind(this);
+  }
+
+  _shepherdElectrumKvServersList() {
+    shepherdElectrumKvServersList()
+    .then((res) => {
+      if (res.msg === 'success') {
+        Store.dispatch(
+          triggerToaster(
+            translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS_DONE'),
+            translate('INDEX.SETTINGS'),
+            'success'
+          )
+        );
+      } else {
+        Store.dispatch(
+          triggerToaster(
+            translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS_ERR'),
+            translate('INDEX.SETTINGS'),
+            'error'
+          )
+        );
+      }
+    });
+  }
+
+  _resetSPVCache() {
+    Store.dispatch(resetSPVCache());
   }
 
   componentWillMount() {
@@ -150,7 +181,8 @@ class AppSettingsPanel extends React.Component {
                   <span>
                     <i
                       className="icon fa-question-circle settings-help"
-                      data-tip={ this.state.appConfigSchema[key].info }></i>
+                      data-tip={ this.state.appConfigSchema[key].info }
+                      data-html={ true }></i>
                     <ReactTooltip
                       effect="solid"
                       className="text-left" />
@@ -170,7 +202,8 @@ class AppSettingsPanel extends React.Component {
                     <span>
                       <i
                         className="icon fa-question-circle settings-help"
-                        data-tip={ this.state.appConfigSchema[key][_key].info }></i>
+                        data-tip={ this.state.appConfigSchema[key][_key].info }
+                        data-html={ true }></i>
                       <ReactTooltip
                         effect="solid"
                         className="text-left" />
@@ -186,7 +219,8 @@ class AppSettingsPanel extends React.Component {
                       value={ _appConfig[key][_key] }
                       onChange={ (event) => this.updateInputSettings(event, key, _key) } />
                   }
-                  { (this.state.appConfigSchema[key][_key].type === 'string' || this.state.appConfigSchema[key][_key].type === 'folder') &&
+                  { (this.state.appConfigSchema[key][_key].type === 'string' ||
+                    this.state.appConfigSchema[key][_key].type === 'folder') &&
                     <input
                       type="text"
                       name={ `${key}__${_key}` }
@@ -211,6 +245,46 @@ class AppSettingsPanel extends React.Component {
                 </td>
               </tr>
             );
+
+            if (key === 'spv' &&
+                _key === 'cache' &&
+                this.props.Settings.appInfo &&
+                this.props.Settings.appInfo.cacheSize &&
+                this.props.Settings.appInfo.cacheSize !== '2 Bytes') {
+              items.push(
+                <tr key={ `app-settings-${key}-${_key}-size` }>
+                  <td
+                    colSpan="2"
+                    className="padding-15 padding-left-30">
+                    { translate('SETTINGS.CURRENT_CACHE_SIZE') }: <strong>{ this.props.Settings.appInfo.cacheSize }</strong>
+                    <button
+                      type="button"
+                      className="btn btn-info waves-effect waves-light margin-left-30"
+                      onClick={ this._resetSPVCache }>
+                      { translate('SETTINGS.CLEAR_CACHE') }
+                    </button>
+                  </td>
+                </tr>
+              );
+            }
+
+            if (key === 'spv' &&
+                _key === 'syncServerListFromKv') {
+              items.push(
+                <tr key={ `app-settings-${key}-${_key}-size` }>
+                  <td
+                    colSpan="2"
+                    className="padding-15">
+                    <button
+                      type="button"
+                      className="btn btn-info waves-effect waves-light margin-left-15"
+                      onClick={ this._shepherdElectrumKvServersList }>
+                      { translate('SETTINGS.DOWNLOAD_KV_ELECTRUMS') }
+                    </button>
+                  </td>
+                </tr>
+              );
+            }
           }
         }
       } else {
@@ -224,7 +298,8 @@ class AppSettingsPanel extends React.Component {
                   <span>
                     <i
                       className="icon fa-question-circle settings-help"
-                      data-tip={ this.state.appConfigSchema[key].info }></i>
+                      data-tip={ this.state.appConfigSchema[key].info }
+                      data-html={ true }></i>
                     <ReactTooltip
                       effect="solid"
                       className="text-left" />
@@ -240,7 +315,8 @@ class AppSettingsPanel extends React.Component {
                     value={ _appConfig[key] }
                     onChange={ (event) => this.updateInputSettings(event, key) } />
                 }
-                { (this.state.appConfigSchema[key].type === 'string' || this.state.appConfigSchema[key].type === 'folder') &&
+                { (this.state.appConfigSchema[key].type === 'string' ||
+                  this.state.appConfigSchema[key].type === 'folder') &&
                   <input
                     type="text"
                     name={ `${key}` }
@@ -285,7 +361,8 @@ class AppSettingsPanel extends React.Component {
           { translate('SETTINGS.SAFE_MAIN_SYNC_ONLY') }
           <i
             className="icon fa-question-circle settings-help"
-            data-tip={ translate('SETTINGS.RPC_FETCH_ONLY_DESC') }></i>
+            data-tip={ translate('SETTINGS.RPC_FETCH_ONLY_DESC') }
+            data-html={ true }></i>
           <ReactTooltip
             effect="solid"
             className="text-left" />
@@ -323,13 +400,27 @@ class AppSettingsPanel extends React.Component {
     if (!childKey &&
         this.state.appConfigSchema[parentKey].type === 'boolean') {
       _appSettings[parentKey] = typeof _appSettings[parentKey] !== undefined ? !_appSettings[parentKey] : !this.state.appSettings[parentKey];
-    } else if (childKey && this.state.appConfigSchema[parentKey][childKey].type === 'boolean') {
+    } else if (
+      childKey &&
+      this.state.appConfigSchema[parentKey][childKey].type === 'boolean'
+    ) {
       _appSettings[parentKey][childKey] = typeof _appSettings[parentKey][childKey] !== undefined ? !_appSettings[parentKey][childKey] : !this.state.appSettings[parentKey][childKey];
-    } else if ((!childKey && this.state.appConfigSchema[parentKey].type === 'number') || (childKey && this.state.appConfigSchema[parentKey][childKey].type === 'number')) {
-      if (e.target.value === '') {
-        _appSettings[e.target.name] = _appSettingsPrev[e.target.name];
+    } else if (
+      (!childKey && this.state.appConfigSchema[parentKey].type === 'number') ||
+      (childKey && this.state.appConfigSchema[parentKey][childKey].type === 'number')
+    ) {
+      if (!childKey) {
+        if (e.target.value === '') {
+          _appSettings[e.target.name] = _appSettingsPrev[e.target.name];
+        } else {
+          _appSettings[e.target.name] = e.target.value.replace(/[^0-9]+/g, '');
+        }
       } else {
-        _appSettings[e.target.name] = e.target.value.replace(/[^0-9]+/g, '');
+        if (e.target.value === '') {
+          _appSettings[parentKey][childKey] = _appSettingsPrev[parentKey][childKey];
+        } else {
+          _appSettings[parentKey][childKey] = e.target.value.replace(/[^0-9]+/g, '');
+        }
       }
     } else {
       _appSettings[e.target.name] = e.target.value;
@@ -360,11 +451,15 @@ class AppSettingsPanel extends React.Component {
             <button
               type="button"
               className="btn btn-primary waves-effect waves-light"
-              onClick={ this._saveAppConfig }>{ translate('SETTINGS.SAVE_APP_CONFIG') }</button>
+              onClick={ this._saveAppConfig }>
+              { translate('SETTINGS.SAVE_APP_CONFIG') }
+            </button>
             <button
               type="button"
               className="btn btn-primary waves-effect waves-light margin-left-30"
-              onClick={ this._resetAppConfig }>{ translate('SETTINGS.RESET_TO_DEFAULT') }</button>
+              onClick={ this._resetAppConfig }>
+              { translate('SETTINGS.RESET_TO_DEFAULT') }
+            </button>
           </div>
         </div>
       </div>

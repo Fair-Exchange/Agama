@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import mainWindow from '../../../util/mainWindow';
 import ReactTooltip from 'react-tooltip';
 import Config from '../../../config';
@@ -7,7 +7,7 @@ import Config from '../../../config';
 const NavbarRender = function() {
   return (
     <nav className="site-navbar navbar navbar-default navbar-fixed-top navbar-mega">
-      <div className="navbar-header">
+      { /*<div className="navbar-header">
         <button
           type="button"
           className="navbar-toggle hamburger hamburger-close navbar-toggle-left hided">
@@ -38,6 +38,21 @@ const NavbarRender = function() {
           <span className="sr-only">{ translate('INDEX.TOGGLE_SEARCH') }</span>
           <i className="icon md-search"></i>
         </button>
+      </div>*/ }
+      <div className="navbar-header">
+        <div className="navbar-brand navbar-brand-center site-gridmenu-toggle">
+          <img
+            className="navbar-brand-logo hidden-xs"
+            src="assets/images/safewallet-logo-side.svg"
+            height="100"
+            width="100"
+            title={ translate('ABOUT.SAFEWALLET_WALLET') } />
+          <img
+            className="navbar-brand-logo hidden-lg"
+            src="assets/images/safewallet-icon.svg"
+            title={ translate('ABOUT.SAFEWALLET_WALLET') } />
+          <span className="navbar-brand-text hidden-xs"></span>
+        </div>
       </div>
       <div className="navbar-container container-fluid">
         <div className="collapse navbar-collapse navbar-collapse-toolbar">
@@ -61,7 +76,8 @@ const NavbarRender = function() {
               </a>
             </li>
             { this.props.ActiveCoin &&
-              (/*this._checkAC() || */this.props.ActiveCoin.coin === 'SAFE' &&
+              (/*this._checkAC() || */
+              this.props.ActiveCoin.coin === 'SAFE' &&
                 this.props.ActiveCoin.mode === 'native') &&
               <li className={ this.isSectionActive('jumblr') ? 'active nav-top-menu' : 'nav-top-menu' }>
                 <a onClick={ () => this.dashboardChangeSection('jumblr') }>
@@ -84,14 +100,14 @@ const NavbarRender = function() {
             { Config.experimentalFeatures &&
               <li className={ this.isSectionActive('tools') ? 'active nav-top-menu' : 'nav-top-menu' }>
                 <a onClick={ () => this.dashboardChangeSection('tools') }>
-                  <i className="site-menu-icon"></i> Tools
+                  <i className="site-menu-icon"></i> { translate('TOOLS.TOOLS') }
                 </a>
               </li>
             }
             { mainWindow.nnVoteChain &&
               <li className="nav-top-menu">
                 <a onClick={ this._toggleNotaryElectionsModal }>
-                  <i className="site-menu-icon"></i> Notary Elections
+                  <i className="site-menu-icon"></i> { translate('NN_ELECTIONS.NN_ELECTIONS_2018') }
                 </a>
               </li>
             }
@@ -150,6 +166,11 @@ const NavbarRender = function() {
                     </a>
                   </li>
                 }
+                <li>
+                  <a onClick={ this._toggleBlurSensitiveData }>
+                    <i className={ 'icon fa-eye' + (!this.props.Main.blurSensitiveData ? '-slash' : '') }></i> { this.props.Main.blurSensitiveData ? translate('INDEX.SHOW_SENSITIVE_DATA') : translate('INDEX.HIDE_SENSITIVE_DATA') }
+                  </a>
+                </li>
                 { this.isRenderSpvLockLogout() &&
                   <li>
                     <a onClick={ this.spvLock }>

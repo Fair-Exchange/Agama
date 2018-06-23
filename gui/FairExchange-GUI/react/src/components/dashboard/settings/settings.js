@@ -1,14 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import {
   getAppConfig,
   getAppInfo,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
-import {
-  SettingsRender,
-} from './settings.render';
+import { SettingsRender } from './settings.render';
 import mainWindow from '../../../util/mainWindow';
 
 /*
@@ -30,7 +28,8 @@ class Settings extends React.Component {
         this.props.Main.coins &&
         this.props.Main.coins.spv) {
       for (let i = 0; i < this.props.Main.coins.spv.length; i++) {
-        if (this.props.Dashboard.electrumCoins[this.props.Main.coins.spv[i]].serverList) {
+        if (this.props.Dashboard.electrumCoins[this.props.Main.coins.spv[i]] &&
+            this.props.Dashboard.electrumCoins[this.props.Main.coins.spv[i]].serverList) {
           return true;
         }
       }

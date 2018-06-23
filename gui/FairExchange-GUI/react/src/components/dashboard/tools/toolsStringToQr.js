@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
 import Select from 'react-select';
@@ -34,7 +34,7 @@ class ToolsStringToQr extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>String to QR</h4>
+          <h4>{ translate('TOOLS.STR_TO_QR') }</h4>
         </div>
         <div className="col-sm-12 form-group form-material no-padding-left">
           <input
@@ -43,7 +43,7 @@ class ToolsStringToQr extends React.Component {
             name="string2qr"
             value={ this.state.string2qr }
             onChange={ this.updateInput }
-            placeholder="Type a string here"
+            placeholder={ translate('TOOLS.TYPE_A_STR') }
             autoComplete="off" />
         </div>
         { this.state.string2qr &&

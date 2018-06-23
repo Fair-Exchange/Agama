@@ -44,25 +44,21 @@ export function Dashboard(state = {
         ...state,
         displayZcparamsModal: action.displayZcparamsModal,
       };
-      break;
     case DISPLAY_COIND_DOWN_MODAL:
       return {
         ...state,
         displayCoindDownModal: action.displayCoindDownModal,
       };
-      break;
     case DISPLAY_CLAIM_INTEREST_MODAL:
       return {
         ...state,
         displayClaimInterestModal: action.displayClaimInterestModal,
       };
-      break;
     case DISPLAY_IMPORT_KEY_MODAL:
       return {
         ...state,
         displayImportKeyModal: action.displayImportKeyModal,
       };
-      break;
     case DASHBOARD_SYNC_ONLY_UPDATE:
       return {
         ...state,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 
 const ZcparamsFetchModalRender = function() {
   return (
@@ -44,7 +44,9 @@ const ZcparamsFetchModalRender = function() {
                         <button
                           type="button"
                           className="btn btn-primary btn-block"
-                          onClick={ this._downloadZCashParamsPromise }>{ translate('ZCPARAMS_FETCH.DOWNLOAD') }</button>
+                          onClick={ this._downloadZCashParamsPromise }>
+                          { translate('ZCPARAMS_FETCH.DOWNLOAD') }
+                        </button>
                       </div>
                     </div>
                   </div>

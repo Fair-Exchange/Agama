@@ -1,124 +1,20 @@
 // TODO: merge check functions
 //			 move to nodejs
 //			 cleanup
+import { isSafecoinCoin } from 'safewallet-wallet-lib/src/coin-helpers';
 
-export function checkAC(coinVal) {
-	if (coinVal === 'SUPERNET' ||
-			coinVal === 'REVS' ||
-			coinVal === 'WLC' ||
-			coinVal === 'DEX' ||
-			coinVal === 'PANGEA' ||
-			coinVal === 'JUMBLR' ||
-			coinVal === 'BET' ||
-			coinVal === 'CRYPTO' ||
-			coinVal === 'COQUI' ||
-			coinVal === 'HODL' ||
-			coinVal === 'MSHARK' ||
-			coinVal === 'BOTS' ||
-			coinVal === 'MGW' ||
-			coinVal === 'MVP' ||
-			coinVal === 'KV' ||
-			coinVal === 'CEAL' ||
-			coinVal === 'MESH' ||
-			coinVal === 'MNZ' ||
-			coinVal === 'AXO' ||
-			coinVal === 'ETOMIC' ||
-			coinVal === 'BTCH' ||
-			coinVal === 'BEER' ||
-			coinVal === 'PIZZA' ||
-			coinVal === 'VOTE2018')	{
-		return true;
-	} else {
-		return false;
-	}
+export const checkAC = (coinVal) => {
+	return isSafecoinCoin(coinVal, true);
 }
 
-export function startCurrencyAssetChain(confpath, coin, mode) {
+export const startCurrencyAssetChain = (confpath, coin, mode) => {
 	const assetChainPorts = window.require('electron').remote.getCurrentWindow().assetChainPorts;
 
 	return assetChainPorts[coin];
 }
 
-export function startAssetChain(confpath, coin, mode, getSuppyOnly) {
+export const startAssetChain = (confpath, coin, mode, getSuppyOnly) => {
 	const assetChainPorts = window.require('electron').remote.getCurrentWindow().assetChainPorts;
-
-	const acConfig = {
-		SUPERNET: {
-			supply: 816061,
-		},
-		REVS: {
-			supply: 1300000,
-		},
-		WLC: {
-			supply: 210000000,
-		},
-		PANGEA: {
-			supply: 999999,
-		},
-		DEX: {
-			supply: 999999,
-		},
-		JUMBLR: {
-			supply: 999999,
-		},
-		BET: {
-			supply: 999999,
-		},
-		CRYPTO: {
-			supply: 999999,
-		},
-		HODL: {
-			supply: 9999999,
-		},
-		MSHARK: {
-			supply: 1400000,
-		},
-		BOTS: {
-			supply: 999999,
-		},
-		MGW: {
-			supply: 999999,
-		},
-		MVP: {
-			supply: 1000000,
-		},
-		KV: {
-			supply: 1000000,
-		},
-		CEAL: {
-			supply: 366666666,
-		},
-		MESH: {
-			supply: 1000007,
-		},
-		COQUI: {
-			supply: 72000000,
-		},
-		MNZ: {
-			supply: 257142858,
-		},
-		AXO: {
-			supply: 200000000,
-		},
-		ETOMIC: {
-			supply: 100000000,
-		},
-		BTCH: {
-			supply: 20998641,
-		},
-		BEER: {
-			supply: 100000000,
-		},
-		PIZZA: {
-			supply: 100000000,
-		},
-		VOTE2018: {
-			supply: 600000000,
-		},
-		NINJA: {
-			supply: 100000000,
-		},
-	};
 
 	if (mode === '-1') {
 		if (getSuppyOnly) {
@@ -129,9 +25,114 @@ export function startAssetChain(confpath, coin, mode, getSuppyOnly) {
 	}
 }
 
-export function startCrypto(confpath, coin, mode) {
+export const startCrypto = (confpath, coin, mode) => {
 	const assetChainPorts = window.require('electron').remote.getCurrentWindow().assetChainPorts;
 
 	coin = coin === 'SAFE' ? 'safecoind' : coin;
 	return assetChainPorts[coin];
 }
+
+export const acConfig = {
+	SUPERNET: {
+		'ac_supply': 816061,
+	},
+	REVS: {
+		'ac_supply': 1300000,
+	},
+	WLC: {
+		'ac_supply': 210000000,
+	},
+	PANGEA: {
+		'ac_supply': 999999,
+	},
+	DEX: {
+		'ac_supply': 999999,
+	},
+	JUMBLR: {
+		'ac_supply': 999999,
+	},
+	BET: {
+		'ac_supply': 999999,
+	},
+	CRYPTO: {
+		'ac_supply': 999999,
+	},
+	HODL: {
+		'ac_supply': 9999999,
+	},
+	MSHARK: {
+		'ac_supply': 1400000,
+	},
+	BOTS: {
+		'ac_supply': 999999,
+	},
+	MGW: {
+		'ac_supply': 999999,
+	},
+	MVP: {
+		'ac_supply': 1000000,
+	},
+	KV: {
+		'ac_supply': 1000000,
+	},
+	CEAL: {
+		'ac_supply': 366666666,
+	},
+	MESH: {
+		'ac_supply': 1000007,
+	},
+	COQUI: {
+		'ac_supply': 72000000,
+ 	},
+	CHAIN: {
+  	'ac_supply': 999999,
+  	addnode: '78.47.146.222',
+  },
+	GLXT: {
+    'ac_supply': 100000000,
+    addnode: '13.230.224.15',
+  },
+	EQL: {
+    'ac_supply': 500000000,
+    addnode: '46.101.124.153',
+	},
+	MNZ: {
+		'ac_supply': 257142858,
+	},
+	AXO: {
+		'ac_supply': 200000000,
+	},
+	ETOMIC: {
+		'ac_supply': 100000000,
+	},
+	BTCH: {
+		'ac_supply': 20998641,
+	},
+	BEER: {
+		'ac_supply': 100000000,
+		addnode: '24.54.206.138',
+	},
+	PIZZA: {
+		'ac_supply': 100000000,
+		addnode: '24.54.206.138',
+	},
+	OOT: {
+		'ac_supply': 216000000,
+		addnode: '174.138.107.226',
+	},
+	VOTE2018: {
+		'ac_supply': 600000000,
+	},
+	NINJA: {
+		'ac_supply': 100000000,
+		addnode: '192.241.134.19',
+	},
+	BNTN: {
+		'ac_supply': 500000000,
+		addnode: '94.130.169.205',
+	},
+	PRLPAY: {
+		'ac_supply': 500000000,
+		addnode: '13.250.226.125',
+	},
+};

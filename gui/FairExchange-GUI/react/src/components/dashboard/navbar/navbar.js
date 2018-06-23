@@ -13,6 +13,7 @@ import {
   dashboardRemoveCoin,
   dashboardChangeActiveCoin,
   toggleNotaryElectionsModal,
+  toggleBlurSensitiveData,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
 import Config from '../../../config';
@@ -32,8 +33,13 @@ class Navbar extends React.Component {
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this._toggleNotaryElectionsModal = this._toggleNotaryElectionsModal.bind(this);
     this._checkAC = this._checkAC.bind(this);
+    this._toggleBlurSensitiveData = this._toggleBlurSensitiveData.bind(this);
     this.spvLock = this.spvLock.bind(this);
     this.spvLogout = this.spvLogout.bind(this);
+  }
+
+  _toggleBlurSensitiveData() {
+    Store.dispatch(toggleBlurSensitiveData(!this.props.Main.blurSensitiveData));
   }
 
   isRenderSpvLockLogout() {
@@ -49,6 +55,7 @@ class Navbar extends React.Component {
   spvLock() {
     shepherdElectrumLock()
     .then((res) => {
+      mainWindow.pinAccess = false;
       Store.dispatch(getDexCoins());
       Store.dispatch(activeHandle());
     });
@@ -58,6 +65,8 @@ class Navbar extends React.Component {
     shepherdElectrumLogout()
     .then((res) => {
       const _spvCoins = this.props.Main.coins.spv;
+
+      mainWindow.pinAccess = false;
 
       if (!this.props.Main.coins.native.length) {
         Store.dispatch(dashboardChangeActiveCoin(null, null, true));
@@ -165,6 +174,7 @@ const mapStateToProps = (state) => {
     Main: {
       isLoggedIn: state.Main.isLoggedIn,
       coins: state.Main.coins,
+      blurSensitiveData: state.Main.blurSensitiveData,
     },
   };
 };

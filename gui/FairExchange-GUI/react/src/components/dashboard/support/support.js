@@ -1,5 +1,7 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
+
+const { shell } = window.require('electron');
 
 class Support extends React.Component {
   constructor() {
@@ -7,7 +9,7 @@ class Support extends React.Component {
   }
 
   openExternalWindow(url) {
-    return window.require('electron').shell.openExternal(url);
+    return shell.openExternal(url);
   }
 
   render() {
@@ -66,10 +68,10 @@ class Support extends React.Component {
           <div className="row margin-top-30">
             <div className="col-sm-12">
               <p>
-                For guides & FAQ please go to <a onClick={ () => this.openExternalWindow('https://support.safecoin.org/support/home') }>https://support.safecoin.org/support/home</a>
+                { translate('SUPPORT.FOR_GUIDES') } <a className="pointer" onClick={ () => this.openExternalWindow('https://support.safecoinplatform.com/support/home') }>https://support.safecoinplatform.com/support/home</a>
               </p>
               <p>
-                To send feedback please open a ticket at <a onClick={ () => this.openExternalWindow('https://support.safecoin.org/support/tickets/new') }>https://support.safecoin.org/support/tickets/new</a>
+              { translate('SUPPORT.TO_SEND_FEEDBACK_P1') } <a className="pointer" onClick={ () => this.openExternalWindow('https://support.safecoinplatform.com/support/tickets/new') }>https://support.safecoinplatform.com/support/tickets/new</a> { translate('SUPPORT.TO_SEND_FEEDBACK_P2') }
               </p>
             </div>
           </div>

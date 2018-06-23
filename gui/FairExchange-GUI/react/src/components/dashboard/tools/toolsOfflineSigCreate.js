@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
 import Select from 'react-select';
@@ -52,7 +52,7 @@ class ToolsOfflineSigCreate extends React.Component {
         Store.dispatch(
           triggerToaster(
             res.result,
-            'Offline tx signing',
+            translate('TOOLS.ERR_OFFLINE_TX_SIG'),
             'error'
           )
         );
@@ -63,7 +63,12 @@ class ToolsOfflineSigCreate extends React.Component {
   getUnsignedTx() {
     const _coin = this.state.selectedCoin.split('|');
 
-    shepherdToolsBuildUnsigned(_coin[0], this.state.amount * 100000000, this.state.sendTo, this.state.sendFrom)
+    shepherdToolsBuildUnsigned(
+      _coin[0],
+      this.state.amount * 100000000,
+      this.state.sendTo,
+      this.state.sendFrom
+    )
     .then((res) => {
       // console.warn(res);
 
@@ -90,7 +95,7 @@ class ToolsOfflineSigCreate extends React.Component {
         Store.dispatch(
           triggerToaster(
             res.result,
-            'Offline tx signing',
+            translate('TOOLS.ERR_OFFLINE_TX_SIG'),
             'error'
           )
         );
@@ -137,12 +142,12 @@ class ToolsOfflineSigCreate extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>Offline Transaction Signing</h4>
+          <h4>{ translate('TOOLS.OFFLINE_TX_SIG') }</h4>
         </div>
         <div className="col-xlg-12 form-group form-material no-padding-left padding-top-20 padding-bottom-70">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">Coin</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.COIN') }</label>
           <Select
             name="selectedCoin"
             className="col-sm-3"
@@ -158,7 +163,7 @@ class ToolsOfflineSigCreate extends React.Component {
             htmlFor="safeWalletSendTo">{ translate('INDEX.SEND_FROM') }</label>
           <input
             type="text"
-            className="form-control col-sm-3"
+            className="form-control col-sm-3 blur"
             name="sendFrom"
             onChange={ this.updateInput }
             value={ this.state.sendFrom }
@@ -172,10 +177,10 @@ class ToolsOfflineSigCreate extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.getBalance }>
-              Get balance
+            { translate('TOOLS.GET_BALANCE') }
           </button>
           { this.state.balance &&
-            <label className="margin-left-20">Balance: { this.state.balance.balance } </label>
+            <label className="margin-left-20">{ translate('TOOLS.BALANCE') }: { this.state.balance.balance }</label>
           }
         </div>
         <div className="col-sm-12 form-group form-material no-padding-left">
@@ -184,7 +189,7 @@ class ToolsOfflineSigCreate extends React.Component {
             htmlFor="safeWalletSendTo">{ translate('INDEX.SEND_TO') }</label>
           <input
             type="text"
-            className="form-control col-sm-3"
+            className="form-control col-sm-3 blur"
             name="sendTo"
             onChange={ this.updateInput }
             value={ this.state.sendTo }
@@ -214,12 +219,12 @@ class ToolsOfflineSigCreate extends React.Component {
             type="button"
             className="btn btn-primary col-sm-2"
             onClick={ this.getUnsignedTx }>
-              Generate unsigned tx QR
+            { translate('TOOLS.GEN_UNSIG_TX_QR') }
           </button>
         </div>
         { this.state.tx2qr &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-20">
-            <label className="control-label col-sm-1 no-padding-left">QR payload</label>
+            <label className="control-label col-sm-1 no-padding-left">{ translate('TOOLS.QR_PAYLOAD') }</label>
             <textarea
               rows="5"
               cols="20"
@@ -230,10 +235,10 @@ class ToolsOfflineSigCreate extends React.Component {
         { this.state.tx2qr &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-20">
             <label className="control-label col-sm-2 no-padding-left">
-              UTXO count: { this.state.utxo.length }
+            { translate('TOOLS.UTXO_COUNT') }: { this.state.utxo.length }
             </label>
             { this.state.utxo.length > 3 &&
-              <div className="col-red margin-left-20 margin-top-5">cant encode a qr tx larger than 3 utxos!</div>
+              <div className="col-red margin-left-20 margin-top-5">{ translate('TOOLS.UTXO_COUNT_TO_MERGE') }</div>
             }
           </div>
         }
@@ -250,7 +255,7 @@ class ToolsOfflineSigCreate extends React.Component {
                 type="button"
                 className="btn btn-primary col-sm-2"
                 onClick={ this.closeQr }>
-                  Close
+                { translate('TOOLS.CLOSE') }
               </button>
             </div>
           </div>

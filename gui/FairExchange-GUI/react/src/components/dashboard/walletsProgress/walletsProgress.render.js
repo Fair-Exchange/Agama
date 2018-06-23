@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 
 export const VerifyingBlocksRender = function() {
   return (
@@ -20,10 +20,8 @@ export const SyncErrorBlocksRender = function() {
 export const SyncPercentageRender = function(syncPercentage, currentBlock, maxHeight) {
   if (this.props.ActiveCoin.rescanInProgress) {
     return (
-      <div
-        className="progress-bar progress-bar-info progress-bar-striped active font-size-80-percent"
-        style={{ width: '100%' }}>
-        <span style={{ width: '100%' }}>{ translate('INDEX.PLEASE_WAIT_UNTIL_RESCAN_FINISHED') }</span>
+      <div className="progress-bar progress-bar-info progress-bar-striped active font-size-80-percent full-width">
+        <span className="full-width">{ translate('INDEX.PLEASE_WAIT_UNTIL_RESCAN_FINISHED') }</span>
       </div>
     );
   } else {
@@ -65,23 +63,13 @@ export const SyncPercentageRender = function(syncPercentage, currentBlock, maxHe
 };
 
 export const LoadingBlocksRender = function() {
-  if (this.props.ActiveCoin.rescanInProgress) {
-    return (
-      <div
-        className="progress-bar progress-bar-info progress-bar-striped active font-size-80-percent"
-        style={{ width: '100%' }}>
-        <span style={{ width: '100%' }}>{ translate('INDEX.PLEASE_WAIT_UNTIL_RESCAN_FINISHED') }</span>
-      </div>
-    );
-  } else {
-    return (
-      <div
-        className="progress-bar progress-bar-info progress-bar-striped active font-size-80-percent"
-        style={{ width: '100%' }}>
-        <span style={{ width: '100%' }}>{ translate('INDEX.LOADING_BLOCKS') }</span>
-      </div>
-    );
-  }
+  return (
+    <div className="progress-bar progress-bar-info progress-bar-striped active font-size-80-percent full-width">
+      <span className="full-width">
+      { translate(this.props.ActiveCoin.rescanInProgress ? 'INDEX.PLEASE_WAIT_UNTIL_RESCAN_FINISHED' : 'INDEX.LOADING_BLOCKS') }
+      </span>
+    </div>
+  );
 };
 
 export const TranslationComponentsRender = function(translationID) {

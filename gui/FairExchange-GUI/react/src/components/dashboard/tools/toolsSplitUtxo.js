@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import addCoinOptionsCrypto from '../../addcoin/addcoinOptionsCrypto';
 import addCoinOptionsAC from '../../addcoin/addcoinOptionsAC';
 import Select from 'react-select';
@@ -15,8 +15,10 @@ import {
   shepherdElectrumSplitUtxoPromise,
 } from '../../../actions/actionCreators';
 import Store from '../../../store';
-import { isSafecoinCoin } from '../../../util/coinHelper';
 import devlog from '../../../util/devlog';
+import { isSafecoinCoin } from 'safewallet-wallet-lib/src/coin-helpers';
+
+const { shell } = window.require('electron');
 
 class ToolsSplitUTXO extends React.Component {
   constructor() {
@@ -88,7 +90,7 @@ class ToolsSplitUTXO extends React.Component {
     devlog(`change ${Number(largestUTXO.amount - totalOutSize) - 0.0001 + (largestUTXO.interest ? largestUTXO.interest : 0)}`);
 
     this.setState({
-      splitUtxoApproximateVal: largestUTXO.amount - totalOutSize > 0 ? totalOutSize : 'no op, output is bigger than utxo size!',
+      splitUtxoApproximateVal: largestUTXO.amount - totalOutSize > 0 ? totalOutSize : translate('TOOLS.UTXO_SPLIT_NOOP'),
     });
   }
 
@@ -165,7 +167,7 @@ class ToolsSplitUTXO extends React.Component {
             });
             Store.dispatch(
               triggerToaster(
-                'Split success',
+                translate('TOOLS.SPLIT_SUCCESS'),
                 'UTXO',
                 'success'
               )
@@ -174,7 +176,7 @@ class ToolsSplitUTXO extends React.Component {
             Store.dispatch(
               triggerToaster(
                 res.result,
-                'Split UTXO error',
+                translate('TOOLS.ERR_SPLIT_UTXO'),
                 'error'
               )
             );
@@ -184,7 +186,7 @@ class ToolsSplitUTXO extends React.Component {
         Store.dispatch(
           triggerToaster(
             res.result,
-            'Split UTXO error',
+            translate('TOOLS.ERR_SPLIT_UTXO'),
             'error'
           )
         );
@@ -202,7 +204,11 @@ class ToolsSplitUTXO extends React.Component {
     )
     .then((seed2kpRes) => {
       if (seed2kpRes.msg === 'success') {
-        shepherdCliPromise(null, _coin[0], 'listunspent')
+        shepherdCliPromise(
+          null,
+          _coin[0],
+          'listunspent'
+        )
         .then((res) => {
           // devlog(res);
 
@@ -237,7 +243,7 @@ class ToolsSplitUTXO extends React.Component {
               Store.dispatch(
                 triggerToaster(
                   res.result,
-                  'Split UTXO error',
+                  translate('TOOLS.ERR_SPLIT_UTXO'),
                   'error'
                 )
               );
@@ -246,7 +252,7 @@ class ToolsSplitUTXO extends React.Component {
             Store.dispatch(
               triggerToaster(
                 res.result,
-                'Get UTXO error',
+                translate('TOOLS.ERR_GET_UTXO'),
                 'error'
               )
             );
@@ -256,7 +262,7 @@ class ToolsSplitUTXO extends React.Component {
         Store.dispatch(
           triggerToaster(
             seed2kpRes.result,
-            'Seed to wif error',
+            translate('TOOLS.ERR_SEED_TO_WIF'),
             'error'
           )
         );
@@ -294,26 +300,8 @@ class ToolsSplitUTXO extends React.Component {
   }
 
   openExplorerWindow(txid, coin) {
-    const url = `https://explorer.safecoin.org/tx/${txid}`;
-    const remote = window.require('electron').remote;
-    const BrowserWindow = remote.BrowserWindow;
-
-    const externalWindow = new BrowserWindow({
-      width: 1280,
-      height: 800,
-      title: `${translate('INDEX.LOADING')}...`,
-      icon: remote.getCurrentWindow().iguanaIcon,
-      webPreferences: {
-        nodeIntegration: false,
-      },
-    });
-
-    externalWindow.loadURL(url);
-    externalWindow.webContents.on('did-finish-load', () => {
-      setTimeout(() => {
-        externalWindow.show();
-      }, 40);
-    });
+    const url = `http://${coin}.explorer.fairexchange.org/tx/${txid}`;
+    return shell.openExternal(url);
   }
 
   renderUTXOSplitMergeResponse(type) {
@@ -326,10 +314,10 @@ class ToolsSplitUTXO extends React.Component {
         _items.push(
           <tr key={ `tools-utxos-${i}` }>
             <td>{ _utxos[i].amount }</td>
-            <td>{ _utxos[i].address }</td>
+            <td className="blur">{ _utxos[i].address }</td>
             <td>{ _utxos[i].confirmations }</td>
             <td>{ _utxos[i].vout }</td>
-            <td>{ _utxos[i].txid }</td>
+            <td className="blur">{ _utxos[i].txid }</td>
           </tr>
         );
       }
@@ -339,10 +327,10 @@ class ToolsSplitUTXO extends React.Component {
       <table className="table table-hover dataTable table-striped">
         <thead>
           <tr>
-            <th>Amount</th>
-            <th>Address</th>
-            <th>Confirmations</th>
-            <th>Vout</th>
+            <th>{ translate('TOOLS.AMOUNT') }</th>
+            <th>{ translate('TOOLS.ADDR') }</th>
+            <th>{ translate('TOOLS.CONFS') }</th>
+            <th>{ translate('TOOLS.VOUT') }</th>
             <th>TxID</th>
           </tr>
         </thead>
@@ -351,10 +339,10 @@ class ToolsSplitUTXO extends React.Component {
         </tbody>
         <tfoot>
           <tr>
-            <th>Amount</th>
-            <th>Address</th>
-            <th>Confirmations</th>
-            <th>Vout</th>
+            <th>{ translate('TOOLS.AMOUNT') }</th>
+            <th>{ translate('TOOLS.ADDR') }</th>
+            <th>{ translate('TOOLS.CONFS') }</th>
+            <th>{ translate('TOOLS.VOUT') }</th>
             <th>TxID</th>
           </tr>
         </tfoot>
@@ -366,12 +354,12 @@ class ToolsSplitUTXO extends React.Component {
     return (
       <div className="row margin-left-10">
         <div className="col-xlg-12 form-group form-material no-padding-left padding-bottom-10">
-          <h4>Split UTXO</h4>
+          <h4>{ translate('TOOLS.SPLIT_UTXO') }</h4>
         </div>
         <div className="col-xlg-12 form-group form-material no-padding-left padding-top-20 padding-bottom-50">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">Coin</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.COIN') }</label>
           <Select
             name="utxoSplitCoin"
             className="col-sm-3"
@@ -388,25 +376,25 @@ class ToolsSplitUTXO extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left">
           <label
             className="control-label col-sm-1 no-padding-left"
-            htmlFor="safeWalletSendTo">Seed</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.SEED') }</label>
           <input
             type="text"
-            className="form-control col-sm-3"
+            className="form-control col-sm-3 blur"
             name="utxoSplitSeed"
             onChange={ this.updateInput }
             value={ this.state.utxoSplitSeed }
-            placeholder="Enter a seed"
+            placeholder={ translate('TOOLS.ENTER_A_SEED') }
             autoComplete="off"
             required />
         </div>
         { this.state.utxoSplitAddress &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
-            Pub: { this.state.utxoSplitAddress }
+            Pub: <span className="blur">{ this.state.utxoSplitAddress }</span>
           </div>
         }
         { this.state.utxoSplitAddress &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
-            WIF: { this.state.utxoSplitWif }
+            WIF: <span className="blur">{ this.state.utxoSplitWif }</span>
           </div>
         }
         <div className="col-sm-12 form-group no-padding-left margin-top-20 padding-bottom-10">
@@ -414,14 +402,14 @@ class ToolsSplitUTXO extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.getUtxoSplit }>
-              Get UTXO(s)
+            { translate('TOOLS.GET_UTXO') }
           </button>
         </div>
         { this.state.utxoSplitList &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
             { /*this.renderUTXOSplitResponse()*/ }
-            <div>Total UTXO: { this.state.utxoSplitList.length }</div>
-            <div>Largest UTXO: { this.state.utxoSplitLargestUtxo }</div>
+            <div>{ translate('TOOLS.TOTAL') } UTXO: { this.state.utxoSplitList.length }</div>
+            <div>{ translate('TOOLS.LARGEST') } UTXO: { this.state.utxoSplitLargestUtxo }</div>
           </div>
         }
         <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
@@ -436,7 +424,7 @@ class ToolsSplitUTXO extends React.Component {
           <div
             className="toggle-label margin-right-15 pointer iguana-core-toggle"
             onClick={ this.toggleSplitUtxoList }>
-            Show UTXO list
+            { translate('TOOLS.SHOW_UTXO_LIST') }
           </div>
         </div>
         { this.state.utxoSplitShowUtxoList &&
@@ -447,28 +435,28 @@ class ToolsSplitUTXO extends React.Component {
         <div className="col-sm-12 form-group form-material no-padding-left margin-top-20 padding-bottom-20">
           <label
             className="control-label col-sm-2 no-padding-left"
-            htmlFor="safeWalletSendTo">UTXO sizes</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.UTXO_SIZES') }</label>
           <input
             type="text"
             className="form-control col-sm-3"
             name="utxoSplitPairs"
             onChange={ this.updateInput }
             value={ this.state.utxoSplitPairs }
-            placeholder="UTXO sized"
+            placeholder={ translate('TOOLS.UTXO_SIZES') }
             autoComplete="off"
             required />
         </div>
         <div className="col-sm-12 form-group form-material no-padding-left padding-top-20 padding-bottom-20">
           <label
             className="control-label col-sm-2 no-padding-left"
-            htmlFor="safeWalletSendTo">Number of pairs</label>
+            htmlFor="safeWalletSendTo">{ translate('TOOLS.NUMBER_OF_PAIRS') }</label>
           <input
             type="text"
             className="form-control col-sm-3"
             name="utxoSplitPairsCount"
             onChange={ this.updateInput }
             value={ this.state.utxoSplitPairsCount }
-            placeholder="Pairs"
+            placeholder={ translate('TOOLS.NUMBER_OF_PAIRS') }
             autoComplete="off"
             required />
         </div>
@@ -477,18 +465,18 @@ class ToolsSplitUTXO extends React.Component {
             type="button"
             className="btn btn-info col-sm-2"
             onClick={ this.splitUtxoApproximate }>
-              Calc total output size
+            { translate('TOOLS.CALC_TOTAL_OUT_SIZE') }
           </button>
           <button
             type="button"
             className="btn btn-info col-sm-2 margin-left-40"
             onClick={ this.splitUtxo }>
-              Split UTXO(s)
+            { translate('TOOLS.SPLIT_UTXO') }
           </button>
         </div>
         { this.state.splitUtxoApproximateVal &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
-            Total out size: { this.state.splitUtxoApproximateVal }
+            { translate('TOOLS.TOTAL_OUT_SIZE') }: { this.state.splitUtxoApproximateVal }
           </div>
         }
         {
@@ -499,7 +487,7 @@ class ToolsSplitUTXO extends React.Component {
         }
         { this.state.utxoSplitPushResult &&
           <div className="col-sm-12 form-group form-material no-padding-left margin-top-10">
-            TXID: <div style={{ wordBreak: 'break-all' }}>{ this.state.utxoSplitPushResult }</div>
+            TXID: <div className="blur" style={{ wordBreak: 'break-all' }}>{ this.state.utxoSplitPushResult }</div>
             { isSafecoinCoin(this.state.utxoSplitCoin.split('|')[0]) &&
               <div className="margin-top-10">
                 <button

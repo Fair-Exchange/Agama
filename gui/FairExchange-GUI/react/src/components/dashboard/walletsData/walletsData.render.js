@@ -1,11 +1,17 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import { translate } from '../../../translate/translate';
+import translate from '../../../translate/translate';
 import ReactTable from 'react-table';
 import TablePaginationRenderer from './pagination';
-import { formatValue } from '../../../util/formatValue';
+import { formatValue } from 'safewallet-wallet-lib/src/utils';
 import Config from '../../../config';
 import Spinner from '../spinner/spinner';
+
+const kvCoins = {
+  'KV': true,
+  'BEER': true,
+  'PIZZA': true,
+};
 
 export const TxConfsRender = function(confs) {
   if (Number(confs) > -1) {
@@ -52,7 +58,6 @@ export const AddressRender = function(tx) {
   if (!tx.address) {
     return (
       <span>
-        <i className="icon fa-bullseye"></i>&nbsp;
         <span className="label label-dark">
           { translate('DASHBOARD.ZADDR_NOT_LISTED') }
         </span>
@@ -60,13 +65,13 @@ export const AddressRender = function(tx) {
     );
   }
 
-  return tx.address;
+  return (<span className="blur">{ tx.address }</span>);
 };
 
 export const AddressItemRender = function(address, type, amount, coin) {
   return (
     <li
-      key={address}
+      key={ address }
       className={ address === this.state.currentAddress ? 'selected' : '' }>
       <a onClick={ () => this.updateAddressSelection(address) }>
         <i className={ 'icon fa-eye' + (type === 'public' ? '' : '-slash') }></i>&nbsp;&nbsp;
@@ -127,8 +132,10 @@ export const TxTypeRender = function(category) {
         <i className="icon fa-arrow-circle-left"></i> <span>{ translate('DASHBOARD.OUT') }</span>
       </span>
     );
-  } else if (category === 'receive' ||
-      category === 'received') {
+  } else if (
+    category === 'receive' ||
+    category === 'received'
+  ) {
     return (
       <span className="label label-success">
         <i className="icon fa-arrow-circle-right"></i> <span>{ translate('DASHBOARD.IN') } &nbsp; &nbsp;</span>
@@ -192,6 +199,17 @@ export const TxAmountRender = function(tx) {
         <ReactTooltip
           effect="solid"
           className="text-left" />
+        { tx.vinLen > tx.vinMaxLen &&
+          <span>
+            <i
+              className="icon fa-question tx-history-vin-len-err"
+              data-tip={ translate('INDEX.SPV_TX_VIN_COUNT_WARN') }
+              data-html={ true }></i>
+            <ReactTooltip
+              effect="solid"
+              className="text-left" />
+          </span>
+        }
       </span>
     );
   }
@@ -208,6 +226,17 @@ export const TxAmountRender = function(tx) {
         <ReactTooltip
           effect="solid"
           className="text-left" />
+      }
+      { tx.vinLen > tx.vinMaxLen &&
+        <span>
+          <i
+            className="icon fa-question tx-history-vin-len-err"
+            data-tip={ translate('INDEX.SPV_TX_VIN_COUNT_WARN') }
+            data-html={ true }></i>
+          <ReactTooltip
+            effect="solid"
+            className="text-left" />
+        </span>
       }
     </span>
   );
@@ -239,7 +268,8 @@ export const WalletsDataRender = function() {
   return (
     <span>
       <div id="edexcoin_dashboardinfo">
-        { (this.displayClaimInterestUI() === 777 || this.displayClaimInterestUI() === -777) &&
+        { (this.displayClaimInterestUI() === 777 ||
+          this.displayClaimInterestUI() === -777) &&
           <div className="col-xs-12 margin-top-20 backround-gray">
             <div className="panel no-margin">
               <div>
@@ -289,7 +319,17 @@ export const WalletsDataRender = function() {
                         className="icon fa-refresh manual-txhistory-refresh pointer"
                         onClick={ this.refreshTxHistory }></i>
                     }
-                    <h4 className="panel-title">{ translate('INDEX.TRANSACTION_HISTORY') }</h4>
+                    <h4 className="panel-title">{ !this.state.kvView ? translate('INDEX.TRANSACTION_HISTORY') : translate('KV.KV_HISTORY') }</h4>
+                    { this.props.ActiveCoin.mode === 'spv' &&
+                      Config.experimentalFeatures &&
+                      kvCoins[this.props.ActiveCoin.coin] &&
+                      <button
+                        type="button"
+                        className="btn btn-default btn-switch-kv"
+                        onClick={ this.toggleKvView }>
+                        { !this.state.kvView ? translate('KV.KV_VIEW') : translate('KV.TX_VIEW') }
+                      </button>
+                    }
                   </header>
                   <div className="panel-body">
                     <div className="row padding-bottom-30 padding-top-10">
@@ -298,6 +338,7 @@ export const WalletsDataRender = function() {
                         this.props.ActiveCoin.txhistory !== 'connection error' &&
                         this.props.ActiveCoin.txhistory !== 'connection error or incomplete data' &&
                         this.props.ActiveCoin.txhistory !== 'cant get current height' &&
+                        !this.state.kvView &&
                         <div className="col-sm-4 search-box">
                           <input
                             className="form-control"
