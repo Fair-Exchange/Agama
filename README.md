@@ -1,5 +1,5 @@
 # Safewallet Desktop App
-Forked from SuperNET's Agama
+Desktop App for FairExchange DAPPs
 
 #### For Developers
 You must have `node.js` and `npm` installed on your machine.

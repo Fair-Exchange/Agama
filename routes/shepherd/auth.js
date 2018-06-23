@@ -60,7 +60,7 @@ module.exports = (shepherd) => {
   };
 
   shepherd.isWatchOnly = () => {
-    return shepherd.isWatchOnly;
+    return shepherd._isWatchOnly;
   };
 
   shepherd.setPubkey = (seed, coin) => {

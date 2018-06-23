@@ -740,9 +740,12 @@ module.exports = (shepherd) => {
                     '\naddnode=94.130.96.114' +
                     '\naddnode=5.9.253.195';
                   } else if (flock === 'safecoind') {
-                    nodesList = '\naddnode=140.82.45.57' +
-                    '\naddnode=8.12.22.254' +
-                    '\naddnode=140.82.11.189';
+                    nodesList = '\naddnode=78.47.196.146' +
+                    '\naddnode=5.9.102.210' +
+                    '\naddnode=178.63.69.164' +
+                    '\naddnode=88.198.65.74' +
+                    '\naddnode=5.9.122.241' +
+                    '\naddnode=144.76.94.3';
                   }
 
                   shepherd.log('addnode: NOT FOUND');

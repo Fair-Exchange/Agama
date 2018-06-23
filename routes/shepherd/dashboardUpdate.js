@@ -277,7 +277,7 @@ module.exports = (shepherd) => {
           };
 
           request(options, (error, response, body) => {
-            resolve(body);            
+            resolve(body);
           });
         });
       }

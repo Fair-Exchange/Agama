@@ -1,4 +1,4 @@
-const SAFECOIN_ENDOFERA = 77195;
+const SAFECOIN_ENDOFERA = 7777777;
 const LOCKTIME_THRESHOLD = 500000000;
 
 // TODO: tiptime != 0 && nLockTime < tiptime
@@ -12,31 +12,36 @@ module.exports = (shepherd) => {
     let timestampDiffMinutes = timestampDiff / 60;
     let interest = 0;
 
-    shepherd.log(`${height} vs ${SAFECOIN_ENDOFERA}`);
-    shepherd.log(`${locktime} vs ${LOCKTIME_THRESHOLD}`);
+    shepherd.log(`${height} vs ${SAFECOIN_ENDOFERA}`, true);
+    shepherd.log(`${locktime} vs ${LOCKTIME_THRESHOLD}`, true);
 
     if (height < SAFECOIN_ENDOFERA &&
         locktime >= LOCKTIME_THRESHOLD) {
-      shepherd.log('safeCalcInterest =>', false);
-      shepherd.log(`locktime ${locktime}`, false);
-      shepherd.log(`minutes converted ${timestampDiffMinutes}`, false);
-      shepherd.log(`passed ${hoursPassed}h ${minutesPassed}m ${secondsPassed}s`, false);
+      shepherd.log('safeCalcInterest =>', true);
+      shepherd.log(`locktime ${locktime}`, true);
+      shepherd.log(`minutes converted ${timestampDiffMinutes}`, true);
+      shepherd.log(`passed ${hoursPassed}h ${minutesPassed}m ${secondsPassed}s`, true);
 
       // calc interest
       if (timestampDiffMinutes >= 60) {
-        if (timestampDiffMinutes > 365 * 24 * 60) {
-          timestampDiffMinutes = 365 * 24 * 60;
+        if (height >= 1000000 &&
+            timestampDiffMinutes > 31 * 24 * 60) {
+          shepherd.log('safe new interest conditions');
+          timestampDiffMinutes = 31 * 24 * 60;
+        } else {
+          if (timestampDiffMinutes > 365 * 24 * 60) {
+            timestampDiffMinutes = 365 * 24 * 60;
+          }
+          timestampDiffMinutes -= 59;
+
+          // TODO: check if interest is > 5% yr
+          // calc ytd and 5% for 1 yr
+          // const hoursInOneYear = 365 * 24;
+          // const hoursDiff = hoursInOneYear - hoursPassed;
         }
-        timestampDiffMinutes -= 59;
 
-        // TODO: check if interest is > 5% yr
-        // calc ytd and 5% for 1 yr
-        // const hoursInOneYear = 365 * 24;
-        // const hoursDiff = hoursInOneYear - hoursPassed;
-
-       //sc interest = ((Number(value) * 0.00000001) / 10512000) * timestampDiffMinutes;
-	  interest = 0;
-	  shepherd.log(`interest ${interest}`, false);   //sc from true
+        interest = ((Number(value) * 0.00000001) / 10512000) * timestampDiffMinutes;
+        shepherd.log(`interest ${interest}`, true);
       }
     }
 

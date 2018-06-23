@@ -57,6 +57,17 @@ module.exports = (shepherd) => {
         shepherd.log('shepherd/pin folder already exists');
       }
 
+      if (!fs.existsSync(`${shepherd.safewalletDir}/shepherd/csv`)) {
+        fs.mkdirSync(`${shepherd.safewalletDir}/shepherd/csv`);
+
+        if (fs.existsSync(`${shepherd.safewalletDir}/shepherd/csv`)) {
+          shepherd.log(`created csv folder at ${shepherd.safewalletDir}/shepherd/csv`);
+          shepherd.writeLog(`create csv folder at ${shepherd.safewalletDir}/shepherd/csv`);
+        }
+      } else {
+        shepherd.log('shepherd/csv folder already exists');
+      }
+
       if (!fs.existsSync(shepherd.zcashParamsDir)) {
         fs.mkdirSync(shepherd.zcashParamsDir);
       } else {

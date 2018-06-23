@@ -331,7 +331,7 @@
     <requireInstallationByRootUser>1</requireInstallationByRootUser>
     <saveRelativePaths>1</saveRelativePaths>
     <uninstallerName>Uninstall-Safewallet</uninstallerName>
-    <vendor>Fair-Exchange</vendor>
+    <vendor>FairExchange</vendor>
     <finalPageActionList>
         <runProgram>
             <program>/bin/Safewallet</program>

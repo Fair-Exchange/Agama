@@ -1,6 +1,25 @@
 const fs = require('fs-extra');
 
 module.exports = (shepherd) => {
+  shepherd.loadCoinsListFromFile = () => {
+    try {
+      if (fs.existsSync(`${shepherd.safewalletDir}/shepherd/coinslist.json`)) {
+        const _coinsList = JSON.parse(fs.readFileSync(`${shepherd.safewalletDir}/shepherd/coinslist.json`, 'utf8'));
+
+        for (let i = 0; i < _coinsList.length; i++) {
+          const _coin = _coinsList[i].selectedCoin.split('|');
+
+          if (_coinsList[i].spvMode.checked) {
+            shepherd.addElectrumCoin(_coin[0]);
+            shepherd.log(`add spv coin ${_coin[0]} from file`);
+          }
+        }
+      }
+    } catch (e) {
+      shepherd.log(e, true);
+    }
+  }
+
   /*
    *  type: GET
    *

@@ -464,7 +464,7 @@
     <enableTimestamp>1</enableTimestamp>
     <requireInstallationByRootUser>1</requireInstallationByRootUser>
     <saveRelativePaths>1</saveRelativePaths>
-    <vendor>Fair-Exchange</vendor>
+    <vendor>FairExchange</vendor>
     <windows64bitMode>1</windows64bitMode>
     <finalPageActionList>
         <runProgram>

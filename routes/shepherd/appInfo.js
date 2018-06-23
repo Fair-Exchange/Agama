@@ -1,3 +1,5 @@
+const fs = require('fs-extra');
+
 const formatBytes = (bytes, decimals) => {
   if (bytes === 0) {
     return '0 Bytes';
@@ -45,13 +47,19 @@ module.exports = (shepherd) => {
       safecoinDir: shepherd.safecoinDir,
       safecoindBin: shepherd.safecoindBin,
       configLocation: `${shepherd.safewalletDir}/config.json`,
-      cacheLocation: `${shepherd.safewalletDir}/shepherd`,
+      cacheLocation: `${shepherd.safewalletDir}/spv-cache.json`,
     };
+    let spvCacheSize = '2 Bytes';
+
+    try {
+      spvCacheSize = formatBytes(fs.lstatSync(`${shepherd.safewalletDir}/spv-cache.json`).size);
+    } catch (e) {}
 
     return {
       sysInfo,
       releaseInfo,
       dirs,
+      cacheSize: spvCacheSize,
     };
   }
 

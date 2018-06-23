@@ -242,7 +242,7 @@
     <saveRelativePaths>1</saveRelativePaths>
     <uninstallerDirectory>${installdir}/Safewallet.app/</uninstallerDirectory>
     <uninstallerName>Uninstall-Safewallet</uninstallerName>
-    <vendor>Fair-Exchange</vendor>
+    <vendor>FairExchange</vendor>
     <finalPageActionList>
         <runProgram>
             <program>open</program>

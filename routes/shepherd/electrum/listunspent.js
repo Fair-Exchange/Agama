@@ -44,14 +44,15 @@ module.exports = (shepherd) => {
                         const _network = shepherd.getNetworkData(network);
                         const decodedTx = shepherd.electrumJSTxDecoder(_rawtxJSON, network, _network);
 
-                        shepherd.log('decoded tx =>', true);
-                        shepherd.log(decodedTx, true);
+                        // shepherd.log('decoded tx =>', true);
+                        // shepherd.log(decodedTx, true);
 
                         if (!decodedTx) {
                           _atLeastOneDecodeTxFailed = true;
                           resolve('cant decode tx');
                         } else {
-                          if (network === 'safecoin') {
+                          if (network === 'safecoin' ||
+                              network.toLowerCase() === 'safe') {
                             let interest = 0;
 
                             if (Number(_utxoItem.value) * 0.00000001 >= 10 &&
@@ -172,7 +173,8 @@ module.exports = (shepherd) => {
   shepherd.get('/electrum/listunspent', (req, res, next) => {
     if (shepherd.checkToken(req.query.token)) {
       const network = req.query.network || shepherd.findNetworkObj(req.query.coin);
-      const ecl = shepherd.electrumServers[network].proto === 'insight' ? shepherd.insightJSCore(shepherd.electrumServers[network]) : new shepherd.electrumJSCore(shepherd.electrumServers[network].port, shepherd.electrumServers[network].address, shepherd.electrumServers[network].proto); // tcp or tls
+      const ecl = shepherd.ecl(network);
+      // const ecl = shepherd.electrumServers[network].proto === 'insight' ? shepherd.insightJSCore(shepherd.electrumServers[network]) : new shepherd.electrumJSCore(shepherd.electrumServers[network].port, shepherd.electrumServers[network].address, shepherd.electrumServers[network].proto); // tcp or tls
 
       if (req.query.full &&
           req.query.full === 'true') {

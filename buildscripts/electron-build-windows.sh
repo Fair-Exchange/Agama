@@ -20,9 +20,9 @@ electron-packager . --platform=win32 \
   --ignore=react/src \
   --ignore=react/www \
   --overwrite \
-  --version-string.CompanyName="SafeCoin" \
+  --version-string.CompanyName="FairExchange" \
   --version-string.FileDescription="Safewallet" \
   --version-string.OriginalFilename="Safewallet" \
   --version-string.ProductName="Safewallet" \
   --version-string.InternalName="Safewallet" \
-  --app-copyright="Copyright (C) 2017 SuperNET. All rights reserved."
+  --app-copyright="Copyright (C) 2017 FairExchange. All rights reserved."

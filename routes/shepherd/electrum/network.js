@@ -1,3 +1,5 @@
+const { isSafecoinCoin } = require('safewallet-wallet-lib/src/coin-helpers');
+
 const txDecoder = {
   default: require('../../electrumjs/electrumjs.txdecoder.js'),
   zcash: require('../../electrumjs/electrumjs.txdecoder-2bytes.js'),
@@ -6,41 +8,15 @@ const txDecoder = {
 
 module.exports = (shepherd) => {
   shepherd.isZcash = (network) => {
-    if (network === 'ZEC' ||
-        network === 'zec' ||
-        network === 'zcash' ||
-        network === 'ZCASH' ||
-        network === 'sng' ||
-        network === 'SNG' ||
-        network === 'HUSH' ||
-        network === 'hush' ||
-        network === 'ZCL' ||
-        network === 'zcl' ||
-        network === 'BTCZ' ||
-        network === 'btcz' ||
-        network === 'VOT' ||
-        network === 'vot' ||
-        network === 'BTCP' ||
-        network === 'btcp' ||
-        network === 'XZC' ||
-        network === 'xzc' ||
-        network === 'ZEN' ||
-        network === 'zen' ||
-        network === 'SYS' ||
-        network === 'sys' ||
-        network === 'SMART' ||
-        network === 'smart') {
+    if (shepherd.electrumJSNetworks[network.toLowerCase()] &&
+        shepherd.electrumJSNetworks[network.toLowerCase()].isZcash) {
       return true;
     }
   };
 
   shepherd.isPos = (network) => {
-    if (network === 'BLK' ||
-        network === 'blk' ||
-        network === 'DNR' ||
-        network === 'dnr' ||
-        network === 'XWC' ||
-        network === 'xwc') {
+    if (shepherd.electrumJSNetworks[network.toLowerCase()] &&
+        shepherd.electrumJSNetworks[network.toLowerCase()].isPoS) {
       return true;
     }
   };
@@ -66,71 +42,9 @@ module.exports = (shepherd) => {
       coin = network.toUpperCase();
     }
 
-    if (coin === 'SUPERNET' ||
-        coin === 'REVS' ||
-        coin === 'SUPERNET' ||
-        coin === 'PANGEA' ||
-        coin === 'DEX' ||
-        coin === 'JUMBLR' ||
-        coin === 'BET' ||
-        coin === 'CRYPTO' ||
-        coin === 'COQUI' ||
-	coin === 'CHAIN' ||
-        coin === 'GLXT' ||
-        coin === 'OOT' ||
-        coin === 'HODL' ||
-        coin === 'EQL' ||
-        coin === 'SHARK' ||
-        coin === 'MSHARK' ||
-        coin === 'BOTS' ||
-        coin === 'MGW' ||
-        coin === 'MVP' ||
-        coin === 'KV' ||
-        coin === 'CEAL' ||
-        coin === 'MESH' ||
-        coin === 'WLC' ||
-        coin === 'MNZ' ||
-        coin === 'BTCH' ||
-        coin === 'SAFE' ||
-        coin === 'BEER' ||
-        coin === 'PIZZA' ||
-        coin === 'VOTE2018' ||
-        coin === 'NINJA' ||
-        coin === 'SAFECOIN' ||
-        coin === 'BNTN' ||
-        coinUC === 'SUPERNET' ||
-        coinUC === 'REVS' ||
-        coinUC === 'SUPERNET' ||
-        coinUC === 'PANGEA' ||
-        coinUC === 'DEX' ||
-        coinUC === 'JUMBLR' ||
-        coinUC === 'BET' ||
-        coinUC === 'CRYPTO' ||
-        coinUC === 'COQUI' ||
-	coinUC === 'CHAIN' ||
-        coinUC === 'GLXT' ||
-        coinUC === 'OOT' ||
-        coinUC === 'EQL' ||
-        coinUC === 'HODL' ||
-        coinUC === 'SHARK' ||
-        coinUC === 'MSHARK' ||
-        coinUC === 'BOTS' ||
-        coinUC === 'MGW' ||
-        coinUC === 'MVP' ||
-        coinUC === 'KV' ||
-        coinUC === 'CEAL' ||
-        coinUC === 'MESH' ||
-        coinUC === 'WLC' ||
-        coinUC === 'MNZ' ||
-        coinUC === 'BTCH' ||
-        coinUC === 'BEER' ||
-        coinUC === 'PIZZA' ||
-        coinUC === 'VOTE2018' ||
-        coinUC === 'NINJA' ||
-        coinUC === 'SAFE' ||
-        coinUC === 'SAFECOIN' ||
-        coinUC === 'BNTN') {
-      return shepherd.electrumJSNetworks.safecoin;
+    if (isSafecoinCoin(coin) ||
+        isSafecoinCoin(coinUC)) {
+      return shepherd.electrumJSNetworks.safe;
     } else {
       return shepherd.electrumJSNetworks[network];
     }
@@ -138,7 +52,7 @@ module.exports = (shepherd) => {
 
   shepherd.findNetworkObj = (coin) => {
     for (let key in shepherd.electrumServers) {
-      if (shepherd.electrumServers[key].abbr === coin) {
+      if (key.toLowerCase() === coin.toLowerCase()) {
         return key;
       }
     }
@@ -146,11 +60,11 @@ module.exports = (shepherd) => {
 
   shepherd.get('/electrum/servers', (req, res, next) => {
     if (shepherd.checkToken(req.query.token)) {
-      if (req.query.abbr) {
+      if (req.query.abbr) { // (?) change
         let _electrumServers = {};
 
         for (let key in shepherd.electrumServers) {
-          _electrumServers[shepherd.electrumServers[key].abbr] = shepherd.electrumServers[key];
+          _electrumServers[key] = shepherd.electrumServers[key];
         }
 
         const successObj = {
@@ -186,12 +100,14 @@ module.exports = (shepherd) => {
       shepherd.electrumCoins[req.query.coin].server = {
         ip: req.query.address,
         port: req.query.port,
+        proto: req.query.proto,
       };
 
       for (let key in shepherd.electrumServers) {
-        if (shepherd.electrumServers[key].abbr === req.query.coin) {
+        if (key === req.query.coin) {
           shepherd.electrumServers[key].address = req.query.address;
           shepherd.electrumServers[key].port = req.query.port;
+          shepherd.electrumServers[key].proto = req.query.proto;
           break;
         }
       }
@@ -216,7 +132,9 @@ module.exports = (shepherd) => {
 
   shepherd.get('/electrum/servers/test', (req, res, next) => {
     if (shepherd.checkToken(req.query.token)) {
-      const ecl = new shepherd.electrumJSCore(req.query.port, req.query.address, 'tcp'); // tcp or tls
+      const ecl = shepherd.ecl(null, { port: req.query.port, ip: req.query.address, proto: req.query.proto });
+      //const ecl = new shepherd.electrumJSCore(null, { port: req.query.port, ip: req.query.address, proto: req.query.proto }); // tcp or tls
+      //const ecl = new shepherd.electrumJSCore(req.query.port, req.query.address, 'tcp'); // tcp or tls
 
       ecl.connect();
       ecl.serverVersion()
@@ -252,6 +170,60 @@ module.exports = (shepherd) => {
       res.end(JSON.stringify(errorObj));
     }
   });
+
+  // remote api switch wrapper
+  shepherd.ecl = (network, customElectrum) => {
+    if (!network) {
+      return new shepherd.electrumJSCore(customElectrum.port, customElectrum.ip, customElectrum.proto, shepherd.appConfig.spv.socketTimeout);
+    } else {
+      let _currentElectrumServer;
+      network = network.toLowerCase();
+
+      /*console.log(`ecl net ${network}`);
+      console.log(shepherd.electrumCoins[network]);
+      console.log(shepherd.electrumServers[network].serverList);*/
+
+      if (shepherd.electrumCoins[network]) {
+        _currentElectrumServer = shepherd.electrumCoins[network];
+      } else {
+        const _server = shepherd.electrumServers[network].serverList[0].split(':');
+        _currentElectrumServer = {
+          ip: _server[0],
+          port: _server[1],
+          proto: _server[2],
+        };
+      }
+
+      if (shepherd.electrumServers[network].proto === 'insight') {
+        return shepherd.insightJSCore(shepherd.electrumServers[network]);
+      } else {
+        if (shepherd.appConfig.spv.proxy) {
+          return shepherd.proxy(network, customElectrum);
+        } else {
+          const electrum = customElectrum ? {
+            port: customElectrum.port,
+            ip: customElectrum.ip,
+            proto: customElectrum.proto,
+          } : {
+            port: shepherd.electrumCoins[network] && shepherd.electrumCoins[network].server.port || _currentElectrumServer.port,
+            ip: shepherd.electrumCoins[network] && shepherd.electrumCoins[network].server.ip || _currentElectrumServer.ip,
+            proto: shepherd.electrumCoins[network] && shepherd.electrumCoins[network].server.proto || _currentElectrumServer.proto,
+          };
+
+          /*if (customElectrum) {
+            console.log('custom electrum');
+            console.log(customElectrum);
+          }
+
+          console.log('electrum');
+          console.log(electrum);*/
+
+          return new shepherd.electrumJSCore(electrum.port, electrum.ip, electrum.proto, shepherd.appConfig.spv.socketTimeout);
+          //return new shepherd.electrumJSCore(shepherd.electrumServers[network].port, shepherd.electrumServers[network].address, shepherd.electrumServers[network].proto); // tcp or tls
+        }
+      }
+    }
+  }
 
   return shepherd;
 };

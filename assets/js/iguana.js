@@ -1,4 +1,4 @@
-//SuperNET iguana app launcher
+//FairExchange iguana app launcher
 
 //var exec = require('child_process').exec
 //exec does not return obj with stream but instead the whole buffer output from proc

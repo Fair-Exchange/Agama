@@ -35,11 +35,12 @@ module.exports = (shepherd) => {
     if (shepherd.checkToken(req.query.token)) {
       if (checkTimestamp(btcFees.lastUpdated) > BTC_FEES_MIN_ELAPSED_TIME) {
         const _randomServer = shepherd.electrumServers.btc.serverList[getRandomIntInclusive(0, shepherd.electrumServers.btc.serverList.length - 1)].split(':');
-        const ecl = new shepherd.electrumJSCore(
+        const ecl = shepherd.ecl(network, { port: _randomServer[1], ip: _randomServer[0], port: 'tcp' });
+        /*const ecl = new shepherd.electrumJSCore(
           _randomServer[1],
           _randomServer[0],
           'tcp'
-        );
+        );*/
         let _btcFeeEstimates = [];
 
         console.log(`btc fees server ${_randomServer.join(':')}`);

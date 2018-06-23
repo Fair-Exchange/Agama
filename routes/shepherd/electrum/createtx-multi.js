@@ -1,5 +1,5 @@
 const bitcoinJS = require('bitcoinjs-lib');
-const bitcoinJSForks = require('bitcoinforkjs-lib');
+const bitcoinJSForks = require('bitcoinforksjs-lib');
 const bitcoinZcash = require('bitcoinjs-lib-zcash');
 const bitcoinPos = require('bitcoinjs-lib-pos');
 const coinSelect = require('coinselect');
@@ -28,7 +28,7 @@ module.exports = (shepherd) => {
       let fee = shepherd.electrumServers[network].txfee;
       let wif = req.body.wif;
       let targets = req.body.targets;
-      
+
       if (req.body.gui) {
         wif = shepherd.electrumKeys[req.body.coin].priv;
       }
@@ -65,7 +65,8 @@ module.exports = (shepherd) => {
           let utxoVerified = true;
 
           for (let i = 0; i < utxoList.length; i++) {
-            if (network === 'safecoin') {
+            if (network === 'safecoin' ||
+                network.toLowerCase() === 'safe') {
               utxoListFormatted.push({
                 txid: utxoList[i].txid,
                 vout: utxoList[i].vout,
@@ -232,7 +233,7 @@ module.exports = (shepherd) => {
             shepherd.log(`changeto ${changeAddress} amount ${_change} (${_change * 0.00000001})`, true);
 
             // account for SAFE interest
-            if (network === 'safecoin' &&
+            if ((network === 'safecoin' || network.toLowerCase() === 'safe') &&
                 totalInterest > 0) {
               // account for extra vout
               // const _feeOverhead = outputs.length === 1 ? shepherd.estimateTxSize(0, 1) * feeRate : 0;
@@ -507,7 +508,7 @@ module.exports = (shepherd) => {
     }
 
     if (network === 'safecoin' ||
-        network === 'SAFE') {
+        network.toUpperCase() === 'SAFE') {
       const _locktime = Math.floor(Date.now() / 1000) - 777;
       tx.setLockTime(_locktime);
       shepherd.log(`safe tx locktime set to ${_locktime}`, true);

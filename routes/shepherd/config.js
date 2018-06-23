@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const _fs = require('graceful-fs');
 const fsnode = require('fs');
 const Promise = require('bluebird');
+const defaultConf = require('../appConfig.js').config;
+const deepmerge = require('./deepmerge.js');
 
 module.exports = (shepherd) => {
   shepherd.loadLocalConfig = () => {
@@ -17,8 +19,25 @@ module.exports = (shepherd) => {
         let result = {};
 
         for (let i in obj1) {
-          if (!obj2.hasOwnProperty(i)) {
-            result[i] = obj1[i];
+          if (typeof obj1[i] !== 'object') {
+            if (!obj2.hasOwnProperty(i)) {
+              result[i] = obj1[i];
+            }
+          } else {
+            for (let j in obj1[i]) {
+              if (!obj2[i]) {
+                obj2[i] = {};
+              }
+
+              if (!obj2[i].hasOwnProperty(j)) {
+                if (!result[i]) {
+                  result[i] = {};
+                }
+
+                shepherd.log(`settings multi-level diff ${i} -> ${j}`, true);
+                result[i][j] = obj1[i][j];
+              }
+            }
           }
         }
 
@@ -26,10 +45,10 @@ module.exports = (shepherd) => {
       };
 
       if (localAppConfig) {
-        const compareConfigs = compareJSON(shepherd.appConfig, JSON.parse(localAppConfig));
+        const compareConfigs = compareJSON(defaultConf, JSON.parse(localAppConfig));
 
         if (Object.keys(compareConfigs).length) {
-          const newConfig = Object.assign(JSON.parse(localAppConfig), compareConfigs);
+          const newConfig = deepmerge(defaultConf, JSON.parse(localAppConfig));
 
           shepherd.log('config diff is found, updating local config');
           shepherd.log('config diff:');
@@ -56,11 +75,10 @@ module.exports = (shepherd) => {
   };
 
   shepherd.saveLocalAppConf = (appSettings) => {
-    let appConfFileName = `${shepherd.safewalletDir}/config.json`;
+    const appConfFileName = `${shepherd.safewalletDir}/config.json`;
 
     _fs.access(shepherd.safewalletDir, shepherd.fs.constants.R_OK, (err) => {
       if (!err) {
-
         const FixFilePermissions = () => {
           return new Promise((resolve, reject) => {
             const result = 'config.json file permissions updated to Read/Write';
@@ -179,6 +197,24 @@ module.exports = (shepherd) => {
       res.end(JSON.stringify(errorObj));
     }
   });
+
+  shepherd.testLocation = (path) => {
+    return new Promise((resolve, reject) => {
+      fs.lstat(path, (err, stats) => {
+        if (err) {
+          shepherd.log(`error testing path ${path}`);
+          resolve(-1);
+        } else {
+          if (stats.isDirectory()) {
+            resolve(true);
+          } else {
+            shepherd.log(`error testing path ${path} not a folder`);
+            resolve(false);
+          }
+        }
+      });
+    });
+  }
 
   return shepherd;
 };

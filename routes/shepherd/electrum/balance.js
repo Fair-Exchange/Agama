@@ -4,7 +4,7 @@ module.exports = (shepherd) => {
   shepherd.get('/electrum/getbalance', (req, res, next) => {
     if (shepherd.checkToken(req.query.token)) {
       const network = req.query.network || shepherd.findNetworkObj(req.query.coin);
-      const ecl = shepherd.electrumServers[network].proto === 'insight' ? shepherd.insightJSCore(shepherd.electrumServers[network]) : new shepherd.electrumJSCore(shepherd.electrumServers[network].port, shepherd.electrumServers[network].address, shepherd.electrumServers[network].proto); // tcp or tls
+      const ecl = shepherd.ecl(network);
 
       shepherd.log('electrum getbalance =>', true);
 
@@ -14,7 +14,8 @@ module.exports = (shepherd) => {
         if (json &&
             json.hasOwnProperty('confirmed') &&
             json.hasOwnProperty('unconfirmed')) {
-          if (network === 'safecoin') {
+          if (network === 'safecoin' ||
+              network.toLowerCase() === 'safe') {
             ecl.blockchainAddressListunspent(req.query.address)
             .then((utxoList) => {
               if (utxoList &&

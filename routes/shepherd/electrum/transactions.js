@@ -1,8 +1,6 @@
 const async = require('async');
 const Promise = require('bluebird');
 
-const MAX_VIN_LENGTH = 150; // parse up to MAX_VIN_LENGTH vins
-
 // TODO: add z -> pub, pub -> z flag for zcash forks
 
 module.exports = (shepherd) => {
@@ -70,14 +68,38 @@ module.exports = (shepherd) => {
 
   shepherd.get('/electrum/listtransactions', (req, res, next) => {
     if (shepherd.checkToken(req.query.token)) {
-      const network = req.query.network || shepherd.findNetworkObj(req.query.coin);
-      const ecl = shepherd.electrumServers[network].proto === 'insight' ? shepherd.insightJSCore(shepherd.electrumServers[network]) : new shepherd.electrumJSCore(shepherd.electrumServers[network].port, shepherd.electrumServers[network].address, shepherd.electrumServers[network].proto); // tcp or tls
-      const _address = req.query.address;
-      const _maxlength = req.query.maxlength;
+      shepherd.listtransactions({
+        network: req.query.network,
+        coin: req.query.coin,
+        address: req.query.address,
+        kv: req.query.kv,
+        maxlength: req.query.maxlength,
+        full: req.query.full,
+      })
+      .then((txhistory) => {
+        res.end(JSON.stringify(txhistory));
+      });
+    } else {
+      const errorObj = {
+        msg: 'error',
+        result: 'unauthorized access',
+      };
+
+      res.end(JSON.stringify(errorObj));
+    }
+  });
+
+  shepherd.listtransactions = (config, options) => {
+    return new Promise((resolve, reject) => {
+      const network = config.network || shepherd.findNetworkObj(config.coin);
+      const ecl = shepherd.ecl(network);
+      const _address = config.address;
+      const isKv = config.kv;
+      const _maxlength = isKv ? 10 : config.maxlength;
 
       shepherd.log('electrum listtransactions ==>', true);
 
-      if (!req.query.full ||
+      if (!config.full ||
           ecl.insight) {
         ecl.connect();
         ecl.blockchainAddressGetHistory(_address)
@@ -87,12 +109,10 @@ module.exports = (shepherd) => {
 
           json = shepherd.sortTransactions(json, 'timestamp');
 
-          const successObj = {
+          resolve({
             msg: 'success',
             result: json,
-          };
-
-          res.end(JSON.stringify(successObj));
+          });
         });
       } else {
         // !expensive call!
@@ -147,7 +167,15 @@ module.exports = (shepherd) => {
                             decodedTx.outputs.length) {
                           for (let i = 0; i < decodedTx.outputs.length; i++) {
                             if (decodedTx.outputs[i].scriptPubKey.type === 'nulldata') {
-                              opreturn = shepherd.hex2str(decodedTx.outputs[i].scriptPubKey.hex);
+                              if (isKv) {
+                                opreturn = {
+                                  kvHex: decodedTx.outputs[i].scriptPubKey.hex,
+                                  kvAsm: decodedTx.outputs[i].scriptPubKey.asm,
+                                  kvDecoded: shepherd.kvDecode(decodedTx.outputs[i].scriptPubKey.asm.substr(10, decodedTx.outputs[i].scriptPubKey.asm.length), true),
+                                };
+                              } else {
+                                opreturn = shepherd.hex2str(decodedTx.outputs[i].scriptPubKey.hex);
+                              }
                             }
                           }
                         }
@@ -160,7 +188,7 @@ module.exports = (shepherd) => {
                               index2++;
 
                               if (index2 === decodedTx.inputs.length ||
-                                  index2 === MAX_VIN_LENGTH) {
+                                  index2 === shepherd.appConfig.spv.maxVinParseLimit) {
                                 shepherd.log(`tx history decode inputs ${decodedTx.inputs.length} | ${index2} => main callback`, true);
                                 const _parsedTx = {
                                   network: decodedTx.network,
@@ -183,7 +211,7 @@ module.exports = (shepherd) => {
                                   formattedTx.outputs = decodedTx.outputs;
                                   formattedTx.locktime = decodedTx.format.locktime;
                                   formattedTx.vinLen = decodedTx.inputs.length;
-                                  formattedTx.vinMaxLen = MAX_VIN_LENGTH;
+                                  formattedTx.vinMaxLen = shepherd.appConfig.spv.maxVinParseLimit;
                                   formattedTx.opreturn = opreturn;
                                   _rawtx.push(formattedTx);
                                 } else {
@@ -195,7 +223,7 @@ module.exports = (shepherd) => {
                                   formattedTx[0].outputs = decodedTx.outputs;
                                   formattedTx[0].locktime = decodedTx.format.locktime;
                                   formattedTx[0].vinLen = decodedTx.inputs.length;
-                                  formattedTx[0].vinMaxLen = MAX_VIN_LENGTH;
+                                  formattedTx[0].vinMaxLen = shepherd.appConfig.spv.maxVinParseLimit;
                                   formattedTx[0].opreturn = opreturn[0];
                                   formattedTx[1].height = transaction.height;
                                   formattedTx[1].blocktime = Number(transaction.height) === 0 || Number(transaction.height) === -1 ? Math.floor(Date.now() / 1000) : blockInfo.timestamp;
@@ -205,7 +233,7 @@ module.exports = (shepherd) => {
                                   formattedTx[1].outputs = decodedTx.outputs;
                                   formattedTx[1].locktime = decodedTx.format.locktime;
                                   formattedTx[1].vinLen = decodedTx.inputs.length;
-                                  formattedTx[1].vinMaxLen = MAX_VIN_LENGTH;
+                                  formattedTx[1].vinMaxLen = shepherd.appConfig.spv.maxVinParseLimit;
                                   formattedTx[1].opreturn = opreturn[1];
                                   _rawtx.push(formattedTx[0]);
                                   _rawtx.push(formattedTx[1]);
@@ -215,12 +243,23 @@ module.exports = (shepherd) => {
                                 if (index === json.length) {
                                   ecl.close();
 
-                                  const successObj = {
+                                  if (isKv) {
+                                    let _kvTx = [];
+
+                                    for (let i = 0; i < _rawtx.length; i++) {
+                                      if (_rawtx[i].opreturn &&
+                                          _rawtx[i].opreturn.kvDecoded) {
+                                        _kvTx.push(_rawtx[i]);
+                                      }
+                                    }
+
+                                    _rawtx = _kvTx;
+                                  }
+
+                                  resolve({
                                     msg: 'success',
                                     result: _rawtx,
-                                  };
-
-                                  res.end(JSON.stringify(successObj));
+                                  });
                                 }
 
                                 callback();
@@ -264,12 +303,23 @@ module.exports = (shepherd) => {
                           if (index === json.length) {
                             ecl.close();
 
-                            const successObj = {
+                            if (isKv) {
+                              let _kvTx = [];
+
+                              for (let i = 0; i < _rawtx.length; i++) {
+                                if (_rawtx[i].opreturn &&
+                                    _rawtx[i].opreturn.kvDecoded) {
+                                  _kvTx.push(_rawtx[i]);
+                                }
+                              }
+
+                              _rawtx = _kvTx;
+                            }
+
+                            resolve({
                               msg: 'success',
                               result: _rawtx,
-                            };
-
-                            res.end(JSON.stringify(successObj));
+                            });
                           } else {
                             callback();
                           }
@@ -292,12 +342,23 @@ module.exports = (shepherd) => {
                       if (index === json.length) {
                         ecl.close();
 
-                        const successObj = {
+                        if (isKv) {
+                          let _kvTx = [];
+
+                          for (let i = 0; i < _rawtx.length; i++) {
+                            if (_rawtx[i].opreturn &&
+                                _rawtx[i].opreturn.kvDecoded) {
+                              _kvTx.push(_rawtx[i]);
+                            }
+                          }
+
+                          _rawtx = _kvTx;
+                        }
+
+                        resolve({
                           msg: 'success',
                           result: _rawtx,
-                        };
-
-                        res.end(JSON.stringify(successObj));
+                        });
                       } else {
                         callback();
                       }
@@ -307,42 +368,27 @@ module.exports = (shepherd) => {
               } else {
                 ecl.close();
 
-                const successObj = {
+                resolve({
                   msg: 'success',
                   result: [],
-                };
-
-                res.end(JSON.stringify(successObj));
+                });
               }
             });
           } else {
-            const successObj = {
+            resolve({
               msg: 'error',
               result: 'cant get current height',
-            };
-
-            res.end(JSON.stringify(successObj));
+            });
           }
         });
       }
-    } else {
-      const errorObj = {
-        msg: 'error',
-        result: 'unauthorized access',
-      };
-
-      res.end(JSON.stringify(errorObj));
-    }
-  });
+    });
+  };
 
   shepherd.get('/electrum/gettransaction', (req, res, next) => {
     if (shepherd.checkToken(req.query.token)) {
       const network = req.query.network || shepherd.findNetworkObj(req.query.coin);
-      const ecl = new shepherd.electrumJSCore(
-        shepherd.electrumServers[network].port,
-        shepherd.electrumServers[network].address,
-        shepherd.electrumServers[network].proto
-      ); // tcp or tls
+      const ecl = shepherd.ecl(network);
 
       shepherd.log('electrum gettransaction =>', true);
 
@@ -359,257 +405,6 @@ module.exports = (shepherd) => {
 
         res.end(JSON.stringify(successObj));
       });
-    } else {
-      const errorObj = {
-        msg: 'error',
-        result: 'unauthorized access',
-      };
-
-      res.end(JSON.stringify(errorObj));
-    }
-  });
-
-  shepherd.parseTransactionAddresses = (tx, targetAddress, network, skipTargetAddress) => {
-    // TODO: - sum vins / sum vouts to the same address
-    //       - multi vin multi vout
-    //       - detect change address
-    //       - double check for exact sum input/output values
-    let result = [];
-    let _parse = {
-      inputs: {},
-      outputs: {},
-    };
-    let _sum = {
-      inputs: 0,
-      outputs: 0,
-    };
-    let _total = {
-      inputs: 0,
-      outputs: 0,
-    };
-    let _addresses = {
-      inputs: [],
-      outputs: [],
-    };
-
-    shepherd.log('parseTransactionAddresses result ==>', true);
-
-    if (tx.format === 'cant parse') {
-      return {
-        type: 'unknown',
-        amount: 'unknown',
-        address: targetAddress,
-        timestamp: tx.timestamp,
-        txid: tx.format.txid,
-        confirmations: tx.confirmations,
-      }
-    }
-
-    for (let key in _parse) {
-      if (!tx[key].length) {
-        _parse[key] = [];
-        _parse[key].push(tx[key]);
-      } else {
-        _parse[key] = tx[key];
-      }
-
-      for (let i = 0; i < _parse[key].length; i++) {
-        shepherd.log(`key ==>`, true);
-        shepherd.log(_parse[key][i], true);
-        shepherd.log(Number(_parse[key][i].value), true);
-
-        _total[key] += Number(_parse[key][i].value);
-
-        // ignore op return outputs
-        if (_parse[key][i].scriptPubKey &&
-            _parse[key][i].scriptPubKey.addresses &&
-            _parse[key][i].scriptPubKey.addresses[0] &&
-            _parse[key][i].scriptPubKey.addresses[0] === targetAddress &&
-            _parse[key][i].value) {
-          _sum[key] += Number(_parse[key][i].value);
-        }
-
-        if (_parse[key][i].scriptPubKey &&
-            _parse[key][i].scriptPubKey.addresses &&
-            _parse[key][i].scriptPubKey.addresses[0]) {
-          _addresses[key].push(_parse[key][i].scriptPubKey.addresses[0]);
-
-          if (_parse[key][i].scriptPubKey.addresses[0] === targetAddress &&
-              skipTargetAddress) {
-            _addresses[key].pop();
-          }
-        }
-      }
-    }
-
-    _addresses.inputs = [ ...new Set(_addresses.inputs) ];
-    _addresses.outputs = [ ...new Set(_addresses.outputs) ];
-
-    shepherd.log('addresses in =>', true);
-    shepherd.log(_addresses.inputs, true);
-    shepherd.log('addresses out =>', true);
-    shepherd.log(_addresses.outputs, true);
-
-    let isSelfSend = {
-      inputs: false,
-      outputs: false,
-    };
-
-    for (let key in _parse) {
-      for (let i = 0; i < _addresses[key].length; i++) {
-        if (_addresses[key][i] === targetAddress &&
-            _addresses[key].length === 1) {
-          isSelfSend[key] = true;
-        }
-      }
-    }
-
-    if (_sum.inputs > 0 &&
-        _sum.outputs > 0) {
-      // vin + change, break into two tx
-
-      // send to self
-      if (isSelfSend.inputs && isSelfSend.outputs) {
-        result = {
-          type: 'self',
-          amount: Number(_sum.inputs - _sum.outputs).toFixed(8),
-          address: targetAddress,
-          timestamp: tx.timestamp,
-          txid: tx.format.txid,
-          confirmations: tx.confirmations,
-        };
-
-        if (network === 'safecoin') { // calc claimed interest amount
-          const vinVoutDiff = _total.inputs - _total.outputs;
-
-          if (vinVoutDiff < 0) {
-            result.interest = Number(vinVoutDiff.toFixed(8));
-          }
-        }
-      } else {
-        result = [{ // reorder since tx sort by default is from newest to oldest
-          type: 'sent',
-          amount: Number(_sum.inputs.toFixed(8)),
-          address: _addresses.outputs[0],
-          timestamp: tx.timestamp,
-          txid: tx.format.txid,
-          confirmations: tx.confirmations,
-          from: _addresses.inputs,
-          to: _addresses.outputs,
-        }, {
-          type: 'received',
-          amount: Number(_sum.outputs.toFixed(8)),
-          address: targetAddress,
-          timestamp: tx.timestamp,
-          txid: tx.format.txid,
-          confirmations: tx.confirmations,
-          from: _addresses.inputs,
-          to: _addresses.outputs,
-        }];
-
-        if (network === 'safecoin') { // calc claimed interest amount
-          const vinVoutDiff = _total.inputs - _total.outputs;
-
-          if (vinVoutDiff < 0) {
-            result[1].interest = Number(vinVoutDiff.toFixed(8));
-          }
-        }
-      }
-    } else if (_sum.inputs === 0 && _sum.outputs > 0) {
-      result = {
-        type: 'received',
-        amount: Number(_sum.outputs.toFixed(8)),
-        address: targetAddress,
-        timestamp: tx.timestamp,
-        txid: tx.format.txid,
-        confirmations: tx.confirmations,
-        from: _addresses.inputs,
-        to: _addresses.outputs,
-      };
-    } else if (_sum.inputs > 0 && _sum.outputs === 0) {
-      result = {
-        type: 'sent',
-        amount: Number(_sum.inputs.toFixed(8)),
-        address: isSelfSend.inputs && isSelfSend.outputs ? targetAddress : _addresses.outputs[0],
-        timestamp: tx.timestamp,
-        txid: tx.format.txid,
-        confirmations: tx.confirmations,
-        from: _addresses.inputs,
-        to: _addresses.outputs,
-      };
-    } else {
-      // (?)
-      result = {
-        type: 'other',
-        amount: 'unknown',
-        address: 'unknown',
-        timestamp: tx.timestamp,
-        txid: tx.format.txid,
-        confirmations: tx.confirmations,
-      };
-    }
-
-    shepherd.log(_sum, true);
-    shepherd.log(result, true);
-
-    return result;
-  }
-
-  shepherd.get('/electrum/decoderawtx', (req, res, next) => {
-    if (shepherd.checkToken(req.query.token)) {
-      const _network = shepherd.getNetworkData(req.query.network);
-      const _rawtx = req.query.rawtx;
-      //const _rawtx = '010000006f2c395a02d81487fc7f9d1be3ea900316730133c044af70cd76d21e988e71de0e9e85918f010000006a47304402202097acd391e1d0eaaf91844bd596e918fb71320e3e0c51554acb71a39e4ee98b0220548fd61d4ae77a08d70b01bf5340983a1ba63f6b71ad71d478af77011f96fd510121031ffc010d8abc4180b4c1a13962bf9153a78082e7f2ac18f7d14cb6a6634ca218feffffff2b31f6c9a7916f7cf128cae94b3fc10e4c74ca3a740e1a7a6fd6624e4e9a5c8b010000006a473044022063f014c5fbaa7614732e0ae486179a854215fc32c02230e13f69b7e81fa000e50220236a2ba6373b1854aafc59c5391ab7505062067f3d293c016cbb5d252b35a56a012102f307f17d282fc0eabf99227c2e0f3122ae9ecd7da0de099f0c6007d4c941b57bfeffffff021b797ad7120000001976a914c7a7142d743b3e6eebe76923f43bae477d3ce31a88acff086d66000000001976a91463800ff36b9c52b2ffe5564af1c2a38df4f0126788ac16381d00';
-      const decodedTx = shepherd.electrumJSTxDecoder(_rawtx, req.query.network, _network);
-
-      shepherd.log('electrum decoderawtx input tx ==>', true);
-
-      if (req.query.parseonly ||
-          decodedTx.inputs[0].txid === '0000000000000000000000000000000000000000000000000000000000000000') {
-        const successObj = {
-          msg: 'success',
-          result: {
-            network: decodedTx.network,
-            format: decodedTx.format,
-            inputs: decodedTx.inputs,
-            outputs: decodedTx.outputs,
-          },
-        };
-
-        shepherd.log(successObj.result, true);
-
-        res.end(JSON.stringify(successObj));
-      } else {
-        const ecl = new shepherd.electrumJSCore(
-          shepherd.electrumServers[req.query.network].port,
-          shepherd.electrumServers[req.query.network].address,
-          shepherd.electrumServers[req.query.network].proto
-        ); // tcp or tls
-
-        shepherd.log(decodedTx.inputs[0]);
-        shepherd.log(decodedTx.inputs[0].txid);
-
-        ecl.connect();
-        ecl.blockchainTransactionGet(decodedTx.inputs[0].txid)
-        .then((json) => {
-          ecl.close();
-          shepherd.log(json, true);
-
-          const decodedVin = shepherd.electrumJSTxDecoder(json, req.query.network, _network);
-
-          const successObj = {
-            msg: 'success',
-            result: {
-              network: decodedTx.network,
-              format: decodedTx.format,
-              inputs: decodedVin.outputs[decodedTx.inputs[0].n],
-              outputs: decodedTx.outputs,
-            },
-          };
-
-          res.end(JSON.stringify(successObj));
-        });
-      }
     } else {
       const errorObj = {
         msg: 'error',
