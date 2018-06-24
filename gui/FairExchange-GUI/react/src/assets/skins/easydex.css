@@ -1,0 +1,14 @@
+.vertical-center {
+	min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+	min-height: 100vh; /* These two lines are counted as one :-)       */
+
+	display: flex;
+	align-items: center;
+}
+
+.force-select {  
+	-webkit-user-select: all;	/* Chrome 49+ */
+	-moz-user-select: all;		/* Firefox 43+ */
+	-ms-user-select: all;		/* No support yet */
+	user-select: all;			/* Likely future */   
+}
