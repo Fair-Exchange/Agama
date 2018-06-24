@@ -6,10 +6,10 @@ You must have `node.js` and `npm` installed on your machine.
 
 Clone Safewallet Desktop App with FairExchange-GUI submodule
 ```shell
-1) git clone https://github.com/fair-exchange/safewallet --recursive --branch pkg_automation_electrum --single-branch
-with this command you git clone safewallet - but explicitly just the pkg_automation_electrum branch (therefore --single-branch) which we also use for the release packages.
+1) git clone https://github.com/fair-exchange/safewallet --recursive --branch master --single-branch
+with this command you git clone safewallet - but explicitly just the master branch (therefore --single-branch) which we also use for the release packages.
 2) cd safewallet && cd gui/FairExchange-GUI/
-3) git checkout electrum && git pull origin electrum
+3) git checkout master && git pull origin master
 4) npm install && npm install webpack
 5) ./binary_artifacts.sh
 6) npm start in project root folder
