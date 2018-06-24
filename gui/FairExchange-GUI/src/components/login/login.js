@@ -1,0 +1,835 @@
+import React from 'react';
+import { connect } from 'react-redux';
+import {
+  toggleAddcoinModal,
+  shepherdElectrumAuth,
+  shepherdElectrumCoins,
+  startInterval,
+  getDexCoins,
+  triggerToaster,
+  toggleLoginSettingsModal,
+  stopInterval,
+  dashboardChangeActiveCoin,
+  toggleZcparamsFetchModal,
+  toggleNotaryElectionsModal,
+  activeHandle,
+  encryptPassphrase,
+  loadPinList,
+  loginWithPin,
+  shepherdElectrumLogout,
+  dashboardRemoveCoin,
+} from '../../actions/actionCreators';
+import Config from '../../config';
+import Store from '../../store';
+import zcashParamsCheckErrors from '../../util/zcashParams';
+import SwallModalRender from './swall-modal.render';
+import LoginRender from './login.render';
+import translate from '../../translate/translate';
+import mainWindow from '../../util/mainWindow';
+import passphraseGenerator from 'safewallet-wallet-lib/src/crypto/passphrasegenerator';
+import md5 from 'safewallet-wallet-lib/src/crypto/md5';
+
+const IGUNA_ACTIVE_HANDLE_TIMEOUT = 3000;
+const IGUNA_ACTIVE_COINS_TIMEOUT = 10000;
+const SEED_TRIM_TIMEOUT = 5000;
+
+class Login extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      display: false,
+      activeLoginSection: 'activateCoin',
+      loginPassphrase: '',
+      seedInputVisibility: false,
+      loginPassPhraseSeedType: null,
+      bitsOption: 256,
+      randomSeed: passphraseGenerator.generatePassPhrase(256),
+      randomSeedConfirm: '',
+      isSeedConfirmError: false,
+      isSeedBlank: false,
+      displaySeedBackupModal: false,
+      customWalletSeed: false,
+      isCustomSeedWeak: false,
+      trimPassphraseTimer: null,
+      displayLoginSettingsDropdown: false,
+      displayLoginSettingsDropdownSection: null,
+      shouldEncryptSeed: true,
+      encryptKey: '',
+      encryptKeyConfirm: '',
+      decryptKey: '',
+      selectedPin: '',
+      isExperimentalOn: false,
+      enableEncryptSeed: true,
+      isCustomPinFilename: true,
+      customPinFilename: '',
+      selectedShortcutNative: '',
+      selectedShortcutSPV: '',
+      seedExtraSpaces: false,
+    };
+    this.defaultState = JSON.parse(JSON.stringify(this.state));
+    this.toggleActivateCoinForm = this.toggleActivateCoinForm.bind(this);
+    this.updateRegisterConfirmPassPhraseInput = this.updateRegisterConfirmPassPhraseInput.bind(this);
+    this.updateLoginPassPhraseInput = this.updateLoginPassPhraseInput.bind(this);
+    this.loginSeed = this.loginSeed.bind(this);
+    this.toggleSeedInputVisibility = this.toggleSeedInputVisibility.bind(this);
+    this.handleRegisterWallet = this.handleRegisterWallet.bind(this);
+    this.toggleSeedBackupModal = this.toggleSeedBackupModal.bind(this);
+    this.copyPassPhraseToClipboard = this.copyPassPhraseToClipboard.bind(this);
+    this.execWalletCreate = this.execWalletCreate.bind(this);
+    this.resizeLoginTextarea = this.resizeLoginTextarea.bind(this);
+    this.toggleLoginSettingsDropdown = this.toggleLoginSettingsDropdown.bind(this);
+    this.updateInput = this.updateInput.bind(this);
+    this.loadPinList = this.loadPinList.bind(this);
+    this.updateSelectedShortcut = this.updateSelectedShortcut.bind(this);
+    this.setRecieverFromScan = this.setRecieverFromScan.bind(this);
+    this.toggleCustomPinFilename = this.toggleCustomPinFilename.bind(this);
+    this.resetSPVCoins = this.resetSPVCoins.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+  }
+
+  handleClickOutside(e) {
+    if (e &&
+        e.srcElement &&
+        e.srcElement.offsetParent) {
+      this.setState({
+        displayLoginSettingsDropdown: e.srcElement.className.indexOf('login-settings-dropdown-label') === -1 || !this.state.displayLoginSettingsDropdown ? false : true,
+      });
+    }
+  }
+
+  renderResetSPVCoinsOption() {
+    if (this.props.Main &&
+        this.props.Main.coins &&
+        this.props.Main.coins.spv &&
+        this.props.Main.coins.spv.length) {
+      return true;
+    }
+  }
+
+  resetSPVCoins() {
+    this.setState({
+      displayLoginSettingsDropdown: false,
+    });
+
+    shepherdElectrumLogout()
+    .then((res) => {
+      const _spvCoins = this.props.Main.coins.spv;
+
+      mainWindow.pinAccess = false;
+
+      if (!this.props.Main.coins.native.length) {
+        Store.dispatch(dashboardChangeActiveCoin(null, null, true));
+      }
+
+      setTimeout(() => {
+        for (let i = 0; i < _spvCoins.length; i++) {
+          Store.dispatch(dashboardRemoveCoin(_spvCoins[i]));
+        }
+        if (!this.props.Main.coins.native.length) {
+          Store.dispatch(dashboardChangeActiveCoin(null, null, true));
+        }
+      }, 500);
+
+      Store.dispatch(getDexCoins());
+      Store.dispatch(activeHandle());
+    });
+  }
+
+  _toggleNotaryElectionsModal() {
+    this.setState({
+      displayLoginSettingsDropdown: false,
+    });
+    Store.dispatch(toggleNotaryElectionsModal(true));
+  }
+
+  // the setInterval handler for 'activeCoins'
+  _iguanaActiveCoins = null;
+
+  toggleLoginSettingsDropdownSection(sectionName) {
+    Store.dispatch(toggleLoginSettingsModal(true));
+
+    this.setState({
+      displayLoginSettingsDropdown: false,
+      displayLoginSettingsDropdownSection: sectionName,
+    });
+  }
+
+  setRecieverFromScan(receiver) {
+    if (receiver) {
+      this.setState({
+        loginPassphrase: receiver,
+      });
+    } else {
+      Store.dispatch(
+        triggerToaster(
+          translate('INDEX.QR_UNABLE_TO_DECODE'),
+          translate('INDEX.QR_ERROR'),
+          'error'
+        )
+      );
+    }
+  }
+
+  isCustomWalletSeed() {
+    return this.state.customWalletSeed;
+  }
+
+  toggleCustomWalletSeed() {
+    this.setState({
+      customWalletSeed: !this.state.customWalletSeed,
+    }, () => {
+      // if customWalletSeed is set to false, regenerate the seed
+      if (!this.state.customWalletSeed) {
+        this.setState({
+          randomSeed: passphraseGenerator.generatePassPhrase(this.state.bitsOption),
+          isSeedConfirmError: false,
+          isSeedBlank: false,
+          isCustomSeedWeak: false,
+        });
+      } else {
+        // if customWalletSeed is set to true, reset to seed to an empty string
+        this.setState({
+          randomSeed: '',
+          randomSeedConfirm: '',
+        });
+      }
+    });
+  }
+
+  shouldEncryptSeed() {
+    return this.state.shouldEncryptSeed;
+  }
+
+  toggleShouldEncryptSeed() {
+    this.setState({
+      shouldEncryptSeed: !this.state.shouldEncryptSeed,
+    });
+  }
+
+  toggleCustomPinFilename() {
+    this.setState({
+      isCustomPinFilename: !this.state.isCustomPinFilename,
+    });
+  }
+
+  updateInput(e) {
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  componentDidMount() {
+    this.setState({
+      isExperimentalOn: mainWindow.experimentalFeatures,
+    });
+
+    this.loadPinList();
+  }
+
+  toggleSeedInputVisibility() {
+    this.setState({
+      seedInputVisibility: !this.state.seedInputVisibility,
+    });
+
+    this.resizeLoginTextarea();
+  }
+
+  generateNewSeed(bits) {
+    this.setState(Object.assign({}, this.state, {
+      randomSeed: passphraseGenerator.generatePassPhrase(bits),
+      bitsOption: bits,
+      isSeedBlank: false,
+    }));
+  }
+
+  toggleLoginSettingsDropdown() {
+    this.setState(Object.assign({}, this.state, {
+      displayLoginSettingsDropdown: !this.state.displayLoginSettingsDropdown,
+    }));
+  }
+
+  componentWillMount() {
+    document.addEventListener(
+      'click',
+      this.handleClickOutside,
+      false
+    );
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener(
+      'click',
+      this.handleClickOutside,
+      false
+    );
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.Login.pinList === 'no pins') {
+      props.Login.pinList = [];
+    }
+
+    if (props.Login.pinList !== 'no pins' &&
+        props.Login.pinList.length === 1) {
+      setTimeout(() => {
+        this.setState({
+          selectedPin: props.Login.pinList[0],
+        });
+      }, 100);
+    }
+
+    if (props &&
+        props.Main &&
+        props.Main.isLoggedIn) {
+      if (props.Main.total === 0) {
+        this.setState({
+          activeLoginSection: 'activateCoin',
+          loginPassphrase: '',
+          display: true,
+        });
+      } else {
+        this.setState({
+          loginPassphrase: '',
+          display: false,
+        });
+      }
+    }
+
+    if (props &&
+        props.Main &&
+        !props.Main.isLoggedIn) {
+      document.body.className = 'page-login layout-full page-dark';
+
+      if (props.Interval &&
+          props.Interval.interval &&
+          props.Interval.interval.sync) {
+        Store.dispatch(dashboardChangeActiveCoin());
+        Store.dispatch(
+          stopInterval(
+            'sync',
+            props.Interval.interval
+          )
+        );
+      }
+
+      this.setState({
+        display: true,
+        activeLoginSection: this.state.activeLoginSection !== 'signup' ? 'login' : 'signup',
+      });
+    }
+
+    if (props.Main &&
+        props.Main.total === 0) {
+      document.body.className = 'page-login layout-full page-dark';
+
+      if (props.Interval &&
+          props.Interval.interval &&
+          props.Interval.interval.sync) {
+        Store.dispatch(dashboardChangeActiveCoin());
+        Store.dispatch(
+          stopInterval(
+            'sync',
+            props.Interval.interval
+          )
+        );
+      }
+    }
+
+    if (this.state.activeLoginSection !== 'signup' &&
+        props &&
+        props.Main &&
+        props.Main.isLoggedIn) {
+      this.setState({
+        loginPassphrase: '',
+        activeLoginSection: 'activateCoin',
+      });
+    }
+  }
+
+  toggleActivateCoinForm() {
+    Store.dispatch(toggleAddcoinModal(true, false));
+  }
+
+  resizeLoginTextarea() {
+    // auto-size textarea
+    setTimeout(() => {
+      if (this.state.seedInputVisibility) {
+        document.querySelector('#loginPassphrase').style.height = '1px';
+        document.querySelector('#loginPassphrase').style.height = `${(15 + document.querySelector('#loginPassphrase').scrollHeight)}px`;
+      }
+    }, 100);
+  }
+
+  updateLoginPassPhraseInput(e) {
+    const newValue = e.target.value;
+
+    clearTimeout(this.state.trimPassphraseTimer);
+
+    const _trimPassphraseTimer = setTimeout(() => {
+      if (newValue[0] === ' ' ||
+          newValue[newValue.length - 1] === ' ') {
+        this.setState({
+          seedExtraSpaces: true,
+        });
+      } else {
+        this.setState({
+          seedExtraSpaces: false,
+        });
+      }
+    }, SEED_TRIM_TIMEOUT);
+
+    this.resizeLoginTextarea();
+
+    this.setState({
+      trimPassphraseTimer: _trimPassphraseTimer,
+      [e.target.name === 'loginPassphraseTextarea' ? 'loginPassphrase' : e.target.name]: newValue,
+      loginPassPhraseSeedType: this.getLoginPassPhraseSeedType(newValue),
+    });
+  }
+
+  updateRegisterConfirmPassPhraseInput(e) {
+    this.setState({
+      [e.target.name]: e.target.value,
+      isSeedConfirmError: false,
+      isSeedBlank: this.isBlank(e.target.value),
+    });
+  }
+
+  updateWalletSeed(e) {
+    this.setState({
+      randomSeed: e.target.value,
+      isSeedConfirmError: false,
+      isSeedBlank: this.isBlank(e.target.value),
+    });
+  }
+
+  loginSeed() {
+    if (!this.state.selectedPin ||
+        !this.state.decryptKey) {
+      const stringEntropy = mainWindow.checkStringEntropy(this.state.loginPassphrase);
+
+      mainWindow.pinAccess = false;
+
+      if (!stringEntropy) {
+        Store.dispatch(
+          triggerToaster(
+            [translate('LOGIN.SEED_ENTROPY_CHECK_LOGIN_P1'),
+              '',
+              translate('LOGIN.SEED_ENTROPY_CHECK_LOGIN_P2')],
+            translate('LOGIN.SEED_ENTROPY_CHECK_TITLE'),
+            'warning toastr-wide',
+            false
+          )
+        );
+      }
+
+      mainWindow.createSeed.secondaryLoginPH = md5(this.state.loginPassphrase);
+      // reset the login pass phrase values so that when the user logs out, the values are clear
+      this.setState({
+        loginPassphrase: '',
+        loginPassPhraseSeedType: null,
+      });
+
+      // reset login input vals
+      this.refs.loginPassphrase.value = '';
+      this.refs.loginPassphraseTextarea.value = '';
+
+      this.setState(this.defaultState);
+
+      Store.dispatch(shepherdElectrumAuth(this.state.loginPassphrase));
+      Store.dispatch(shepherdElectrumCoins());
+    } else {
+      mainWindow.pinAccess = this.state.selectedPin;
+
+      loginWithPin(this.state.decryptKey, this.state.selectedPin)
+      .then((res) => {
+        if (res.msg === 'success') {
+          // reset login input vals
+          this.refs.loginPassphrase.value = '';
+          this.refs.loginPassphraseTextarea.value = '';
+          this.refs.decryptKey.value = '';
+          this.refs.selectedPin.value = '';
+
+          this.setState(this.defaultState);
+
+          Store.dispatch(shepherdElectrumAuth(res.result));
+          Store.dispatch(shepherdElectrumCoins());
+        }
+      });
+    }
+  }
+
+  loadPinList() {
+    Store.dispatch(loadPinList());
+  }
+
+  updateSelectedPin(e) {
+    this.setState({
+      selectedPin: e.target.value,
+    });
+  }
+
+  getLoginPassPhraseSeedType(passPhrase) {
+    if (!passPhrase) {
+      return null;
+    }
+
+    const passPhraseWords = passPhrase.split(' ');
+
+    if (!passphraseGenerator.arePassPhraseWordsValid(passPhrase)) {
+      return null;
+    }
+
+    if (passphraseGenerator.isPassPhraseValid(passPhraseWords, 256)) {
+      return translate('LOGIN.IGUANA_SEED');
+    }
+
+    if (passphraseGenerator.isPassPhraseValid(passPhraseWords, 160)) {
+      return translate('LOGIN.WAVES_SEED');
+    }
+
+    if (passphraseGenerator.isPassPhraseValid(passPhraseWords, 128)) {
+      return translate('LOGIN.NXT_SEED');
+    }
+
+    return null;
+  }
+
+  updateActiveLoginSection(name) {
+    // reset login/create form
+    this.setState({
+      activeLoginSection: name,
+      loginPassphrase: null,
+      loginPassPhraseSeedType: null,
+      seedInputVisibility: false,
+      bitsOption: 256,
+      randomSeed: passphraseGenerator.generatePassPhrase(256),
+      randomSeedConfirm: '',
+      isSeedConfirmError: false,
+      isSeedBlank: false,
+      displaySeedBackupModal: false,
+      customWalletSeed: false,
+      isCustomSeedWeak: false,
+   });
+  }
+
+  execWalletCreate() {
+    mainWindow.createSeed.triggered = true;
+    mainWindow.createSeed.firstLoginPH = md5(this.state.randomSeed);
+
+    Store.dispatch(
+      shepherdElectrumAuth(this.state.randomSeedConfirm)
+    );
+    Store.dispatch(
+      shepherdElectrumCoins()
+    );
+
+    this.setState({
+      activeLoginSection: 'activateCoin',
+      displaySeedBackupModal: false,
+      isSeedConfirmError: false,
+    });
+  }
+
+  handleRegisterWallet() {
+    const enteredSeedsMatch = this.state.randomSeed === this.state.randomSeedConfirm;
+    const isSeedBlank = this.isBlank(this.state.randomSeed);
+    const stringEntropy = mainWindow.checkStringEntropy(this.state.customWalletSeed);
+    const _customSeed = this.state.customWalletSeed;
+
+    if (!stringEntropy &&
+        _customSeed) {
+      Store.dispatch(
+        triggerToaster(
+          [translate('LOGIN.SEED_ENTROPY_CHECK_P1'),
+            '',
+            translate('LOGIN.SEED_ENTROPY_CHECK_P3')],
+            translate('LOGIN.SEED_ENTROPY_CHECK_TITLE'),
+          'warning toastr-wide',
+          false
+        )
+      );
+    }
+
+    this.setState({
+      isCustomSeedWeak: _customSeed === null ? true : false,
+      isSeedConfirmError: !enteredSeedsMatch ? true : false,
+      isSeedBlank: isSeedBlank ? true : false,
+    });
+
+    if (this.state.shouldEncryptSeed &&
+        !this.isCustomWalletSeed()) {
+      if (this.state.encryptKey !== this.state.encryptKeyConfirm) {
+        Store.dispatch(
+          triggerToaster(
+            translate('LOGIN.ENCRYPTION_KEYS_DONT_MATCH'),
+            translate('LOGIN.SEED_ENCRYPT'),
+            'error'
+          )
+        );
+      } else {
+        if (!this.state.encryptKey ||
+            !this.state.encryptKeyConfirm) {
+          Store.dispatch(
+            triggerToaster(
+              translate('LOGIN.ENCRYPTION_KEY_EMPTY'),
+              translate('LOGIN.SEED_ENCRYPT'),
+              'error'
+            )
+          );
+        } else if (this.state.encryptKey === this.state.encryptKeyConfirm) {
+          const seedEncryptionKeyEntropy = mainWindow.checkStringEntropy(this.state.encryptKey);
+
+          if (!seedEncryptionKeyEntropy) {
+            Store.dispatch(
+              triggerToaster(
+                translate('LOGIN.SEED_ENCRYPTION_WEAK_PW'),
+                translate('LOGIN.WEAK_PW'),
+                'error'
+              )
+            );
+          } else {
+            if (this.state.isCustomPinFilename) {
+              const _customPinFilenameTest = /^[0-9a-zA-Z-_]+$/g;
+
+              if (this.state.customPinFilename &&
+                  _customPinFilenameTest.test(this.state.customPinFilename)) {
+                encryptPassphrase(
+                  this.state.randomSeed,
+                  this.state.encryptKey,
+                  false,
+                  this.state.customPinFilename,
+                )
+                .then((res) => {
+                  if (res.msg === 'success') {
+                    this.loadPinList();
+
+                    setTimeout(() => {
+                      this.setState({
+                        selectedPin: res.result,
+                        activeLoginSection: 'login',
+                      });
+                    }, 500);
+                  } else {
+                    Store.dispatch(
+                      triggerToaster(
+                        res.result,
+                        translate('LOGIN.ERR_SEED_STORAGE'),
+                        'error'
+                      )
+                    );
+                  }
+                });
+              } else {
+                Store.dispatch(
+                  triggerToaster(
+                    translate('LOGIN.CUSTOM_PIN_FNAME_INFO'),
+                    translate('LOGIN.ERR_SEED_STORAGE'),
+                    'error'
+                  )
+                );
+              }
+            } else {
+              encryptPassphrase(this.state.randomSeed, this.state.encryptKey)
+              .then((res) => {
+                if (res.msg === 'success') {
+                  this.loadPinList();
+
+                  setTimeout(() => {
+                    this.setState({
+                      selectedPin: res.result,
+                      activeLoginSection: 'login',
+                    });
+                  }, 500);
+                } else {
+                  Store.dispatch(
+                    triggerToaster(
+                      res.result,
+                      translate('LOGIN.ERR_SEED_STORAGE'),
+                      'error'
+                    )
+                  );
+                }
+              });
+            }
+          }
+        }
+      }
+    } else {
+      if (enteredSeedsMatch &&
+          !isSeedBlank &&
+          _customSeed !== null &&
+          ((stringEntropy && this.isCustomWalletSeed()) || !this.isCustomWalletSeed())) {
+        this.toggleSeedBackupModal();
+      }
+    }
+  }
+
+  isBlank(str) {
+    return (!str || /^\s*$/.test(str));
+  }
+
+  handleKeydown(e) {
+    this.updateLoginPassPhraseInput(e);
+
+    if (e.key === 'Enter' &&
+        (this.state.loginPassphrase || (this.state.selectedPin && this.state.decryptKey))) {
+      this.loginSeed();
+    }
+  }
+
+  toggleSeedBackupModal() {
+    this.setState(Object.assign({}, this.state, {
+      displaySeedBackupModal: !this.state.displaySeedBackupModal,
+    }));
+  }
+
+  copyPassPhraseToClipboard() {
+    const passPhrase = this.state.randomSeed;
+    const textField = document.createElement('textarea');
+
+    textField.innerText = passPhrase;
+    document.body.appendChild(textField);
+    textField.select();
+    document.execCommand('copy');
+    textField.remove();
+
+    Store.dispatch(
+      triggerToaster(
+        translate('LOGIN.SEED_SUCCESSFULLY_COPIED'),
+        translate('LOGIN.SEED_COPIED'),
+        'success'
+      )
+    );
+  }
+
+  updateSelectedShortcut(e, type) {
+    this.setState({
+      [type === 'native' ? 'selectedShortcutNative' : 'selectedShortcutSPV'] : e.value,
+    });
+
+    if (type === 'native') {
+      const _res = mainWindow.zcashParamsExist;
+      const __errors = zcashParamsCheckErrors(_res);
+
+      if (__errors) {
+        mainWindow.zcashParamsExistPromise()
+        .then((res) => {
+          const _errors = zcashParamsCheckErrors(res);
+          mainWindow.zcashParamsExist = res;
+
+          if (_errors) {
+            Store.dispatch(
+              triggerToaster(
+                _errors,
+                'Safecoind',
+                'error',
+                false
+              )
+            );
+            Store.dispatch(toggleZcparamsFetchModal(true));
+          } else {
+            mainWindow.startSAFENative(e.value.toUpperCase());
+          }
+        });
+      } else {
+        mainWindow.startSAFENative(e.value.toUpperCase());
+        this.setState({
+          selectedShortcutNative: '',
+        });
+      }
+    } else {
+      mainWindow.startSPV(e.value.toUpperCase());
+      this.setState({
+        selectedShortcutSPV: '',
+      });
+    }
+
+    setTimeout(() => {
+      Store.dispatch(activeHandle());
+      if (type === 'native') {
+        Store.dispatch(shepherdElectrumCoins());
+      }
+      Store.dispatch(getDexCoins());
+    }, 500);
+    setTimeout(() => {
+      Store.dispatch(activeHandle());
+      if (type === 'native') {
+        Store.dispatch(shepherdElectrumCoins());
+      }
+      Store.dispatch(getDexCoins());
+    }, 1000);
+    setTimeout(() => {
+      Store.dispatch(activeHandle());
+      if (type === 'native') {
+        Store.dispatch(shepherdElectrumCoins());
+      }
+      Store.dispatch(getDexCoins());
+    }, type === 'native' ? 5000 : 2000);
+  }
+
+  renderSwallModal() {
+    if (this.state.displaySeedBackupModal) {
+      return SwallModalRender.call(this);
+    }
+
+    return null;
+  }
+
+  renderShortcutOption(option) {
+    if (option.value.indexOf('+') > -1) {
+      const _comps = option.value.split('+');
+      let _items = [];
+
+      for (let i = 0; i < _comps.length; i++) {
+        _items.push(
+          <span key={ `addcoin-shortcut-icons-${i}` }>
+            <img
+              src={ `assets/images/cryptologo/${_comps[i].toLowerCase()}.png` }
+              alt={ _comps[i].toUpperCase() }
+              width="30px"
+              height="30px" />
+              { i !== _comps.length - 1 &&
+                <span className="margin-left-10 margin-right-10">+</span>
+              }
+          </span>
+        );
+      }
+
+      return _items;
+    } else {
+      return (
+        <div>
+          <img
+            src={ `assets/images/cryptologo/${option.value.toLowerCase()}.png` }
+            alt={ option.value.toUpperCase() }
+            width="30px"
+            height="30px" />
+            <span className="margin-left-10">{ option.value.toUpperCase() }</span>
+        </div>
+      );
+    }
+  }
+
+  render() {
+    if ((this.state && this.state.display) ||
+        !this.props.Main) {
+      return LoginRender.call(this);
+    }
+
+    return null;
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    Main: state.Main,
+    Dashboard: state.Dashboard,
+    Interval: {
+      interval: state.Interval.interval,
+    },
+    Login: state.Login,
+  };
+};
+
+export default connect(mapStateToProps)(Login);
