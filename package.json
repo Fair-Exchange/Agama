@@ -33,7 +33,7 @@
     "async": "^2.6.0",
     "bigi": "^1.4.2",
     "bip39": "^2.5.0",
-    "bitcoinforksjs-lib": "git://github.com/Fair-Exchange/bitcoinforkjs-lib",
+    "bitcoinforksjs-lib": "git://github.com/Fair-Exchange/bitcoinjs-lib#opt-in-bitcoincash-sighash",
     "bitcoinjs-lib": "git://github.com/Fair-Exchange/bitcoinjs-lib.git",
     "bitcoinjs-lib-pos": "git://github.com/Fair-Exchange/bitcoinjs-lib-pos",
     "bitcoinjs-lib-zcash": "git://github.com/pbca26/bitcoinjs-lib#zcash",
