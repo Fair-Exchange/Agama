@@ -625,13 +625,15 @@ class WalletsData extends React.Component {
       return (
         <DoubleScrollbar>
           { TxHistoryListRender.call(this) }
-          <div className="margin-left-5 margin-top-30">
-            <span
-              className="pointer"
-              onClick={ this.exportToCSV }>
-              <i className="icon fa-file-excel-o margin-right-10"></i>{ this.state.generatingCSV ? translate('INDEX.GENERATING_CSV') + '...' : translate('INDEX.EXPORT_TO_CSV') }
-            </span>
-          </div>
+          { !this.state.kvView &&
+            <div className="margin-left-5 margin-top-30">
+              <span
+                className="pointer"
+                onClick={ this.exportToCSV }>
+                <i className="icon fa-file-excel-o margin-right-10"></i>{ this.state.generatingCSV ? translate('INDEX.GENERATING_CSV') + '...' : translate('INDEX.EXPORT_TO_CSV') }
+              </span>
+            </div>
+          }
         </DoubleScrollbar>
       );
     }

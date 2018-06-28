@@ -120,7 +120,7 @@ module.exports = (shepherd) => {
         const MAX_TX = _maxlength || 10;
         ecl.connect();
 
-        ecl.blockchainNumblocksSubscribe()
+        shepherd.electrumGetCurrentBlock(network)
         .then((currentHeight) => {
           if (currentHeight &&
               Number(currentHeight) > 0) {

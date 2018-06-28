@@ -1033,6 +1033,7 @@ export const LANG_EN = {
     'BNTN': 'Blocnation',
     'PRLPAY': 'Pearl Pay',
     'OOT': 'Utrum',
+    'ZILLA': 'ChainZilla',
   },
   'CRYPTO': {
     'STRAT': 'Stratis',

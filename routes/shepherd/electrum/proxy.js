@@ -223,8 +223,8 @@ module.exports = (shepherd) => {
           });
         });
       },
-      blockchainNumblocksSubscribe: () => {
-        shepherd.log(`proxy blockchainNumblocksSubscribe`, true);
+      blockchainHeadersSubscribe: () => {
+        shepherd.log(`proxy blockchainHeadersSubscribe`, true);
 
         return new Promise((resolve, reject) => {
           let options = {
@@ -238,18 +238,18 @@ module.exports = (shepherd) => {
                 response.statusCode === 200) {
               try {
                 const _parsedBody = JSON.parse(body);
-                shepherd.log('proxy blockchainNumblocksSubscribe parsed');
+                shepherd.log('proxy blockchainHeadersSubscribe parsed');
                 shepherd.log(_parsedBody);
 
                 if (_parsedBody) {
                   resolve(_parsedBody.result);
                 }
-                shepherd.log(`proxy blockchainNumblocksSubscribe`);
+                shepherd.log(`proxy blockchainHeadersSubscribe`);
               } catch (e) {
-                shepherd.log(`parse error proxy blockchainNumblocksSubscribe`, true);
+                shepherd.log(`parse error proxy blockchainHeadersSubscribe`, true);
               }
             } else {
-              shepherd.log(`req error proxy blockchainNumblocksSubscribe`, true);
+              shepherd.log(`req error proxy blockchainHeadersSubscribe`, true);
             }
           });
         });

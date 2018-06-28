@@ -10,8 +10,8 @@ var options = {
   name: 'safewallet-app',
   bin: 'Safewallet',
   categories: ['Office', 'Internet'],
-  homepage: 'http://ipv6admin.com',
-  maintainer: '<dev@ipv6admin.com>',
+  homepage: 'http://fairexchange.org',
+  maintainer: 'FairExchange <dev@fairexchange.org>',
 }
 
 console.log('Creating package (this may take a while)');

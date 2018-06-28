@@ -174,7 +174,7 @@ module.exports = (shepherd) => {
 
         res.end(JSON.stringify(obj));
       } else {
-        delete shepherd.electrumCoins[_chain === 'safecoin' ? 'SAFE' : _chain];
+        delete shepherd.electrumCoins[_chain.toLowerCase()];
 
         if (Object.keys(shepherd.electrumCoins).length - 1 === 0) {
           shepherd.electrumCoins.auth = false;

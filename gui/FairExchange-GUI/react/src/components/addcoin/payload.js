@@ -135,4 +135,8 @@ export const acConfig = {
 		'ac_supply': 500000000,
 		addnode: '13.250.226.125',
 	},
+	ZILLA: {
+		'ac_supply': 11000000,
+		addnode: '158.69.0.53',
+	},
 };

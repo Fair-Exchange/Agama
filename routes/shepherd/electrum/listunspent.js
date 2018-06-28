@@ -17,7 +17,7 @@ module.exports = (shepherd) => {
             let formattedUtxoList = [];
             let _utxo = [];
 
-            ecl.blockchainNumblocksSubscribe()
+            shepherd.electrumGetCurrentBlock(network)
             .then((currentHeight) => {
               if (currentHeight &&
                   Number(currentHeight) > 0) {

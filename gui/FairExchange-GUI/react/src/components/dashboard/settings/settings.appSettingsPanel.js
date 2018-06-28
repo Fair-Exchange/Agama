@@ -88,7 +88,7 @@ class AppSettingsPanel extends React.Component {
     let saveAfterPathCheck = false;
 
     for (let key in _appSettings) {
-      if (key.indexOf('__') === -1) {
+      if (typeof _appSettings[key] !== 'object') {
         _appSettingsPristine[key] = this.state.appConfigSchema[key] && this.state.appConfigSchema[key].type === 'number' ? Number(_appSettings[key]) : _appSettings[key];
 
         if (this.state.appConfigSchema[key] &&
@@ -126,10 +126,13 @@ class AppSettingsPanel extends React.Component {
           });
         }
       } else {
-        const _nestedKey = key.split('__');
-        _appSettingsPristine[_nestedKey[0]][_nestedKey[1]] = this.state.appConfigSchema[_nestedKey[0]][_nestedKey[1]].type === 'number' ? Number(_appSettings[key]) : _appSettings[key];
+        for (let keyChild in _appSettings[key]) {
+          _appSettingsPristine[key][keyChild] = this.state.appConfigSchema[key][keyChild].type === 'number' ? Number(_appSettings[key][keyChild]) : _appSettings[key][keyChild];
+        }
       }
     }
+
+    delete _appSettingsPristine.token;
 
     if (!saveAfterPathCheck) {
       Store.dispatch(saveAppConfig(_appSettingsPristine));

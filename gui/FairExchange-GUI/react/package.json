@@ -18,6 +18,7 @@
     "e2e-live": "protractor --elementExplorer"
   },
   "repository": "https://github.com/OleksandrBlack/FairExchange-GUI",
+  "homepage": "http://fairexchange.org",
   "keywords": [
     "safewallet",
     "FairExchange",

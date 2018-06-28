@@ -96,15 +96,17 @@ module.exports = (shepherd) => {
   });
 
   shepherd.get('/electrum/coins/server/set', (req, res, next) => {
+    const _coin = req.query.coin;
+
     if (shepherd.checkToken(req.query.token)) {
-      shepherd.electrumCoins[req.query.coin].server = {
+      shepherd.electrumCoins[_coin].server = {
         ip: req.query.address,
         port: req.query.port,
         proto: req.query.proto,
       };
 
       for (let key in shepherd.electrumServers) {
-        if (key === req.query.coin) {
+        if (key === _coin) {
           shepherd.electrumServers[key].address = req.query.address;
           shepherd.electrumServers[key].port = req.query.port;
           shepherd.electrumServers[key].proto = req.query.proto;

@@ -25,11 +25,6 @@ module.exports = (shepherd) => {
   shepherd.electrumGetBlockInfo = (height, network) => {
     return new Promise((resolve, reject) => {
       const ecl = shepherd.ecl(network);
-      /*const ecl = new shepherd.electrumJSCore(
-        shepherd.electrumServers[network].port,
-        shepherd.electrumServers[network].address,
-        shepherd.electrumServers[network].proto
-      ); // tcp or tls*/
 
       ecl.connect();
       ecl.blockchainBlockGetHeader(height)
@@ -67,20 +62,20 @@ module.exports = (shepherd) => {
   shepherd.electrumGetCurrentBlock = (network) => {
     return new Promise((resolve, reject) => {
       const ecl = shepherd.ecl(network);
-      /*const ecl = new shepherd.electrumJSCore(
-        shepherd.electrumServers[network].port,
-        shepherd.electrumServers[network].address,
-        shepherd.electrumServers[network].proto
-      ); // tcp or tls*/
 
       ecl.connect();
-      ecl.blockchainNumblocksSubscribe()
+      ecl.blockchainHeadersSubscribe()
       .then((json) => {
         ecl.close();
-        shepherd.log('electrum currentblock ==>', true);
+
+        shepherd.log('electrum currentblock (electrum >= v1.1) ==>', true);
         shepherd.log(json, true);
 
-        resolve(json);
+        if (json['block_height']) {
+          resolve(json['block_height']);
+        } else {
+          resolve(json);
+        }
       });
     });
   }

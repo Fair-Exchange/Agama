@@ -1,4 +1,4 @@
- import { safeAssetChains } from 'safewallet-wallet-lib/src/coin-helpers'
+import { safeAssetChains } from 'safewallet-wallet-lib/src/coin-helpers'
 
 export const getCoinTitle = (coin) => {
   let coinlogo;
