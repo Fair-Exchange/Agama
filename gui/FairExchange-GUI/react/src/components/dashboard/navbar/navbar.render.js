@@ -77,7 +77,7 @@ const NavbarRender = function() {
             </li>
             <li className={ this.isSectionActive('safenodes') ? 'active nav-top-menu' : 'nav-top-menu' }>
                 <a onClick={ () => this.dashboardChangeSection('safenodes') }>
-                  <i className="site-menu-icon"></i> { translate('INDEX.SAFENODES') }
+                  <i className="site-menu-icon"></i> Safenodes
                 </a>
             </li>
             <li className={ (this.isSectionActive('dex') ? 'active nav-top-menu' : 'nav-top-menu') + (mainWindow.argv.indexOf('dexonly') > -1 ? '' : ' hide') }>
