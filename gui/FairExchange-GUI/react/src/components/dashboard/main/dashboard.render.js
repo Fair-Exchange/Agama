@@ -24,6 +24,7 @@ import SafeTrade from '../safeTrade/safeTrade';
 import PairTile from '../pairTile/pairTile';
 import SafeVote from '../safeVote/safeVote';
 import Swissknife from '../swissknife/swissknife';
+import Safenodes from '../safenodes/safenodes';
 
 const DashboardRender = function() {
   return (
@@ -58,6 +59,9 @@ const DashboardRender = function() {
         }
         <div className={ this.isSectionActive('swissknife') ? 'show' : 'hide' }>        
           <Swissknife />
+        </div>
+         <div className={ this.isSectionActive('safenodes') ? 'show' : 'hide' }>        
+          <Safenodes />
         </div>
         { this.isSectionActive('edex') &&
           <EDEX />
